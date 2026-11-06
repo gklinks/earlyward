@@ -1,0 +1,22 @@
+# Private dogfood evidence and logs. Never commit.
+private/
+
+# Build output
+/build/
+/dist/
+*.zip
+
+# Dev dependencies and caches
+/vendor/
+/node_modules/
+.phpunit.result.cache
+.phpunit.cache/
+.phpcs-cache
+
+# Local environment
+.env
+.env.*
+.mcp.json
+.claude/settings.local.json
+.DS_Store
+Thumbs.db
