@@ -1,8 +1,16 @@
 # Phase 0 plan
 
-Status: **draft, waiting on owner decisions** (name, repo owner, PHP/WP floor, quarantine, wordpress.org timing).
-Working name in this file: **Wallwarden** (slug `wallwarden`). If a different name is chosen, it is a
-search-and-replace; nothing below depends on it.
+Status: **accepted 2026-11-06.**
+
+## 0. Decisions (owner, 2026-11-06)
+
+| Decision | Outcome |
+|---|---|
+| Name | **Wallwarden**, slug `wallwarden`. ("WP Warden" is already a commercial WordPress care service.) Trademark registries not yet searched. |
+| Repo owner | A free GitHub organisation `wallwarden`; repo private until the owner approves going public. |
+| Minimum versions | **PHP 7.4+, WordPress 6.4+.** |
+| Quarantine | **No file quarantine in v1.0.** v1.0 ships reversible account actions (demote, revoke sessions and application passwords, with a backup). File quarantine is a v1.1 candidate after dogfood. |
+| wordpress.org | Built to the directory guidelines from the first commit; submitted at v1.0, after the false-positive gate. |
 
 This file is public. It contains no real domains, server paths, account names or credentials. The
 incident evidence it draws on is summarised by *shape*, not by name.
@@ -160,13 +168,13 @@ Everything here is either cheap or already proven by the hand-written monitor th
 
 **v0.2 (dogfood):** rest of A and B, C7-C13, Site Health integration, "copy for your host" block.
 
-**v1.0 (public):** D hardening toggles, account actions if approved, docs, wordpress.org assets.
+**v1.0 (public):** D hardening toggles, reversible account actions, docs, wordpress.org assets.
 Public release only after the false-positive gate in section 7.
 
 ## 6. Writes, network, cost (to be measured, not assumed)
 
 - Writes (full list kept in `docs/WRITES.md`): own options and transients, one cron event,
-  and only with confirmation: hardening toggles, account actions, quarantine (if approved).
+  and only with confirmation: hardening toggles and reversible account actions.
 - Network: loopback to the site's own URL only. Anything else is click-to-run or opt-in.
 - External probe: a tiny script in `bin/` the owner can run from any other machine or cron to catch
   the outage the plugin cannot see from inside (site fully down, or plugin itself not loading).
