@@ -1,0 +1,34 @@
+name: False positive
+description: Wallwarden flagged something that is legitimate.
+labels: ["false-positive"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        False positives are treated as bugs. Thank you.
+        **Do not paste real domains, server paths, usernames, emails, keys or full file contents.** Replace them with placeholders.
+  - type: input
+    id: check
+    attributes:
+      label: Check ID
+      description: Shown on the finding, for example C3.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence shown (sanitised)
+      description: The evidence line(s) from the finding, with private details replaced.
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: Why it is legitimate
+      description: For example the plugin or host that created the file.
+    validations:
+      required: true
+  - type: input
+    id: versions
+    attributes:
+      label: Wallwarden, WordPress and PHP versions

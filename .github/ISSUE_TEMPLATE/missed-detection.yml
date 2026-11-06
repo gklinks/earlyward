@@ -1,0 +1,24 @@
+name: Missed detection
+description: Something malicious or broken that Wallwarden did not flag.
+labels: ["detection-gap"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Never post live malware, credentials or someone else's site.** Describe the *shape* (file location, naming pattern, a few sanitised bytes). If the details are sensitive, use private reporting in the Security tab instead.
+  - type: textarea
+    id: what
+    attributes:
+      label: What was missed
+    validations:
+      required: true
+  - type: textarea
+    id: shape
+    attributes:
+      label: Where it lived and what it looked like (sanitised)
+    validations:
+      required: true
+  - type: input
+    id: versions
+    attributes:
+      label: Wallwarden, WordPress and PHP versions

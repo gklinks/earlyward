@@ -1,0 +1,22 @@
+name: Bug
+description: The plugin errored, slowed the site, or behaved unexpectedly.
+labels: ["bug"]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened, and what you expected
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+  - type: textarea
+    id: log
+    attributes:
+      label: Relevant log lines (sanitised)
+  - type: input
+    id: versions
+    attributes:
+      label: Wallwarden, WordPress and PHP versions
