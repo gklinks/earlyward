@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<ruleset name="Wallwarden">
+	<description>WordPress Coding Standards plus PHP 7.4+ compatibility.</description>
+
+	<file>wallwarden.php</file>
+	<file>src</file>
+	<file>tests</file>
+	<exclude-pattern>tests/fixtures/*</exclude-pattern>
+	<exclude-pattern>vendor/*</exclude-pattern>
+
+	<arg name="extensions" value="php"/>
+	<arg name="cache" value=".phpcs-cache"/>
+	<arg value="sp"/>
+
+	<config name="testVersion" value="7.4-"/>
+	<config name="minimum_wp_version" value="6.4"/>
+
+	<rule ref="WordPress"/>
+	<rule ref="PHPCompatibilityWP"/>
+
+	<rule ref="WordPress.WP.I18n">
+		<properties>
+			<property name="text_domain" type="array">
+				<element value="wallwarden"/>
+			</property>
+		</properties>
+	</rule>
+
+	<rule ref="WordPress.NamingConventions.PrefixAllGlobals">
+		<properties>
+			<property name="prefixes" type="array">
+				<element value="wallwarden"/>
+				<element value="Wallwarden"/>
+			</property>
+		</properties>
+	</rule>
+
+	<!-- PHPUnit test classes follow PHPUnit conventions. -->
+	<rule ref="WordPress.Files.FileName">
+		<exclude-pattern>tests/unit/*</exclude-pattern>
+	</rule>
+	<rule ref="WordPress.WP.AlternativeFunctions">
+		<exclude-pattern>tests/*</exclude-pattern>
+	</rule>
+	<rule ref="WordPress.PHP.NoSilencedErrors">
+		<exclude-pattern>tests/*</exclude-pattern>
+	</rule>
+</ruleset>

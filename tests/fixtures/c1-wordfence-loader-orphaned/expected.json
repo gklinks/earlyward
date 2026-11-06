@@ -1,0 +1,4 @@
+[
+	{ "check": "C1", "severity": "warning", "confidence": "medium",
+	  "where": [ ".user.ini:1", "wordfence-waf.php" ] }
+]

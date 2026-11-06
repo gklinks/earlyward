@@ -1,0 +1,150 @@
+<?php
+/**
+ * Materialises a fixture case into a temporary site tree.
+ *
+ * Fixture layout: tests/fixtures/<case>/
+ *   tree/           the site root (wp-content/, wp-content/uploads/, ...)
+ *   ini.json        optional effective ini values
+ *   expected.json   the findings the default scanner must return, no more, no less
+ *
+ * Conventions inside tree/:
+ *   - the text {ROOT} is replaced by the temporary site root (real configs hold absolute paths);
+ *   - a directory named NAME.zip.src/ becomes a zip archive NAME.zip with the same contents,
+ *     so no binary archives are committed.
+ *
+ * @package Wallwarden
+ */
+
+namespace Wallwarden\Tests;
+
+use Wallwarden\Env\Context;
+
+/**
+ * Fixture site.
+ */
+final class Fixture_Site {
+
+	/**
+	 * Temporary root.
+	 *
+	 * @var string
+	 */
+	public $root;
+
+	/**
+	 * Case directory.
+	 *
+	 * @var string
+	 */
+	public $case_dir;
+
+	/**
+	 * Build from a case directory.
+	 *
+	 * @param string $case_dir Case directory.
+	 */
+	public function __construct( string $case_dir ) {
+		$this->case_dir = $case_dir;
+		$this->root     = str_replace( '\\', '/', sys_get_temp_dir() ) . '/wallwarden-fixture-' . bin2hex( random_bytes( 6 ) );
+		mkdir( $this->root, 0777, true );
+		$this->copy( $case_dir . '/tree', $this->root );
+		foreach ( array( '/wp-content', '/wp-content/uploads' ) as $dir ) {
+			if ( ! is_dir( $this->root . $dir ) ) {
+				mkdir( $this->root . $dir, 0777, true );
+			}
+		}
+	}
+
+	/**
+	 * Context pointing at the temporary tree.
+	 *
+	 * @return Context
+	 */
+	public function context(): Context {
+		$ini      = array();
+		$ini_file = $this->case_dir . '/ini.json';
+		if ( is_file( $ini_file ) ) {
+			$raw = str_replace( '{ROOT}', $this->root, (string) file_get_contents( $ini_file ) );
+			$ini = (array) json_decode( $raw, true );
+		}
+		$ini += array( 'wallwarden.sapi' => 'fpm-fcgi' );
+		return new Context( $this->root, $this->root . '/wp-content', $this->root . '/wp-content/uploads', $ini );
+	}
+
+	/**
+	 * Expected findings.
+	 *
+	 * @return array<int, array<string, mixed>>
+	 */
+	public function expected(): array {
+		return (array) json_decode( (string) file_get_contents( $this->case_dir . '/expected.json' ), true );
+	}
+
+	/**
+	 * Remove the temporary tree.
+	 */
+	public function destroy(): void {
+		self::remove( $this->root );
+	}
+
+	/**
+	 * Recursive copy with {ROOT} substitution and zip building.
+	 *
+	 * @param string $from Source.
+	 * @param string $to   Destination.
+	 */
+	private function copy( string $from, string $to ): void {
+		if ( ! is_dir( $from ) ) {
+			return;
+		}
+		foreach ( (array) scandir( $from ) as $name ) {
+			if ( '.' === $name || '..' === $name || '.gitkeep' === $name ) {
+				continue;
+			}
+			$src = $from . '/' . $name;
+			if ( is_dir( $src ) && '.zip.src' === substr( $name, -8 ) ) {
+				$this->zip( $src, $to . '/' . substr( $name, 0, -4 ) );
+			} elseif ( is_dir( $src ) ) {
+				mkdir( $to . '/' . $name, 0777, true );
+				$this->copy( $src, $to . '/' . $name );
+			} else {
+				file_put_contents( $to . '/' . $name, str_replace( '{ROOT}', $this->root, (string) file_get_contents( $src ) ) );
+			}
+		}
+	}
+
+	/**
+	 * Build a zip from a directory.
+	 *
+	 * @param string $src  Directory.
+	 * @param string $dest Zip path.
+	 */
+	private function zip( string $src, string $dest ): void {
+		$zip = new \ZipArchive();
+		$zip->open( $dest, \ZipArchive::CREATE | \ZipArchive::OVERWRITE );
+		$it = new \RecursiveIteratorIterator( new \RecursiveDirectoryIterator( $src, \FilesystemIterator::SKIP_DOTS ) );
+		foreach ( $it as $file ) {
+			$path = str_replace( '\\', '/', (string) $file );
+			$zip->addFile( $path, substr( $path, strlen( str_replace( '\\', '/', $src ) ) + 1 ) );
+		}
+		$zip->close();
+	}
+
+	/**
+	 * Recursive delete.
+	 *
+	 * @param string $path Path.
+	 */
+	private static function remove( string $path ): void {
+		if ( is_dir( $path ) && ! is_link( $path ) ) {
+			foreach ( (array) scandir( $path ) as $name ) {
+				if ( '.' !== $name && '..' !== $name ) {
+					self::remove( $path . '/' . $name );
+				}
+			}
+			rmdir( $path );
+		} elseif ( file_exists( $path ) ) {
+			unlink( $path );
+		}
+	}
+}

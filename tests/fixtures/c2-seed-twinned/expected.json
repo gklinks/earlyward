@@ -1,0 +1,4 @@
+[
+	{ "check": "C2", "severity": "critical", "confidence": "high", "where": [ "wp-content/d1e2f3a4.zip" ] },
+	{ "check": "C2", "severity": "critical", "confidence": "high", "where": [ "wp-content/uploads/2026/08/d1e2f3a4.zip" ] }
+]

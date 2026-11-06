@@ -1,0 +1,5 @@
+# BEGIN examplefw
+<IfModule mod_php7.c>
+php_value auto_prepend_file "{ROOT}/wp-content/plugins/examplefw/firewall.php"
+</IfModule>
+# END examplefw

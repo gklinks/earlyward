@@ -1,0 +1,4 @@
+[
+	{ "check": "C1", "severity": "critical", "confidence": "high",
+	  "where": [ "php:auto_prepend_file", "wp-content/.a1b2c3d4.php" ] }
+]

@@ -1,0 +1,13 @@
+parameters:
+	level: 8
+	phpVersion: 70400
+	paths:
+		- wallwarden.php
+		- src
+	bootstrapFiles:
+		- tests/phpstan-bootstrap.php
+	scanDirectories:
+		- vendor/php-stubs/wp-cli-stubs
+	# Docblock types are not enforced at runtime, and checks may come from contributors.
+	# The scanner deliberately re-checks them (fail open), so do not treat docblocks as proof.
+	treatPhpDocTypesAsCertain: false
