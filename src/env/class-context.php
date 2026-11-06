@@ -136,10 +136,18 @@ final class Context {
 	 * @return string
 	 */
 	public function relative( string $path ): string {
-		$path = Filesystem::normalise( $path );
-		foreach ( array( $this->root, dirname( $this->content_dir ) ) as $base ) {
-			if ( 0 === strpos( $path, $base . '/' ) ) {
-				return substr( $path, strlen( $base ) + 1 );
+		$path  = Filesystem::normalise( $path );
+		$bases = array(
+			$this->root,
+			dirname( $this->content_dir ),
+			Filesystem::canonical( $this->root ),
+			dirname( Filesystem::canonical( $this->content_dir ) ),
+		);
+		foreach ( array( $path, Filesystem::canonical( $path ) ) as $candidate ) {
+			foreach ( $bases as $base ) {
+				if ( 0 === strpos( $candidate, $base . '/' ) ) {
+					return substr( $candidate, strlen( $base ) + 1 );
+				}
 			}
 		}
 		return basename( $path );

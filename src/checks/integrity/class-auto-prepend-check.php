@@ -171,17 +171,22 @@ final class Auto_Prepend_Check implements Check {
 	 * @return Finding|null Null when the target is a recognised firewall loader.
 	 */
 	private function classify( Context $ctx, string $target, array $evidence ): ?Finding {
-		$norm     = Filesystem::normalise( $target );
-		$base     = basename( $norm );
-		$abs      = ( '/' === $norm[0] || preg_match( '#^[A-Za-z]:/#', $norm ) ) ? $norm : $ctx->root() . '/' . $norm;
-		$plugins  = $ctx->content_dir() . '/plugins/';
-		$evidence = array_merge(
+		$norm = Filesystem::normalise( $target );
+		$base = basename( $norm );
+		$abs  = ( '/' === $norm[0] || preg_match( '#^[A-Za-z]:/#', $norm ) ) ? $norm : $ctx->root() . '/' . $norm;
+		// Compare real locations: the same directory can be spelled two ways (symlinked docroots are common).
+		$abs        = Filesystem::canonical( $abs );
+		$target_dir = dirname( $abs );
+		$root       = Filesystem::canonical( $ctx->root() );
+		$content    = Filesystem::canonical( $ctx->content_dir() );
+		$plugins    = $content . '/plugins/';
+		$evidence   = array_merge(
 			$evidence,
 			array( new Evidence( 'target', $ctx->relative( $abs ), 0, $target ) )
 		);
 
 		// Wordfence's own loader lives at the WordPress root. Benign only if Wordfence is installed.
-		if ( 'wordfence-waf.php' === $base && dirname( $abs ) === $ctx->root() ) {
+		if ( 'wordfence-waf.php' === $base && $target_dir === $root ) {
 			if ( $ctx->fs()->is_dir( $plugins . 'wordfence' ) ) {
 				return null;
 			}
@@ -219,7 +224,7 @@ final class Auto_Prepend_Check implements Check {
 		}
 
 		$suspicious_name = (bool) preg_match( '/^\.|^[a-f0-9]{6,}\.php$/i', $base );
-		$in_content_root = dirname( $abs ) === $ctx->content_dir() || dirname( $abs ) === $ctx->root();
+		$in_content_root = $target_dir === $content || $target_dir === $root;
 		return new Finding(
 			self::ID,
 			Finding::SEVERITY_CRITICAL,

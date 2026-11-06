@@ -55,6 +55,25 @@ final class Filesystem {
 	}
 
 	/**
+	 * The real location of a path, so two spellings of one place compare equal.
+	 * For a path that does not exist, resolves its parent directory and keeps the name.
+	 *
+	 * @param string $path Path.
+	 * @return string Normalised path.
+	 */
+	public static function canonical( string $path ): string {
+		$real = realpath( $path );
+		if ( false !== $real ) {
+			return self::normalise( $real );
+		}
+		$parent = realpath( dirname( $path ) );
+		if ( false !== $parent ) {
+			return self::normalise( $parent ) . '/' . basename( $path );
+		}
+		return self::normalise( $path );
+	}
+
+	/**
 	 * Whether a path resolves inside an allowed root. Symlinks that escape are refused.
 	 *
 	 * @param string $path Path.
