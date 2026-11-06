@@ -1,0 +1,58 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    name: PHPCS + PHPStan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
+        with:
+          php-version: '8.3'
+          tools: composer:v2
+          coverage: none
+      - run: composer install --no-interaction --no-progress
+      - run: composer lint
+      - run: composer analyse
+
+  test:
+    name: Fixtures + unit tests (PHP ${{ matrix.php }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['7.4', '8.0', '8.1', '8.2', '8.3', '8.4', '8.5']
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: zip
+          tools: composer:v2
+          coverage: none
+      # One lock file, resolved for the PHP 7.4 floor, used on every version.
+      - run: composer install --no-interaction --no-progress
+      - run: composer test
+
+  plugin-check:
+    name: WordPress Plugin Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Build the distributable plugin
+        run: bash bin/build.sh
+      - uses: WordPress/plugin-check-action@10857da14b6c2246d15402b3e69f777edcf8c12e # v1.1.9
+        with:
+          build-dir: './build/wallwarden'

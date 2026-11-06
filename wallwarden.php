@@ -3,7 +3,7 @@
  * Plugin Name:       Wallwarden
  * Plugin URI:        https://github.com/wallwarden/wallwarden
  * Description:       Detection, early warning, hardening checks and hosting diagnostics, in plain language. Read-only by default.
- * Version:           0.1.0-dev
+ * Version:           0.1.0
  * Requires at least: 6.4
  * Requires PHP:      7.4
  * Author:            Wallwarden contributors
@@ -26,7 +26,7 @@ if ( version_compare( PHP_VERSION, '7.4', '<' ) ) {
 	return;
 }
 
-define( 'WALLWARDEN_VERSION', '0.1.0-dev' );
+define( 'WALLWARDEN_VERSION', '0.1.0' );
 define( 'WALLWARDEN_FILE', __FILE__ );
 define( 'WALLWARDEN_DIR', __DIR__ );
 

@@ -5,12 +5,13 @@ shows they behave on real sites. Check IDs refer to the ranked list in [PHASE-0-
 
 ## v0.1 — private dogfood
 
-- [ ] Plugin skeleton: bootstrap, kill switch, fail-open wrappers, autoloader
-- [ ] Finding model with evidence, severity, confidence, fingerprint
-- [ ] Env layer (filesystem, database, `/proc`, loopback) with fixture twins
-- [ ] Fixtures suite in CI
-- [ ] C1 `auto_prepend_file` per-line classification
-- [ ] C2 hex-named archive seeds
+- [x] Plugin skeleton: bootstrap, kill switch, fail-open wrappers, autoloader
+- [x] Finding model with evidence, severity, confidence, fingerprint
+- [x] Env layer: filesystem
+- [ ] Env layer: database, `/proc`, loopback, with fixture twins
+- [x] Fixtures suite (runs locally; CI workflow written, not yet run on GitHub)
+- [x] C1 `auto_prepend_file` per-line classification
+- [x] C2 hex-named archive seeds
 - [ ] C3 unrecognised must-use plugins and drop-ins
 - [ ] C4 look-alike admin accounts
 - [ ] C5 sessions and application passwords on admin accounts
@@ -23,7 +24,8 @@ shows they behave on real sites. Check IDs refer to the ranked list in [PHASE-0-
 - [ ] B1 several sites sharing one Linux user
 - [ ] B2 `open_basedir` unset
 - [ ] B3 backups and dumps reachable in the docroot
-- [ ] Scanner in WP-Cron with a time budget; WP-CLI command
+- [x] WP-CLI command `wp wallwarden scan`
+- [ ] Scanner in WP-Cron with a time budget
 - [ ] Email only when findings change
 - [ ] Plain admin page
 
@@ -41,6 +43,7 @@ shows they behave on real sites. Check IDs refer to the ranked list in [PHASE-0-
 - [ ] False-positive gate passed (see the plan, section 7)
 - [ ] Hardening toggles (reversible settings only)
 - [ ] Reversible account actions: demote, revoke sessions and application passwords, with backup
+- [ ] wordpress.org account for the `Contributors:` line in readme.txt
 - [ ] wordpress.org submission
 
 ## Later candidates
