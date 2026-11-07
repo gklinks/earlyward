@@ -33,12 +33,27 @@ composer analyse     # PHPStan
 
 CI runs the same commands on PHP 7.4 to 8.5, plus the WordPress Plugin Check.
 
+## Building the plugin
+
+```bash
+bash bin/build.sh
+```
+
+This copies only the runtime files into `build/earlyward/` (no tests, no Composer packages: the plugin
+has no runtime dependencies) and refuses to finish if it finds a server path, a personal email address
+or a private key in the output. Copy `build/earlyward` into a test site's `wp-content/plugins/`.
+
 ## Adding a check
 
-1. Create the class under `src/Checks/<Group>/`. Implement `Earlyward\Checks\Check`.
-2. Read only through the `Env` you are given; never call `file_get_contents()` or `$wpdb` directly.
-3. Add fixtures under `tests/fixtures/<check-id>/<case>/` with an `expected.json`.
-4. Add a `docs/checks/<check-id>.md` page: what it detects, why, known false positives, how to fix.
+1. Create `src/checks/<group>/class-<name>-check.php` implementing `Earlyward\Checks\Check`, and add
+   it to `Scanner::with_default_checks()`.
+2. Read only through the `Context` you are given (its filesystem, database and loopback); never call
+   `file_get_contents()`, `$wpdb` or `wp_remote_get()` directly. This keeps checks read-only, limited
+   to the site's own folders, and testable with fixtures.
+3. Add at least one malicious and one benign case under `tests/fixtures/<check-id>-<case>/`, each
+   with an `expected.json` listing exactly the findings the full scanner must return.
+4. Explain in the class doc comment what it detects, the real case behind it, and the known false
+   positives.
 
 ## Commits and pull requests
 

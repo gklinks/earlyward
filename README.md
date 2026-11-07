@@ -1,7 +1,10 @@
 # Earlyward
 
-**Status: pre-release. Not ready for production sites.** The first release will go public only after
-weeks of testing on real sites (see [the release gate](docs/PHASE-0-PLAN.md#7-dogfood-and-the-false-positive-gate)).
+**Status: early preview (0.1). Not yet recommended for production sites.** The code is developed in
+the open. It has been tested against the fixtures in this repository and on a local WordPress, not yet
+on live hosting. The first release for production sites comes after weeks of testing on real sites
+(see [the release gate](docs/PHASE-0-PLAN.md#7-dogfood-and-the-false-positive-gate)). There is no
+admin screen yet: results come through WP-CLI and email.
 
 Earlyward is a free, open-source WordPress plugin. It looks for signs of an attack, spots hardening
 that is missing or broken, and explains hosting and runtime problems in plain language: what is wrong,
@@ -12,19 +15,43 @@ on one shared hosting account, a second paid-backlink campaign hiding inside the
 separate outage where the site kept answering HTTP 200 while it was broken, for 12 days, without
 anyone noticing.
 
-## What it does
+## What works in 0.1
 
-- **Runtime and outage checks.** Notices when your site loads but is broken (styles gone, custom pages
-  returning 404), fatal-error recovery mode, runaway error logs, and WP-Cron that has stopped firing.
-- **Hosting health.** Warns when several WordPress sites share one Linux user (one break-in reaches
-  all of them), when backups sit where anyone can download them, and when PHP limits, disk space or
-  certificates are about to cause trouble. Includes a "copy this to your host's support" block.
-- **Malware indicators.** Checks for hidden `auto_prepend_file` loaders, self-healing archive seeds,
-  unknown must-use plugins, look-alike admin accounts, application passwords that survive password
-  changes, links hidden off-screen, and more. Every finding shows the evidence (file and line, user,
-  option or process) so you can judge it yourself.
-- **Hardening.** One-click settings only where the fix is a reversible setting.
-- **Alerts that are not noise.** Email only when the set of findings changes.
+Every finding says what is wrong, how sure the check is, and the exact steps to fix it, and shows its
+evidence (file and line, user, option or URL) so you can judge it yourself.
+
+**Runtime and outage**
+
+- **A1** The site answers but is broken: compared with a known-good baseline of the homepage, its own
+  stylesheets, menu or REST routes have gone missing, or the homepage returns an error or an empty page.
+- **A2** Code switched off after a crash, and fatal errors WordPress caught (recovery mode).
+- **A3** Error logs that are huge, growing fast, or dominated by one repeating line.
+- **A4** WP-Cron that has stopped firing.
+
+**Hosting**
+
+- **B1** Other WordPress sites readable by this site's PHP (one break-in reaches all of them).
+- **B2** No `open_basedir` limit, so PHP can open files anywhere the account can.
+- **B3** Backups, database dumps and config copies where the web server can serve them.
+
+**Malware indicators**
+
+- **C1** Hidden `auto_prepend_file` / `auto_append_file` loaders in `.user.ini`, `php.ini` or `.htaccess`.
+- **C2** Hex-named zip archives that malware uses to rebuild itself.
+- **C3** Unexpected PHP: must-use plugins, drop-ins, hidden dot-files and loose PHP in `wp-content`.
+- **C4** Administrator accounts shaped like automation rather than people.
+- **C5** Application passwords on administrator accounts (they survive password changes).
+- **C6** Custom CSS that hides a user from the Users screen.
+- **C9** Links hidden off-screen inside published content.
+
+**Alerts that are not noise.** Scans run hourly in WP-Cron, never on visitor requests. Email goes out
+only when the set of warning or critical findings changes.
+
+## Planned
+
+An admin screen and Site Health integration, more checks (PHP limits, disk space, certificates,
+opcache), a "copy this to your host's support" block, reversible one-click hardening, and an external
+probe script. See the [roadmap](docs/ROADMAP.md).
 
 ## What it does NOT do
 
@@ -44,7 +71,15 @@ PHP 7.4 or newer, WordPress 6.4 or newer.
 
 ## Install
 
-Not yet released. Build from source: see [CONTRIBUTING.md](CONTRIBUTING.md).
+There is no packaged release yet. To try the preview on a test site, build it from source (see
+[CONTRIBUTING.md](CONTRIBUTING.md)) and copy `build/earlyward` to `wp-content/plugins/`, then:
+
+```sh
+wp plugin activate earlyward
+wp earlyward scan              # read-only scan, prints findings
+wp earlyward run --no-mail     # scan and store the results, without email
+wp earlyward report            # last stored results
+```
 
 ## Turning it off in an emergency
 

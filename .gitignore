@@ -4,7 +4,8 @@ private/
 # Build output
 /build/
 /dist/
-*.zip
+# Release zips only. Fixture zips under tests/ must be committed.
+/*.zip
 
 # Dev dependencies and caches
 /vendor/

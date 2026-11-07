@@ -7,7 +7,7 @@ Status: **accepted 2026-11-06.**
 | Decision | Outcome |
 |---|---|
 | Name | **Earlyward**, slug `earlyward` (owner, 2026-11-07; replaced the working name Wallwarden). Free at the time on wordpress.org, GitHub and as .com/.org/.dev; "WP Warden" is an existing commercial WordPress care service. Trademark registries not yet searched. |
-| Repo owner | GitHub organisation `gklinks` (the owner's company), repo `gklinks/earlyward`, private until the owner approves going public. Website, when needed: a `gklinks.com` subdomain on static hosting, not on a WordPress install. |
+| Repo owner | GitHub organisation `gklinks` (the owner's company), repo `gklinks/earlyward`. Made public on 2026-11-07 as an early preview (owner decision), so the work is visible while it is built; the README says it is not yet for production sites. The release gate below still applies to v1.0 and wordpress.org. Website, when needed: a `gklinks.com` subdomain on static hosting, not on a WordPress install. |
 | Minimum versions | **PHP 7.4+, WordPress 6.4+.** |
 | Quarantine | **No file quarantine in v1.0.** v1.0 ships reversible account actions (demote, revoke sessions and application passwords, with a backup). File quarantine is a v1.1 candidate after dogfood. |
 | wordpress.org | Built to the directory guidelines from the first commit; submitted at v1.0, after the false-positive gate. |
@@ -168,8 +168,9 @@ Everything here is either cheap or already proven by the hand-written monitor th
 
 **v0.2 (dogfood):** rest of A and B, C7-C13, Site Health integration, "copy for your host" block.
 
-**v1.0 (public):** D hardening toggles, reversible account actions, docs, wordpress.org assets.
-Public release only after the false-positive gate in section 7.
+**v1.0 (first release for production sites):** D hardening toggles, reversible account actions,
+docs, wordpress.org assets. Released, recommended and submitted to wordpress.org only after the
+false-positive gate in section 7. (The source code itself is public from 0.1 as a preview.)
 
 ## 6. Writes, network, cost (to be measured, not assumed)
 
