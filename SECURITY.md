@@ -1,6 +1,6 @@
 # Security policy
 
-Wallwarden runs inside WordPress with administrator-level reach, so a bug in it is a bug in your site.
+Earlyward runs inside WordPress with administrator-level reach, so a bug in it is a bug in your site.
 We treat reports seriously.
 
 ## Reporting a vulnerability

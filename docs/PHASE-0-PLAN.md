@@ -6,8 +6,8 @@ Status: **accepted 2026-11-06.**
 
 | Decision | Outcome |
 |---|---|
-| Name | **Wallwarden**, slug `wallwarden`. ("WP Warden" is already a commercial WordPress care service.) Trademark registries not yet searched. |
-| Repo owner | A free GitHub organisation `wallwarden`; repo private until the owner approves going public. |
+| Name | **Earlyward**, slug `earlyward` (owner, 2026-11-07; replaced the working name Wallwarden). Free at the time on wordpress.org, GitHub and as .com/.org/.dev; "WP Warden" is an existing commercial WordPress care service. Trademark registries not yet searched. |
+| Repo owner | GitHub organisation `gklinks` (the owner's company), repo `gklinks/earlyward`, private until the owner approves going public. Website, when needed: a `gklinks.com` subdomain on static hosting, not on a WordPress install. |
 | Minimum versions | **PHP 7.4+, WordPress 6.4+.** |
 | Quarantine | **No file quarantine in v1.0.** v1.0 ships reversible account actions (demote, revoke sessions and application passwords, with a backup). File quarantine is a v1.1 candidate after dogfood. |
 | wordpress.org | Built to the directory guidelines from the first commit; submitted at v1.0, after the false-positive gate. |
@@ -28,7 +28,7 @@ so a total outage can only be caught from outside (section 6, "external probe").
 ## 2. Architecture
 
 ```
-            WP-Cron (chunked, time-budgeted)       WP-CLI: wp wallwarden scan|report|ack
+            WP-Cron (chunked, time-budgeted)       WP-CLI: wp earlyward scan|report|ack
                          \                          /
                           v                        v
                    +------------------- Scanner -------------------+
@@ -48,7 +48,7 @@ so a total outage can only be caught from outside (section 6, "external probe").
                           |
           +---------------+-------------------+----------------------+
           | Store          | Notifier         | Admin UI / Site Health|
-          | (non-autoload  | (email only when | (Tools -> Wallwarden, |
+          | (non-autoload  | (email only when | (Tools -> Earlyward, |
           |  option)       |  fingerprint set |  "copy for your host" |
           |                |  changes)        |  block)               |
           +----------------+------------------+-----------------------+
@@ -65,7 +65,7 @@ Key design choices:
   (for example a hex-named option that might be a cache key).
 - **Fail open.** Every entry point (cron callback, admin page, CLI, REST if any) is wrapped in
   `try/catch (\Throwable)`; a failure records an internal error finding and returns. Kill switch:
-  `define( 'WALLWARDEN_DISABLE', true );` in `wp-config.php`, or delete the plugin folder.
+  `define( 'EARLYWARD_DISABLE', true );` in `wp-config.php`, or delete the plugin folder.
 - **No front-end cost.** Nothing hooks a public request except, optionally, hardening toggles
   that core already exposes as filters (XML-RPC off, security headers).
 - **No runtime Composer dependencies.** Own PSR-4 autoloader; dev tools only via Composer.
@@ -73,8 +73,8 @@ Key design choices:
 ## 3. Directory layout
 
 ```
-wallwarden/
-  wallwarden.php            bootstrap: version guard, kill switch, try/catch, autoloader
+earlyward/
+  earlyward.php            bootstrap: version guard, kill switch, try/catch, autoloader
   uninstall.php             removes only what docs/WRITES.md lists
   readme.txt                wordpress.org
   src/
@@ -89,7 +89,7 @@ wallwarden/
       Hardening/            file-edit, xmlrpc, enumeration, headers, uploads-php, perms, exposure
     Notify/                 diff + wp_mail
     Admin/                  page, Site Health tests, host-support block
-    Cli/                    wp wallwarden ...
+    Cli/                    wp earlyward ...
   templates/  assets/  languages/
 tests/
   unit/                     check logic against fixtures

@@ -8,15 +8,15 @@
  * shape: {word}_{6-12 hex}, with the email's local part equal to the login. Match the shape,
  * never a list of prefixes.
  *
- * @package Wallwarden
+ * @package Earlyward
  */
 
-namespace Wallwarden\Checks\Integrity;
+namespace Earlyward\Checks\Integrity;
 
-use Wallwarden\Checks\Check;
-use Wallwarden\Env\Context;
-use Wallwarden\Finding\Evidence;
-use Wallwarden\Finding\Finding;
+use Earlyward\Checks\Check;
+use Earlyward\Env\Context;
+use Earlyward\Finding\Evidence;
+use Earlyward\Finding\Finding;
 
 defined( 'ABSPATH' ) || exit;
 

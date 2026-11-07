@@ -4,13 +4,13 @@
  * requires the exact expected set of findings: missing findings and extra findings
  * (false positives) both fail.
  *
- * @package Wallwarden
+ * @package Earlyward
  */
 
-namespace Wallwarden\Tests;
+namespace Earlyward\Tests;
 
 use PHPUnit\Framework\TestCase;
-use Wallwarden\Scanner\Scanner;
+use Earlyward\Scanner\Scanner;
 
 /**
  * Fixtures suite.

@@ -2,19 +2,19 @@
 /**
  * A4: WP-Cron is not firing.
  *
- * WP-Cron runs scheduled jobs (updates, backups, emails, and Wallwarden's own scans) only
+ * WP-Cron runs scheduled jobs (updates, backups, emails, and Earlyward's own scans) only
  * when something triggers wp-cron.php: a visitor, or a real system cron job. If neither
  * happens, everything scheduled quietly stops.
  *
- * @package Wallwarden
+ * @package Earlyward
  */
 
-namespace Wallwarden\Checks\Runtime;
+namespace Earlyward\Checks\Runtime;
 
-use Wallwarden\Checks\Check;
-use Wallwarden\Env\Context;
-use Wallwarden\Finding\Evidence;
-use Wallwarden\Finding\Finding;
+use Earlyward\Checks\Check;
+use Earlyward\Env\Context;
+use Earlyward\Finding\Evidence;
+use Earlyward\Finding\Finding;
 
 defined( 'ABSPATH' ) || exit;
 

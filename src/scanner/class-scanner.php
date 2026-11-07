@@ -2,14 +2,14 @@
 /**
  * Runs checks in isolation. One failing check never stops the others.
  *
- * @package Wallwarden
+ * @package Earlyward
  */
 
-namespace Wallwarden\Scanner;
+namespace Earlyward\Scanner;
 
-use Wallwarden\Checks\Check;
-use Wallwarden\Env\Context;
-use Wallwarden\Finding\Finding;
+use Earlyward\Checks\Check;
+use Earlyward\Env\Context;
+use Earlyward\Finding\Finding;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -42,20 +42,20 @@ final class Scanner {
 	public static function with_default_checks(): self {
 		return new self(
 			array(
-				new \Wallwarden\Checks\Runtime\Outage_Check(),
-				new \Wallwarden\Checks\Runtime\Crash_Check(),
-				new \Wallwarden\Checks\Runtime\Error_Log_Check(),
-				new \Wallwarden\Checks\Runtime\Cron_Check(),
-				new \Wallwarden\Checks\Integrity\Auto_Prepend_Check(),
-				new \Wallwarden\Checks\Integrity\Archive_Seed_Check(),
-				new \Wallwarden\Checks\Integrity\Unexpected_Php_Check(),
-				new \Wallwarden\Checks\Integrity\Rogue_Admin_Check(),
-				new \Wallwarden\Checks\Integrity\Admin_Credentials_Check(),
-				new \Wallwarden\Checks\Integrity\Hidden_User_Css_Check(),
-				new \Wallwarden\Checks\Integrity\Cloaked_Link_Check(),
-				new \Wallwarden\Checks\Hosting\Shared_User_Check(),
-				new \Wallwarden\Checks\Hosting\Open_Basedir_Check(),
-				new \Wallwarden\Checks\Hosting\Exposed_Backup_Check(),
+				new \Earlyward\Checks\Runtime\Outage_Check(),
+				new \Earlyward\Checks\Runtime\Crash_Check(),
+				new \Earlyward\Checks\Runtime\Error_Log_Check(),
+				new \Earlyward\Checks\Runtime\Cron_Check(),
+				new \Earlyward\Checks\Integrity\Auto_Prepend_Check(),
+				new \Earlyward\Checks\Integrity\Archive_Seed_Check(),
+				new \Earlyward\Checks\Integrity\Unexpected_Php_Check(),
+				new \Earlyward\Checks\Integrity\Rogue_Admin_Check(),
+				new \Earlyward\Checks\Integrity\Admin_Credentials_Check(),
+				new \Earlyward\Checks\Integrity\Hidden_User_Css_Check(),
+				new \Earlyward\Checks\Integrity\Cloaked_Link_Check(),
+				new \Earlyward\Checks\Hosting\Shared_User_Check(),
+				new \Earlyward\Checks\Hosting\Open_Basedir_Check(),
+				new \Earlyward\Checks\Hosting\Exposed_Backup_Check(),
 			)
 		);
 	}
@@ -79,7 +79,7 @@ final class Scanner {
 						$findings[] = $finding;
 					}
 				}
-				if ( $check instanceof \Wallwarden\Checks\Observes && array() !== $check->observation() ) {
+				if ( $check instanceof \Earlyward\Checks\Observes && array() !== $check->observation() ) {
 					$observations[ $check->id() ] = array(
 						'data'    => $check->observation(),
 						'healthy' => $check->observation_is_healthy(),

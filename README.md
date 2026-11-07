@@ -1,9 +1,9 @@
-# Wallwarden
+# Earlyward
 
 **Status: pre-release. Not ready for production sites.** The first release will go public only after
 weeks of testing on real sites (see [the release gate](docs/PHASE-0-PLAN.md#7-dogfood-and-the-false-positive-gate)).
 
-Wallwarden is a free, open-source WordPress plugin. It looks for signs of an attack, spots hardening
+Earlyward is a free, open-source WordPress plugin. It looks for signs of an attack, spots hardening
 that is missing or broken, and explains hosting and runtime problems in plain language: what is wrong,
 why it matters, how sure it is, and the exact steps to fix it.
 
@@ -48,8 +48,8 @@ Not yet released. Build from source: see [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Turning it off in an emergency
 
-Add `define( 'WALLWARDEN_DISABLE', true );` to `wp-config.php`, or delete the
-`wp-content/plugins/wallwarden` folder. Either one stops it completely.
+Add `define( 'EARLYWARD_DISABLE', true );` to `wp-config.php`, or delete the
+`wp-content/plugins/earlyward` folder. Either one stops it completely.
 
 ## Documentation
 

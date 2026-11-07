@@ -6,20 +6,20 @@
  * page view; another 1.4 GB. A fix that set error_reporting in wp-config.php silently did
  * nothing, because WordPress resets the level later during start-up.
  *
- * Thresholds can be changed with the constants WALLWARDEN_LOG_WARN_BYTES,
- * WALLWARDEN_LOG_CRITICAL_BYTES and WALLWARDEN_LOG_GROWTH_BYTES_PER_DAY.
+ * Thresholds can be changed with the constants EARLYWARD_LOG_WARN_BYTES,
+ * EARLYWARD_LOG_CRITICAL_BYTES and EARLYWARD_LOG_GROWTH_BYTES_PER_DAY.
  *
- * @package Wallwarden
+ * @package Earlyward
  */
 
-namespace Wallwarden\Checks\Runtime;
+namespace Earlyward\Checks\Runtime;
 
-use Wallwarden\Checks\Check;
-use Wallwarden\Checks\Observes;
-use Wallwarden\Env\Context;
-use Wallwarden\Env\Filesystem;
-use Wallwarden\Finding\Evidence;
-use Wallwarden\Finding\Finding;
+use Earlyward\Checks\Check;
+use Earlyward\Checks\Observes;
+use Earlyward\Env\Context;
+use Earlyward\Env\Filesystem;
+use Earlyward\Finding\Evidence;
+use Earlyward\Finding\Finding;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -77,9 +77,9 @@ final class Error_Log_Check implements Check, Observes {
 	 * @return Finding[]
 	 */
 	public function run( Context $ctx ): array {
-		$warn     = self::setting( $ctx, 'WALLWARDEN_LOG_WARN_BYTES', self::WARN_BYTES );
-		$critical = self::setting( $ctx, 'WALLWARDEN_LOG_CRITICAL_BYTES', self::CRITICAL_BYTES );
-		$growth   = self::setting( $ctx, 'WALLWARDEN_LOG_GROWTH_BYTES_PER_DAY', self::GROWTH_PER_DAY );
+		$warn     = self::setting( $ctx, 'EARLYWARD_LOG_WARN_BYTES', self::WARN_BYTES );
+		$critical = self::setting( $ctx, 'EARLYWARD_LOG_CRITICAL_BYTES', self::CRITICAL_BYTES );
+		$growth   = self::setting( $ctx, 'EARLYWARD_LOG_GROWTH_BYTES_PER_DAY', self::GROWTH_PER_DAY );
 		$previous = $ctx->previous( self::ID );
 		$before   = isset( $previous['files'] ) && is_array( $previous['files'] ) ? $previous['files'] : array();
 

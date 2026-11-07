@@ -1,12 +1,12 @@
 <?php
 /**
- * The only data Wallwarden stores: the last scan and the last alerted set.
+ * The only data Earlyward stores: the last scan and the last alerted set.
  * One non-autoloaded option, so it costs nothing on normal page loads.
  *
- * @package Wallwarden
+ * @package Earlyward
  */
 
-namespace Wallwarden\Store;
+namespace Earlyward\Store;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -15,7 +15,7 @@ defined( 'ABSPATH' ) || exit;
  */
 final class State {
 
-	const OPTION = 'wallwarden_state';
+	const OPTION = 'earlyward_state';
 
 	/**
 	 * Keep stored findings bounded even on a badly infected site.
@@ -103,7 +103,7 @@ final class State {
 		);
 		$state['alerted']         = isset( $state['alerted'] ) && is_array( $state['alerted'] ) ? $state['alerted'] : array();
 		$state['alerted'][ $env ] = array_slice( $alerted, 0, self::MAX_FINDINGS );
-		$state['version']         = defined( 'WALLWARDEN_VERSION' ) ? WALLWARDEN_VERSION : '';
+		$state['version']         = defined( 'EARLYWARD_VERSION' ) ? EARLYWARD_VERSION : '';
 		$state['baselines']       = isset( $state['baselines'] ) && is_array( $state['baselines'] ) ? $state['baselines'] : array();
 		$state['observations']    = isset( $state['observations'] ) && is_array( $state['observations'] ) ? $state['observations'] : array();
 		foreach ( $observations as $check => $obs ) {

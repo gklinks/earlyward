@@ -5,15 +5,15 @@
  * Real case: the attacker stored tr#user-4{display:none!important} in custom CSS on three
  * sites, so the Users screen silently left out their account.
  *
- * @package Wallwarden
+ * @package Earlyward
  */
 
-namespace Wallwarden\Checks\Integrity;
+namespace Earlyward\Checks\Integrity;
 
-use Wallwarden\Checks\Check;
-use Wallwarden\Env\Context;
-use Wallwarden\Finding\Evidence;
-use Wallwarden\Finding\Finding;
+use Earlyward\Checks\Check;
+use Earlyward\Env\Context;
+use Earlyward\Finding\Evidence;
+use Earlyward\Finding\Finding;
 
 defined( 'ABSPATH' ) || exit;
 

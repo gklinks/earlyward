@@ -6,15 +6,15 @@
  * mid-run, and from then on silently skipped all the custom code it manages. The marker sat
  * there for 12 days on one site, and longer on two others, before anyone looked.
  *
- * @package Wallwarden
+ * @package Earlyward
  */
 
-namespace Wallwarden\Checks\Runtime;
+namespace Earlyward\Checks\Runtime;
 
-use Wallwarden\Checks\Check;
-use Wallwarden\Env\Context;
-use Wallwarden\Finding\Evidence;
-use Wallwarden\Finding\Finding;
+use Earlyward\Checks\Check;
+use Earlyward\Env\Context;
+use Earlyward\Finding\Evidence;
+use Earlyward\Finding\Finding;
 
 defined( 'ABSPATH' ) || exit;
 

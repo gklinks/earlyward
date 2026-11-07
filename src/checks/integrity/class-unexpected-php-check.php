@@ -8,16 +8,16 @@
  * fake advanced-cache.php / db.php drop-ins; hex-named loaders and hidden ".name.php" twins
  * in wp-content; and a daemon that ran from a dot-file in wp-includes.
  *
- * @package Wallwarden
+ * @package Earlyward
  */
 
-namespace Wallwarden\Checks\Integrity;
+namespace Earlyward\Checks\Integrity;
 
-use Wallwarden\Checks\Check;
-use Wallwarden\Checks\Code_Traits;
-use Wallwarden\Env\Context;
-use Wallwarden\Finding\Evidence;
-use Wallwarden\Finding\Finding;
+use Earlyward\Checks\Check;
+use Earlyward\Checks\Code_Traits;
+use Earlyward\Env\Context;
+use Earlyward\Finding\Evidence;
+use Earlyward\Finding\Finding;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -203,7 +203,7 @@ final class Unexpected_Php_Check implements Check {
 			'' === $header ? 'A must-use plugin with no name' : sprintf( 'Must-use plugin: %s', $header ),
 			'Must-use plugins run on every request and cannot be switched off from the dashboard. Hosts and developers add them on purpose; malware does too. Confirm you know where this one came from.',
 			array(),
-			array( 'If you recognise it, acknowledge it so Wallwarden only alerts when it changes.' )
+			array( 'If you recognise it, acknowledge it so Earlyward only alerts when it changes.' )
 		);
 	}
 
@@ -295,7 +295,7 @@ final class Unexpected_Php_Check implements Check {
 			'A PHP file sits directly in wp-content',
 			'Some plugins put configuration files here (for example cache settings). Confirm you know where it came from.',
 			array(),
-			array( 'If you recognise it, acknowledge it so Wallwarden only alerts when it changes.' )
+			array( 'If you recognise it, acknowledge it so Earlyward only alerts when it changes.' )
 		);
 	}
 

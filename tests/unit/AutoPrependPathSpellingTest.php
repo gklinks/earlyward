@@ -5,14 +5,14 @@
  * docroot, or "dir/sub/.." forms). Comparing strings misclassified a genuine Wordfence
  * line as an unknown loader.
  *
- * @package Wallwarden
+ * @package Earlyward
  */
 
-namespace Wallwarden\Tests;
+namespace Earlyward\Tests;
 
 use PHPUnit\Framework\TestCase;
-use Wallwarden\Env\Context;
-use Wallwarden\Scanner\Scanner;
+use Earlyward\Env\Context;
+use Earlyward\Scanner\Scanner;
 
 /**
  * Path spelling test.

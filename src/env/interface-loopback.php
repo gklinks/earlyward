@@ -2,10 +2,10 @@
 /**
  * Requests to this site's own front end, the only network access checks get by default.
  *
- * @package Wallwarden
+ * @package Earlyward
  */
 
-namespace Wallwarden\Env;
+namespace Earlyward\Env;
 
 defined( 'ABSPATH' ) || exit;
 

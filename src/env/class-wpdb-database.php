@@ -6,10 +6,10 @@
  * data under inspection may be attacker-written and must not be hidden by filters or
  * instantiated as objects.
  *
- * @package Wallwarden
+ * @package Earlyward
  */
 
-namespace Wallwarden\Env;
+namespace Earlyward\Env;
 
 defined( 'ABSPATH' ) || exit;
 

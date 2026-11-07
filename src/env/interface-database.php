@@ -3,10 +3,10 @@
  * The only database questions checks may ask. Narrow on purpose: no raw SQL
  * reaches a check, and a fixture can answer every question from JSON.
  *
- * @package Wallwarden
+ * @package Earlyward
  */
 
-namespace Wallwarden\Env;
+namespace Earlyward\Env;
 
 defined( 'ABSPATH' ) || exit;
 

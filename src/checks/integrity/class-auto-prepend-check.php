@@ -6,16 +6,16 @@
  * loader. One file was a hybrid: a genuine firewall line plus a malicious one, so the file
  * must be classified line by line, never as a whole.
  *
- * @package Wallwarden
+ * @package Earlyward
  */
 
-namespace Wallwarden\Checks\Integrity;
+namespace Earlyward\Checks\Integrity;
 
-use Wallwarden\Checks\Check;
-use Wallwarden\Env\Context;
-use Wallwarden\Env\Filesystem;
-use Wallwarden\Finding\Evidence;
-use Wallwarden\Finding\Finding;
+use Earlyward\Checks\Check;
+use Earlyward\Env\Context;
+use Earlyward\Env\Filesystem;
+use Earlyward\Finding\Evidence;
+use Earlyward\Finding\Finding;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -85,7 +85,7 @@ final class Auto_Prepend_Check implements Check {
 					'php:' . $directive,
 					0,
 					$directive . ' = ' . $value,
-					array( 'sapi' => $ctx->ini( 'wallwarden.sapi' ) )
+					array( 'sapi' => $ctx->ini( 'earlyward.sapi' ) )
 				);
 			}
 		}

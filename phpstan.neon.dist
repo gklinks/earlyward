@@ -2,7 +2,7 @@ parameters:
 	level: 8
 	phpVersion: 70400
 	paths:
-		- wallwarden.php
+		- earlyward.php
 		- src
 	bootstrapFiles:
 		- tests/phpstan-bootstrap.php

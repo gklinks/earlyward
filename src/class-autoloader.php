@@ -2,18 +2,18 @@
 /**
  * Minimal autoloader. No runtime Composer dependency.
  *
- * Maps Wallwarden\Checks\Integrity\Auto_Prepend_Check to
+ * Maps Earlyward\Checks\Integrity\Auto_Prepend_Check to
  * src/checks/integrity/class-auto-prepend-check.php (WordPress file naming).
  *
- * @package Wallwarden
+ * @package Earlyward
  */
 
-namespace Wallwarden;
+namespace Earlyward;
 
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Autoloader for the Wallwarden namespace.
+ * Autoloader for the Earlyward namespace.
  */
 final class Autoloader {
 

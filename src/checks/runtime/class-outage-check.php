@@ -11,16 +11,16 @@
  * namespaces are registered. Assets whose plugin or theme was switched off are explained, not
  * reported.
  *
- * @package Wallwarden
+ * @package Earlyward
  */
 
-namespace Wallwarden\Checks\Runtime;
+namespace Earlyward\Checks\Runtime;
 
-use Wallwarden\Checks\Check;
-use Wallwarden\Checks\Observes;
-use Wallwarden\Env\Context;
-use Wallwarden\Finding\Evidence;
-use Wallwarden\Finding\Finding;
+use Earlyward\Checks\Check;
+use Earlyward\Checks\Observes;
+use Earlyward\Env\Context;
+use Earlyward\Finding\Evidence;
+use Earlyward\Finding\Finding;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -93,7 +93,7 @@ final class Outage_Check implements Check, Observes {
 					Finding::SEVERITY_WARNING,
 					Finding::CONFIDENCE_LOW,
 					'The site could not load its own homepage',
-					'Wallwarden checks the homepage from the server itself. Some hosts or firewalls block that, which is harmless; but it also happens when the site is down.',
+					'Earlyward checks the homepage from the server itself. Some hosts or firewalls block that, which is harmless; but it also happens when the site is down.',
 					array( new Evidence( 'url', 'home', 0, $home['error'], array( 'ms' => $home['ms'] ) ) ),
 					array(
 						'Open the site in a browser. If it works, ask your host whether requests from the server to itself are blocked (WordPress Site Health shows the same "loopback" problem).',
@@ -219,7 +219,7 @@ final class Outage_Check implements Check, Observes {
 				array(
 					'Open the homepage in a private window and compare it with how it should look.',
 					'Check the error log (A3) and crash markers (A2) for the code that owns the missing parts.',
-					'If you changed the site on purpose, record the new healthy state: wp wallwarden baseline --reset',
+					'If you changed the site on purpose, record the new healthy state: wp earlyward baseline --reset',
 				)
 			),
 		);

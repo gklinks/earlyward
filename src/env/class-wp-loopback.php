@@ -2,10 +2,10 @@
 /**
  * Loopback via the WordPress HTTP API, to home_url() only.
  *
- * @package Wallwarden
+ * @package Earlyward
  */
 
-namespace Wallwarden\Env;
+namespace Earlyward\Env;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -24,7 +24,7 @@ final class Wp_Loopback implements Loopback {
 	 */
 	public function get( string $path ): array {
 		// A unique query string gets past most full-page caches, so we see the real page.
-		$url   = add_query_arg( 'wallwarden_probe', (string) time(), home_url( $path ) );
+		$url   = add_query_arg( 'earlyward_probe', (string) time(), home_url( $path ) );
 		$start = microtime( true );
 		$resp  = wp_remote_get(
 			$url,
@@ -32,7 +32,7 @@ final class Wp_Loopback implements Loopback {
 				'timeout'             => 15,
 				'redirection'         => 3,
 				'limit_response_size' => self::MAX_BYTES,
-				'user-agent'          => 'Wallwarden/' . ( defined( 'WALLWARDEN_VERSION' ) ? WALLWARDEN_VERSION : '0' ) . ' (loopback health check)',
+				'user-agent'          => 'Earlyward/' . ( defined( 'EARLYWARD_VERSION' ) ? EARLYWARD_VERSION : '0' ) . ' (loopback health check)',
 				'headers'             => array( 'Cache-Control' => 'no-cache' ),
 				'cookies'             => array(),
 				/** This filter is documented in wp-includes/class-wp-http-streams.php */

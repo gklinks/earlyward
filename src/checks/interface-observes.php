@@ -3,10 +3,10 @@
  * A check that also reports what it measured, so the next scan can compare against it
  * (a healthy baseline, or a previous size for growth rates).
  *
- * @package Wallwarden
+ * @package Earlyward
  */
 
-namespace Wallwarden\Checks;
+namespace Earlyward\Checks;
 
 defined( 'ABSPATH' ) || exit;
 

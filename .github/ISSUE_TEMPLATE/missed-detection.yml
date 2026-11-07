@@ -1,5 +1,5 @@
 name: Missed detection
-description: Something malicious or broken that Wallwarden did not flag.
+description: Something malicious or broken that Earlyward did not flag.
 labels: ["detection-gap"]
 body:
   - type: markdown
@@ -21,4 +21,4 @@ body:
   - type: input
     id: versions
     attributes:
-      label: Wallwarden, WordPress and PHP versions
+      label: Earlyward, WordPress and PHP versions

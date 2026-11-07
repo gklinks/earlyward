@@ -2,10 +2,10 @@
 /**
  * One piece of evidence: where, and what was seen there.
  *
- * @package Wallwarden
+ * @package Earlyward
  */
 
-namespace Wallwarden\Finding;
+namespace Earlyward\Finding;
 
 defined( 'ABSPATH' ) || exit;
 

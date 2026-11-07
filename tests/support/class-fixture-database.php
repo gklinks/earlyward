@@ -10,12 +10,12 @@
  *   "options": { "name": value }
  * }
  *
- * @package Wallwarden
+ * @package Earlyward
  */
 
-namespace Wallwarden\Tests;
+namespace Earlyward\Tests;
 
-use Wallwarden\Env\Database;
+use Earlyward\Env\Database;
 
 /**
  * Fixture database.

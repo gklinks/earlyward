@@ -3,10 +3,10 @@
  * Everything a check may look at. Built from WordPress in production and
  * from a fixture tree in tests.
  *
- * @package Wallwarden
+ * @package Earlyward
  */
 
-namespace Wallwarden\Env;
+namespace Earlyward\Env;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -135,7 +135,7 @@ final class Context {
 	public static function from_wordpress( array $baselines = array(), array $previous = array() ): self {
 		global $wpdb;
 		$constants = array();
-		$names     = array( 'DISABLE_WP_CRON', 'ALTERNATE_WP_CRON', 'WP_DEBUG', 'WP_DEBUG_LOG', 'WALLWARDEN_LOG_WARN_BYTES', 'WALLWARDEN_LOG_CRITICAL_BYTES', 'WALLWARDEN_LOG_GROWTH_BYTES_PER_DAY' );
+		$names     = array( 'DISABLE_WP_CRON', 'ALTERNATE_WP_CRON', 'WP_DEBUG', 'WP_DEBUG_LOG', 'EARLYWARD_LOG_WARN_BYTES', 'EARLYWARD_LOG_CRITICAL_BYTES', 'EARLYWARD_LOG_GROWTH_BYTES_PER_DAY' );
 		foreach ( $names as $name ) {
 			$constants[ $name ] = defined( $name ) ? constant( $name ) : null;
 		}
@@ -145,7 +145,7 @@ final class Context {
 			$value        = ini_get( $name );
 			$ini[ $name ] = false === $value ? '' : (string) $value;
 		}
-		$ini['wallwarden.sapi'] = PHP_SAPI;
+		$ini['earlyward.sapi'] = PHP_SAPI;
 		return new self(
 			ABSPATH,
 			WP_CONTENT_DIR,
@@ -290,7 +290,7 @@ final class Context {
 	 * @return bool
 	 */
 	public function is_cli(): bool {
-		return 'cli' === $this->ini( 'wallwarden.sapi' );
+		return 'cli' === $this->ini( 'earlyward.sapi' );
 	}
 
 	/**

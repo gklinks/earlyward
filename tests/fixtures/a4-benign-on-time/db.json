@@ -11,7 +11,7 @@
 				}
 			},
 			"1794010200": {
-				"wallwarden_scan": {
+				"earlyward_scan": {
 					"abc": {
 						"schedule": "hourly",
 						"args": [],

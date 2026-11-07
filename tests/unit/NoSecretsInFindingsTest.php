@@ -3,13 +3,13 @@
  * Findings are shown on screen and sent by email. They must never carry stored secrets,
  * such as application password hashes or session token keys.
  *
- * @package Wallwarden
+ * @package Earlyward
  */
 
-namespace Wallwarden\Tests;
+namespace Earlyward\Tests;
 
 use PHPUnit\Framework\TestCase;
-use Wallwarden\Scanner\Scanner;
+use Earlyward\Scanner\Scanner;
 
 /**
  * No secrets in findings.

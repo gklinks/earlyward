@@ -19,4 +19,4 @@ body:
   - type: input
     id: versions
     attributes:
-      label: Wallwarden, WordPress and PHP versions
+      label: Earlyward, WordPress and PHP versions

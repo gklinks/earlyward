@@ -2,15 +2,15 @@
 /**
  * "Email only when the set of findings changes."
  *
- * @package Wallwarden
+ * @package Earlyward
  */
 
-namespace Wallwarden\Tests;
+namespace Earlyward\Tests;
 
 use PHPUnit\Framework\TestCase;
-use Wallwarden\Finding\Evidence;
-use Wallwarden\Finding\Finding;
-use Wallwarden\Notify\Alert;
+use Earlyward\Finding\Evidence;
+use Earlyward\Finding\Finding;
+use Earlyward\Notify\Alert;
 
 /**
  * Alert diff and email body.

@@ -1,12 +1,12 @@
 <?php
 /**
- * Removes everything Wallwarden stored (see docs/WRITES.md). Nothing else.
+ * Removes everything Earlyward stored (see docs/WRITES.md). Nothing else.
  *
- * @package Wallwarden
+ * @package Earlyward
  */
 
 defined( 'WP_UNINSTALL_PLUGIN' ) || exit;
 
-delete_option( 'wallwarden_state' );
-delete_transient( 'wallwarden_scan_lock' );
-wp_clear_scheduled_hook( 'wallwarden_scan' );
+delete_option( 'earlyward_state' );
+delete_transient( 'earlyward_scan_lock' );
+wp_clear_scheduled_hook( 'earlyward_scan' );

@@ -1,6 +1,6 @@
 # Threat model
 
-Short and honest. This describes what Wallwarden defends, what it assumes, and how it could itself
+Short and honest. This describes what Earlyward defends, what it assumes, and how it could itself
 be attacked.
 
 ## What we are trying to do
@@ -16,12 +16,12 @@ failures, from inside WordPress, without making the site less safe or less avail
 
 ## Attacker models
 
-| Attacker | Can | Wallwarden's position |
+| Attacker | Can | Earlyward's position |
 |---|---|---|
 | Anonymous visitor | Send any HTTP request | Must gain nothing: no public endpoints by default, nothing runs on front-end requests except reversible hardening filters. |
 | Logged-in low-privilege user | Use wp-admin and REST as subscriber/author | Must not read findings, trigger scans or run actions. Capability `manage_options` (or `manage_network_options` on multisite) plus nonces on every action. |
-| Code already running as the site's PHP user (malware) | Read and write every file and database row the site can | **Out of reach.** It can edit or delete Wallwarden, fake its results, or suppress its email. Wallwarden can only raise the cost of hiding and record evidence early. This is why the README says what it says. |
-| Another site on the same Linux account | Same as above, for every site on the account | Same. Wallwarden warns that this arrangement exists (check B1); it cannot fix it. |
+| Code already running as the site's PHP user (malware) | Read and write every file and database row the site can | **Out of reach.** It can edit or delete Earlyward, fake its results, or suppress its email. Earlyward can only raise the cost of hiding and record evidence early. This is why the README says what it says. |
+| Another site on the same Linux account | Same as above, for every site on the account | Same. Earlyward warns that this arrangement exists (check B1); it cannot fix it. |
 
 ## How the plugin itself could be attacked, and the mitigation
 

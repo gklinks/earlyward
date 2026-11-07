@@ -5,15 +5,15 @@
  * Real case: a seed archive sat in wp-content/ with a copy under uploads/YYYY/MM/. Every
  * cleanup removed the PHP files and left the archive, so everything came back in seconds.
  *
- * @package Wallwarden
+ * @package Earlyward
  */
 
-namespace Wallwarden\Checks\Integrity;
+namespace Earlyward\Checks\Integrity;
 
-use Wallwarden\Checks\Check;
-use Wallwarden\Env\Context;
-use Wallwarden\Finding\Evidence;
-use Wallwarden\Finding\Finding;
+use Earlyward\Checks\Check;
+use Earlyward\Env\Context;
+use Earlyward\Finding\Evidence;
+use Earlyward\Finding\Finding;
 
 defined( 'ABSPATH' ) || exit;
 

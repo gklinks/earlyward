@@ -1,1 +1,1 @@
-{ "open_basedir": "", "wallwarden.sapi": "cli" }
+{ "open_basedir": "", "earlyward.sapi": "cli" }

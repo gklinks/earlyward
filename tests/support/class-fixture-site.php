@@ -17,12 +17,12 @@
  *   - a directory named NAME.zip.src/ becomes a zip archive NAME.zip with the same contents,
  *     so no binary archives are committed.
  *
- * @package Wallwarden
+ * @package Earlyward
  */
 
-namespace Wallwarden\Tests;
+namespace Earlyward\Tests;
 
-use Wallwarden\Env\Context;
+use Earlyward\Env\Context;
 
 /**
  * Fixture site.
@@ -62,7 +62,7 @@ final class Fixture_Site {
 	 */
 	public function __construct( string $case_dir ) {
 		$this->case_dir = $case_dir;
-		$this->base     = str_replace( '\\', '/', sys_get_temp_dir() ) . '/wallwarden-fixture-' . bin2hex( random_bytes( 6 ) );
+		$this->base     = str_replace( '\\', '/', sys_get_temp_dir() ) . '/earlyward-fixture-' . bin2hex( random_bytes( 6 ) );
 		// Default: tree/ is the site root. With layout.json {"root": "x"}: tree/ holds several
 		// sites side by side and tree/x is this one (used for shared-hosting cases).
 		$layout     = is_file( $case_dir . '/layout.json' ) ? (array) json_decode( (string) file_get_contents( $case_dir . '/layout.json' ), true ) : array();
@@ -89,7 +89,7 @@ final class Fixture_Site {
 			$raw = str_replace( '{ROOT}', $this->root, (string) file_get_contents( $ini_file ) );
 			$ini = (array) json_decode( $raw, true );
 		}
-		$ini  += array( 'wallwarden.sapi' => 'fpm-fcgi' );
+		$ini  += array( 'earlyward.sapi' => 'fpm-fcgi' );
 		$extra = array();
 		if ( is_file( $this->case_dir . '/db.json' ) ) {
 			$extra['db'] = new Fixture_Database( (array) json_decode( (string) file_get_contents( $this->case_dir . '/db.json' ), true ) );

@@ -1,6 +1,6 @@
 # Contributing
 
-Thanks for helping. Wallwarden has a few rules that are stricter than most plugins, because a
+Thanks for helping. Earlyward has a few rules that are stricter than most plugins, because a
 security tool that cries wolf, or breaks a site, does more harm than good.
 
 ## Ground rules
@@ -35,7 +35,7 @@ CI runs the same commands on PHP 7.4 to 8.5, plus the WordPress Plugin Check.
 
 ## Adding a check
 
-1. Create the class under `src/Checks/<Group>/`. Implement `Wallwarden\Checks\Check`.
+1. Create the class under `src/Checks/<Group>/`. Implement `Earlyward\Checks\Check`.
 2. Read only through the `Env` you are given; never call `file_get_contents()` or `$wpdb` directly.
 3. Add fixtures under `tests/fixtures/<check-id>/<case>/` with an `expected.json`.
 4. Add a `docs/checks/<check-id>.md` page: what it detects, why, known false positives, how to fix.

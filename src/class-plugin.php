@@ -2,15 +2,15 @@
 /**
  * Wires the plugin into WordPress. Every callback is fail-open.
  *
- * @package Wallwarden
+ * @package Earlyward
  */
 
-namespace Wallwarden;
+namespace Earlyward;
 
-use Wallwarden\Env\Context;
-use Wallwarden\Notify\Alert;
-use Wallwarden\Scanner\Scanner;
-use Wallwarden\Store\State;
+use Earlyward\Env\Context;
+use Earlyward\Notify\Alert;
+use Earlyward\Scanner\Scanner;
+use Earlyward\Store\State;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -19,8 +19,8 @@ defined( 'ABSPATH' ) || exit;
  */
 final class Plugin {
 
-	const CRON_HOOK = 'wallwarden_scan';
-	const LOCK      = 'wallwarden_scan_lock';
+	const CRON_HOOK = 'earlyward_scan';
+	const LOCK      = 'earlyward_scan_lock';
 
 	/**
 	 * Register hooks. Nothing here runs on front-end requests.
@@ -31,7 +31,7 @@ final class Plugin {
 		add_action( 'admin_init', array( __CLASS__, 'ensure_scheduled' ) );
 
 		if ( defined( 'WP_CLI' ) && WP_CLI && class_exists( '\WP_CLI' ) ) {
-			\WP_CLI::add_command( 'wallwarden', Cli\Command::class );
+			\WP_CLI::add_command( 'earlyward', Cli\Command::class );
 		}
 	}
 
@@ -66,7 +66,7 @@ final class Plugin {
 	/**
 	 * Run a scan and return the raw result. Never throws, never writes.
 	 *
-	 * @return array{findings: \Wallwarden\Finding\Finding[], errors: array<string, string>, timings: array<string, float>, observations: array<string, array{data: array<string, mixed>, healthy: bool}>}
+	 * @return array{findings: \Earlyward\Finding\Finding[], errors: array<string, string>, timings: array<string, float>, observations: array<string, array{data: array<string, mixed>, healthy: bool}>}
 	 */
 	public static function scan(): array {
 		try {

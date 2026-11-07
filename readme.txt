@@ -1,5 +1,5 @@
-=== Wallwarden ===
-Contributors: wallwarden
+=== Earlyward ===
+Contributors: gklinks
 Tags: security, malware, diagnostics, monitoring, hardening
 Requires at least: 6.4
 Tested up to: 7.1
@@ -14,7 +14,7 @@ Detection, early warning, hardening checks and hosting diagnostics, explained in
 
 **Pre-release. Not yet recommended for production sites.**
 
-Wallwarden looks for signs of an attack, spots hardening that is missing or broken, and explains hosting and runtime problems in plain language: what is wrong, why it matters, how sure it is, and the exact steps to fix it. Every finding shows its evidence, such as the file and line it matched.
+Earlyward looks for signs of an attack, spots hardening that is missing or broken, and explains hosting and runtime problems in plain language: what is wrong, why it matters, how sure it is, and the exact steps to fix it. Every finding shows its evidence, such as the file and line it matched.
 
 It was built from a real incident on a shared hosting account: a self-healing malware kit that spread across every WordPress site on the account, and a separate outage where a broken site kept answering normally for 12 days.
 
@@ -28,7 +28,7 @@ It was built from a real incident on a shared hosting account: a self-healing ma
 
 = Emergency off switch =
 
-Add `define( 'WALLWARDEN_DISABLE', true );` to `wp-config.php`, or delete the plugin folder.
+Add `define( 'EARLYWARD_DISABLE', true );` to `wp-config.php`, or delete the plugin folder.
 
 == Frequently Asked Questions ==
 

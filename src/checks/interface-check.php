@@ -2,13 +2,13 @@
 /**
  * Contract for a check.
  *
- * @package Wallwarden
+ * @package Earlyward
  */
 
-namespace Wallwarden\Checks;
+namespace Earlyward\Checks;
 
-use Wallwarden\Env\Context;
-use Wallwarden\Finding\Finding;
+use Earlyward\Env\Context;
+use Earlyward\Finding\Finding;
 
 defined( 'ABSPATH' ) || exit;
 

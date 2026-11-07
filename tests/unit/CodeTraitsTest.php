@@ -3,13 +3,13 @@
  * Code trait detection. Malicious samples are assembled at runtime so that no file in this
  * repository contains a working malware pattern (which antivirus tools would quarantine).
  *
- * @package Wallwarden
+ * @package Earlyward
  */
 
-namespace Wallwarden\Tests;
+namespace Earlyward\Tests;
 
 use PHPUnit\Framework\TestCase;
-use Wallwarden\Checks\Code_Traits;
+use Earlyward\Checks\Code_Traits;
 
 /**
  * Code traits.

@@ -3,12 +3,12 @@
  * Decides whether a scan deserves an email, and writes it. Pure: no WordPress calls,
  * so the "only when the set of findings changes" rule is unit-tested directly.
  *
- * @package Wallwarden
+ * @package Earlyward
  */
 
-namespace Wallwarden\Notify;
+namespace Earlyward\Notify;
 
-use Wallwarden\Finding\Finding;
+use Earlyward\Finding\Finding;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -71,7 +71,7 @@ final class Alert {
 			}
 		}
 		$subject = sprintf(
-			'[Wallwarden] %s: %d new, %d resolved (%d critical open)',
+			'[Earlyward] %s: %d new, %d resolved (%d critical open)',
 			self::line( $site_name ),
 			count( $diff['new'] ),
 			count( $diff['resolved'] ),
@@ -79,7 +79,7 @@ final class Alert {
 		);
 
 		$lines   = array();
-		$lines[] = 'Wallwarden found a change in the checks for ' . self::line( $site_url ) . '.';
+		$lines[] = 'Earlyward found a change in the checks for ' . self::line( $site_url ) . '.';
 		$lines[] = 'You get this email only when the set of findings changes.';
 		$lines[] = '';
 		if ( ! empty( $diff['new'] ) ) {
@@ -108,7 +108,7 @@ final class Alert {
 			$lines[] = '';
 		}
 		$lines[] = sprintf( 'Open findings now: %d.', count( $diff['current'] ) );
-		$lines[] = 'No email means no change, not proof that the site is clean. Run "wp wallwarden report" to see when the last scan ran.';
+		$lines[] = 'No email means no change, not proof that the site is clean. Run "wp earlyward report" to see when the last scan ran.';
 
 		return array(
 			'subject' => $subject,

@@ -1,5 +1,5 @@
 name: False positive
-description: Wallwarden flagged something that is legitimate.
+description: Earlyward flagged something that is legitimate.
 labels: ["false-positive"]
 body:
   - type: markdown
@@ -31,4 +31,4 @@ body:
   - type: input
     id: versions
     attributes:
-      label: Wallwarden, WordPress and PHP versions
+      label: Earlyward, WordPress and PHP versions

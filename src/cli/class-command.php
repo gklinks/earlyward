@@ -1,18 +1,18 @@
 <?php
 /**
- * WP-CLI: wp wallwarden scan
+ * WP-CLI: wp earlyward scan
  *
- * @package Wallwarden
+ * @package Earlyward
  */
 
-namespace Wallwarden\Cli;
+namespace Earlyward\Cli;
 
-use Wallwarden\Plugin;
+use Earlyward\Plugin;
 
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Run Wallwarden checks from the command line.
+ * Run Earlyward checks from the command line.
  */
 final class Command {
 
@@ -64,11 +64,11 @@ final class Command {
 	 */
 	public function baseline( array $args, array $assoc_args ): void {
 		if ( ! empty( $assoc_args['reset'] ) ) {
-			\Wallwarden\Store\State::set_baseline( 'A1', null );
-			\WP_CLI::success( 'Baseline cleared. The next healthy scan records a new one (run "wp wallwarden run" to do it now).' );
+			\Earlyward\Store\State::set_baseline( 'A1', null );
+			\WP_CLI::success( 'Baseline cleared. The next healthy scan records a new one (run "wp earlyward run" to do it now).' );
 			return;
 		}
-		$baselines = \Wallwarden\Store\State::baselines();
+		$baselines = \Earlyward\Store\State::baselines();
 		if ( empty( $baselines['A1'] ) ) {
 			\WP_CLI::warning( 'No baseline yet. It is recorded by the first scan that loads a healthy homepage.' );
 			return;
@@ -87,9 +87,9 @@ final class Command {
 	 * @param array<string, string> $assoc_args Flags.
 	 */
 	public function report( array $args, array $assoc_args ): void { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- WP-CLI command signature.
-		$state = \Wallwarden\Store\State::get();
+		$state = \Earlyward\Store\State::get();
 		if ( empty( $state['last'] ) ) {
-			\WP_CLI::warning( 'No scan has been stored yet. Run "wp wallwarden run" or wait for WP-Cron.' );
+			\WP_CLI::warning( 'No scan has been stored yet. Run "wp earlyward run" or wait for WP-Cron.' );
 			return;
 		}
 		$last = $state['last'];

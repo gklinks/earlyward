@@ -2,10 +2,10 @@
 /**
  * A single finding with its evidence.
  *
- * @package Wallwarden
+ * @package Earlyward
  */
 
-namespace Wallwarden\Finding;
+namespace Earlyward\Finding;
 
 defined( 'ABSPATH' ) || exit;
 

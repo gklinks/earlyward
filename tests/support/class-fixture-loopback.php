@@ -4,12 +4,12 @@
  * { "/": { "status": 200, "file": "home.html" }, "/wp-json/": { "status": 200, "file": "rest.json" } }
  * Unlisted paths answer 404. "status": 0 with "error" simulates a blocked request.
  *
- * @package Wallwarden
+ * @package Earlyward
  */
 
-namespace Wallwarden\Tests;
+namespace Earlyward\Tests;
 
-use Wallwarden\Env\Loopback;
+use Earlyward\Env\Loopback;
 
 /**
  * Fixture loopback.

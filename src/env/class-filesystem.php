@@ -5,10 +5,10 @@
  * All direct file access in the plugin goes through this class, so the
  * phpcs exceptions for it live in one place.
  *
- * @package Wallwarden
+ * @package Earlyward
  */
 
-namespace Wallwarden\Env;
+namespace Earlyward\Env;
 
 defined( 'ABSPATH' ) || exit;
 

@@ -2,7 +2,7 @@
 /**
  * Constants PHPStan needs to analyse the plugin outside WordPress.
  *
- * @package Wallwarden
+ * @package Earlyward
  */
 
-define( 'WALLWARDEN_VERSION', '0.0.0' );
+define( 'EARLYWARD_VERSION', '0.0.0' );

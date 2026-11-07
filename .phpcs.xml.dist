@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
-<ruleset name="Wallwarden">
+<ruleset name="Earlyward">
 	<description>WordPress Coding Standards plus PHP 7.4+ compatibility.</description>
 
-	<file>wallwarden.php</file>
+	<file>earlyward.php</file>
 	<file>uninstall.php</file>
 	<file>src</file>
 	<file>tests</file>
@@ -22,7 +22,7 @@
 	<rule ref="WordPress.WP.I18n">
 		<properties>
 			<property name="text_domain" type="array">
-				<element value="wallwarden"/>
+				<element value="earlyward"/>
 			</property>
 		</properties>
 	</rule>
@@ -30,8 +30,8 @@
 	<rule ref="WordPress.NamingConventions.PrefixAllGlobals">
 		<properties>
 			<property name="prefixes" type="array">
-				<element value="wallwarden"/>
-				<element value="Wallwarden"/>
+				<element value="earlyward"/>
+				<element value="Earlyward"/>
 			</property>
 		</properties>
 	</rule>

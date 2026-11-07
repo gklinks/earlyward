@@ -6,10 +6,10 @@
  *
  * Never treat "small file" as a signal: WordPress ships tiny index.php guard files everywhere.
  *
- * @package Wallwarden
+ * @package Earlyward
  */
 
-namespace Wallwarden\Checks;
+namespace Earlyward\Checks;
 
 defined( 'ABSPATH' ) || exit;
 

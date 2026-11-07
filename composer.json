@@ -1,5 +1,5 @@
 {
-	"name": "wallwarden/wallwarden",
+	"name": "gklinks/earlyward",
 	"description": "Detection, early warning, hardening checks and hosting diagnostics for WordPress.",
 	"type": "wordpress-plugin",
 	"license": "GPL-2.0-or-later",
