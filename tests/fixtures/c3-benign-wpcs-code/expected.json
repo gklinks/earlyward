@@ -1,0 +1,3 @@
+[
+	{ "check": "C3", "severity": "info", "confidence": "low", "where": [ "wp-content/mu-plugins/site-tweaks.php" ] }
+]

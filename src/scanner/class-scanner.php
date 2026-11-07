@@ -44,6 +44,7 @@ final class Scanner {
 			array(
 				new \Wallwarden\Checks\Integrity\Auto_Prepend_Check(),
 				new \Wallwarden\Checks\Integrity\Archive_Seed_Check(),
+				new \Wallwarden\Checks\Integrity\Unexpected_Php_Check(),
 			)
 		);
 	}

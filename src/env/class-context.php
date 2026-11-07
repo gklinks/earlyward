@@ -51,19 +51,38 @@ final class Context {
 	private $ini;
 
 	/**
+	 * Must-use plugins directory, normalised.
+	 *
+	 * @var string
+	 */
+	private $mu_plugins_dir;
+
+	/**
+	 * Database reader, or null when none is available (some unit tests).
+	 *
+	 * @var Database|null
+	 */
+	private $db;
+
+	/**
 	 * Constructor.
 	 *
 	 * @param string                $root        WordPress root.
 	 * @param string                $content_dir wp-content.
 	 * @param string                $uploads_dir uploads base.
 	 * @param array<string, string> $ini         Effective ini values the checks may read.
+	 * @param array<string, mixed>  $extra       Optional: 'mu_plugins_dir' (string), 'db' (Database).
 	 */
-	public function __construct( string $root, string $content_dir, string $uploads_dir, array $ini = array() ) {
-		$this->root        = Filesystem::normalise( $root );
-		$this->content_dir = Filesystem::normalise( $content_dir );
-		$this->uploads_dir = Filesystem::normalise( $uploads_dir );
-		$this->ini         = $ini;
-		$this->fs          = new Filesystem( array( $this->root, $this->content_dir, $this->uploads_dir ) );
+	public function __construct( string $root, string $content_dir, string $uploads_dir, array $ini = array(), array $extra = array() ) {
+		$this->root           = Filesystem::normalise( $root );
+		$this->content_dir    = Filesystem::normalise( $content_dir );
+		$this->uploads_dir    = Filesystem::normalise( $uploads_dir );
+		$this->mu_plugins_dir = isset( $extra['mu_plugins_dir'] ) && is_string( $extra['mu_plugins_dir'] )
+			? Filesystem::normalise( $extra['mu_plugins_dir'] )
+			: $this->content_dir . '/mu-plugins';
+		$this->db             = isset( $extra['db'] ) && $extra['db'] instanceof Database ? $extra['db'] : null;
+		$this->ini            = $ini;
+		$this->fs             = new Filesystem( array( $this->root, $this->content_dir, $this->uploads_dir, $this->mu_plugins_dir ) );
 	}
 
 	/**
@@ -72,6 +91,7 @@ final class Context {
 	 * @return self
 	 */
 	public static function from_wordpress(): self {
+		global $wpdb;
 		$uploads = wp_upload_dir( null, false );
 		$ini     = array();
 		foreach ( array( 'auto_prepend_file', 'auto_append_file', 'open_basedir' ) as $name ) {
@@ -79,7 +99,34 @@ final class Context {
 			$ini[ $name ] = false === $value ? '' : (string) $value;
 		}
 		$ini['wallwarden.sapi'] = PHP_SAPI;
-		return new self( ABSPATH, WP_CONTENT_DIR, (string) $uploads['basedir'], $ini );
+		return new self(
+			ABSPATH,
+			WP_CONTENT_DIR,
+			(string) $uploads['basedir'],
+			$ini,
+			array(
+				'mu_plugins_dir' => WPMU_PLUGIN_DIR,
+				'db'             => new Wpdb_Database( $wpdb ),
+			)
+		);
+	}
+
+	/**
+	 * Must-use plugins directory.
+	 *
+	 * @return string
+	 */
+	public function mu_plugins_dir(): string {
+		return $this->mu_plugins_dir;
+	}
+
+	/**
+	 * Database reader.
+	 *
+	 * @return Database|null
+	 */
+	public function db(): ?Database {
+		return $this->db;
 	}
 
 	/**

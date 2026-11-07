@@ -128,6 +128,20 @@ final class Filesystem {
 	}
 
 	/**
+	 * SHA-256 of the whole file (streamed), or '' when unreadable.
+	 *
+	 * @param string $path Path.
+	 * @return string
+	 */
+	public function sha256( string $path ): string {
+		if ( ! $this->is_file( $path ) ) {
+			return '';
+		}
+		$hash = hash_file( 'sha256', $path );
+		return false === $hash ? '' : $hash;
+	}
+
+	/**
 	 * Read up to $max_bytes from the start of a file.
 	 *
 	 * @param string $path      Path.
