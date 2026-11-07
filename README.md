@@ -81,6 +81,7 @@ wp plugin activate earlyward
 wp earlyward scan              # read-only scan, prints findings
 wp earlyward run --no-mail     # scan and store the results, without email
 wp earlyward report            # last stored results
+wp earlyward cost --runs=10    # time and memory per check
 ```
 
 ## Turning it off in an emergency
@@ -92,6 +93,7 @@ Add `define( 'EARLYWARD_DISABLE', true );` to `wp-config.php`, or delete the
 
 - [Roadmap](docs/ROADMAP.md)
 - [Threat model](docs/THREAT-MODEL.md)
+- [What a scan costs, measured](docs/COST.md)
 - [Everything the plugin can write](docs/WRITES.md)
 - [Plan and design](docs/PHASE-0-PLAN.md)
 - [Reporting a security issue](SECURITY.md)

@@ -64,14 +64,21 @@ final class Scanner {
 	 * Run every check.
 	 *
 	 * @param Context $ctx Context.
-	 * @return array{findings: Finding[], errors: array<string, string>, timings: array<string, float>, observations: array<string, array{data: array<string, mixed>, healthy: bool}>}
+	 * @return array{findings: Finding[], errors: array<string, string>, timings: array<string, float>, memory: array<string, int|null>, observations: array<string, array{data: array<string, mixed>, healthy: bool}>}
 	 */
 	public function run( Context $ctx ): array {
 		$findings     = array();
 		$errors       = array();
 		$timings      = array();
+		$memory       = array();
 		$observations = array();
 		foreach ( $this->checks as $check ) {
+			// Peak memory above the starting point; only measurable per check on PHP 8.2+.
+			$can_reset = function_exists( 'memory_reset_peak_usage' );
+			$mem_base  = memory_get_usage();
+			if ( $can_reset ) {
+				memory_reset_peak_usage();
+			}
 			$start = microtime( true );
 			try {
 				foreach ( $check->run( $ctx ) as $finding ) {
@@ -90,11 +97,13 @@ final class Scanner {
 				$errors[ $check->id() ] = get_class( $e ) . ': ' . $e->getMessage();
 			}
 			$timings[ $check->id() ] = round( microtime( true ) - $start, 4 );
+			$memory[ $check->id() ]  = $can_reset ? max( 0, memory_get_peak_usage() - $mem_base ) : null;
 		}
 		return array(
 			'findings'     => $findings,
 			'errors'       => $errors,
 			'timings'      => $timings,
+			'memory'       => $memory,
 			'observations' => $observations,
 		);
 	}

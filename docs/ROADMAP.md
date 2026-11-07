@@ -29,7 +29,7 @@ shows they behave on real sites. Check IDs refer to the ranked list in [PHASE-0-
 - [x] WP-CLI command `wp earlyward scan`
 - [x] Hourly WP-Cron scan with a lock; `wp earlyward run` and `report`
 - [ ] Verify WP-Cron spawning on a real host (not reproducible in the local SQLite test site)
-- [ ] Overall time budget, measured
+- [x] Overall time budget, measured (docs/COST.md; local site only so far)
 - [x] Email only when findings change
 - [x] Plain admin page (Tools → Earlyward; in the development branch, not in the 0.1.0 zip)
 
@@ -42,7 +42,7 @@ shows they behave on real sites. Check IDs refer to the ranked list in [PHASE-0-
 - [x] Site Health integration (reads the stored scan only; critical -> critical, warning -> recommended)
 - [x] "Copy this to your host's support" block (on the admin page)
 - [ ] External probe script
-- [ ] Measured cost published in `docs/COST.md`
+- [x] Measured cost published in `docs/COST.md` (local site; real-hosting figures still to come)
 
 ## v1.0 — public
 

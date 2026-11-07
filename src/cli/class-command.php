@@ -122,6 +122,85 @@ final class Command {
 	}
 
 	/**
+	 * Measure what a scan costs: time and memory per check, over several runs. Read-only.
+	 *
+	 * The numbers describe this site on this server, from the command line. Web and WP-Cron
+	 * scans run with different PHP limits and cache state, so measure there too before quoting
+	 * a figure. Per-check memory needs PHP 8.2 or newer.
+	 *
+	 * ## OPTIONS
+	 *
+	 * [--runs=<n>]
+	 * : How many full scans to run (1 to 50).
+	 * ---
+	 * default: 5
+	 * ---
+	 *
+	 * [--format=<format>]
+	 * : table or json.
+	 * ---
+	 * default: table
+	 * options:
+	 *   - table
+	 *   - json
+	 * ---
+	 *
+	 * @param string[]              $args       Positional args.
+	 * @param array<string, string> $assoc_args Flags.
+	 */
+	public function cost( array $args, array $assoc_args ): void {
+		$n      = max( 1, min( 50, (int) ( $assoc_args['runs'] ?? 5 ) ) );
+		$runs   = array();
+		$before = memory_get_usage();
+		$result = array(
+			'errors'   => array(),
+			'findings' => array(),
+		);
+		for ( $i = 0; $i < $n; $i++ ) {
+			$result = Plugin::scan();
+			$runs[] = array(
+				'timings' => $result['timings'],
+				'memory'  => $result['memory'],
+			);
+		}
+		$sum            = \Earlyward\Scanner\Cost::summarise( $runs );
+		$sum['process'] = array(
+			'php'                 => PHP_VERSION,
+			'sapi'                => PHP_SAPI,
+			'memory_before_bytes' => $before,
+			'process_peak_bytes'  => memory_get_peak_usage(),
+			'errors_in_last_scan' => count( $result['errors'] ),
+			'findings_last_scan'  => count( $result['findings'] ),
+		);
+
+		if ( isset( $assoc_args['format'] ) && 'json' === $assoc_args['format'] ) {
+			\WP_CLI::line( (string) wp_json_encode( $sum, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) );
+			return;
+		}
+		$rows = array();
+		foreach ( $sum['checks'] as $id => $c ) {
+			$rows[] = array(
+				'check'      => $id,
+				'median_ms'  => (int) round( $c['median_s'] * 1000 ),
+				'max_ms'     => (int) round( $c['max_s'] * 1000 ),
+				'peak_extra' => null === $c['peak_bytes'] ? 'n/a (PHP < 8.2)' : size_format( $c['peak_bytes'], 1 ),
+			);
+		}
+		\WP_CLI\Utils\format_items( 'table', $rows, array( 'check', 'median_ms', 'max_ms', 'peak_extra' ) );
+		\WP_CLI::line(
+			sprintf(
+				'%d full scans: median %d ms, slowest %d ms. Process peak memory %s (PHP %s, %s).',
+				$sum['runs'],
+				(int) round( $sum['total_median_s'] * 1000 ),
+				(int) round( $sum['total_max_s'] * 1000 ),
+				size_format( $sum['process']['process_peak_bytes'], 1 ),
+				PHP_VERSION,
+				PHP_SAPI
+			)
+		);
+	}
+
+	/**
 	 * Run all checks and print the findings. Read-only: stores nothing, sends nothing.
 	 *
 	 * Note: under WP-CLI, PHP does not apply .user.ini files, so the "runtime" evidence of
@@ -155,6 +234,7 @@ final class Command {
 						'findings' => $findings,
 						'errors'   => $result['errors'],
 						'timings'  => $result['timings'],
+						'memory'   => $result['memory'],
 					),
 					JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES
 				)

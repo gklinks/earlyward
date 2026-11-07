@@ -73,7 +73,7 @@ final class Plugin {
 	/**
 	 * Run a scan and return the raw result. Never throws, never writes.
 	 *
-	 * @return array{findings: \Earlyward\Finding\Finding[], errors: array<string, string>, timings: array<string, float>, observations: array<string, array{data: array<string, mixed>, healthy: bool}>}
+	 * @return array{findings: \Earlyward\Finding\Finding[], errors: array<string, string>, timings: array<string, float>, memory: array<string, int|null>, observations: array<string, array{data: array<string, mixed>, healthy: bool}>}
 	 */
 	public static function scan(): array {
 		try {
@@ -83,6 +83,7 @@ final class Plugin {
 				'findings'     => array(),
 				'errors'       => array( 'scanner' => get_class( $e ) . ': ' . $e->getMessage() ),
 				'timings'      => array(),
+				'memory'       => array(),
 				'observations' => array(),
 			);
 		}
