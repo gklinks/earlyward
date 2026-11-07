@@ -58,13 +58,17 @@ final class Page {
 	}
 
 	/**
-	 * URL of the screen, with an optional notice code.
+	 * URL of the screen, with an optional notice code and tab.
 	 *
 	 * @param string $notice Notice code or empty.
+	 * @param string $tab    "overview" (the default) or "findings".
 	 * @return string
 	 */
-	public static function url( string $notice = '' ): string {
+	public static function url( string $notice = '', string $tab = '' ): string {
 		$url = admin_url( 'tools.php?page=' . self::SLUG );
+		if ( '' !== $tab ) {
+			$url = add_query_arg( 'tab', $tab, $url );
+		}
 		return '' === $notice ? $url : add_query_arg( 'earlyward_notice', $notice, $url );
 	}
 
@@ -86,7 +90,7 @@ final class Page {
 	public static function handle_scan(): void {
 		self::authorise( self::ACTION_SCAN );
 		$out = Plugin::run( true );
-		wp_safe_redirect( self::url( $out['ran'] ? 'scanned' : 'busy' ) );
+		wp_safe_redirect( self::url( $out['ran'] ? 'scanned' : 'busy', 'findings' ) );
 		exit;
 	}
 
@@ -97,17 +101,17 @@ final class Page {
 	public static function handle_baseline(): void {
 		self::authorise( self::ACTION_BASELINE );
 		if ( empty( $_POST['earlyward_confirm'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce and capability are checked by authorise() above.
-			wp_safe_redirect( self::url( 'baseline_unconfirmed' ) );
+			wp_safe_redirect( self::url( 'baseline_unconfirmed', 'findings' ) );
 			exit;
 		}
 		State::set_baseline( 'A1', null );
 		$out = Plugin::run( true );
 		if ( ! $out['ran'] ) {
-			wp_safe_redirect( self::url( 'busy' ) );
+			wp_safe_redirect( self::url( 'busy', 'findings' ) );
 			exit;
 		}
 		$baselines = State::baselines();
-		wp_safe_redirect( self::url( empty( $baselines['A1'] ) ? 'baseline_missing' : 'baseline_set' ) );
+		wp_safe_redirect( self::url( empty( $baselines['A1'] ) ? 'baseline_missing' : 'baseline_set', 'findings' ) );
 		exit;
 	}
 
@@ -147,6 +151,31 @@ final class Page {
 	}
 
 	/**
+	 * The tab asked for. Anything unknown falls back to the overview.
+	 *
+	 * @return string "overview" or "findings".
+	 */
+	private static function tab(): string {
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only choice of a tab from a whitelist.
+		$tab = isset( $_GET['tab'] ) ? sanitize_key( wp_unslash( $_GET['tab'] ) ) : '';
+		return 'findings' === $tab ? 'findings' : 'overview';
+	}
+
+	/**
+	 * Tab links.
+	 *
+	 * @param string             $tab    Current tab.
+	 * @param array<string, int> $counts Findings by severity.
+	 */
+	private static function render_tabs( string $tab, array $counts ): void {
+		$open = $counts['critical'] + $counts['warning'];
+		echo '<nav class="nav-tab-wrapper" aria-label="' . esc_attr__( 'Earlyward sections', 'earlyward' ) . '">';
+		echo '<a class="nav-tab' . ( 'overview' === $tab ? ' nav-tab-active' : '' ) . '" href="' . esc_url( self::url( '', 'overview' ) ) . '">' . esc_html__( 'Overview', 'earlyward' ) . '</a>';
+		echo '<a class="nav-tab' . ( 'findings' === $tab ? ' nav-tab-active' : '' ) . '" href="' . esc_url( self::url( '', 'findings' ) ) . '">' . esc_html( $open > 0 ? sprintf( /* translators: %d: number of critical and warning findings. */ __( 'Findings (%d)', 'earlyward' ), $open ) : __( 'Findings', 'earlyward' ) ) . '</a>';
+		echo '</nav>';
+	}
+
+	/**
 	 * Output the page.
 	 */
 	private static function render_screen(): void {
@@ -170,10 +199,17 @@ final class Page {
 
 		echo '<p class="description">' . esc_html__( 'Early preview. Earlyward reports signs of an attack and of broken hosting. A scan with no findings is not proof that the site is clean or safe.', 'earlyward' ) . '</p>';
 
-		self::render_status( $last, $next );
-		self::render_actions();
-		self::render_findings( $last, $findings, $counts );
-		self::render_support( $last );
+		$tab = self::tab();
+		self::render_tabs( $tab, $counts );
+
+		if ( 'overview' === $tab ) {
+			Overview::render();
+		} else {
+			self::render_status( $last, $next );
+			self::render_actions();
+			self::render_findings( $last, $findings, $counts );
+			self::render_support( $last );
+		}
 
 		echo '</div>';
 	}
@@ -376,7 +412,7 @@ final class Page {
 	 * @return string
 	 */
 	private static function css(): string {
-		return '.earlyward-actions form{margin:0 0 12px}'
+		return '.earlyward-actions form{margin:0 0 12px}.earlyward-table{max-width:960px;margin:6px 0 12px}'
 			. '.earlyward-finding{background:#fff;border:1px solid #c3c4c7;border-left-width:4px;padding:4px 16px 8px;margin:12px 0;max-width:960px}'
 			. '.earlyward-critical{border-left-color:#d63638}.earlyward-warning{border-left-color:#dba617}.earlyward-info{border-left-color:#72aee6}'
 			. '.earlyward-badge{display:inline-block;font-size:12px;font-weight:600;padding:1px 8px;border:1px solid currentColor;border-radius:3px;vertical-align:middle}'

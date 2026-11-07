@@ -5,7 +5,7 @@ the open. It has been tested against the fixtures in this repository and on a lo
 on live hosting. The first release for production sites comes after weeks of testing on real sites
 (see [the release gate](docs/PHASE-0-PLAN.md#7-dogfood-and-the-false-positive-gate)). The released
 0.1.0 has no admin screen: results come through WP-CLI and email. The development branch adds a
-screen under Tools → Earlyward (unreleased).
+screen under Tools → Earlyward (unreleased): an Overview tab (waiting updates, pending comments, administrators and newest users, scheduled jobs and who registered them, when the findings last changed) and a Findings tab (evidence, fix steps, Scan now, Set baseline, a block to copy for your host's support).
 
 Earlyward is a free, open-source WordPress plugin. It looks for signs of an attack, spots hardening
 that is missing or broken, and explains hosting and runtime problems in plain language: what is wrong,

@@ -89,8 +89,9 @@ final class State {
 	 * @param array<int, array<string, mixed>>                                $alerted  Alerting findings now open.
 	 * @param bool                                                            $mailed   Whether an email was sent.
 	 * @param array<string, array{data: array<string, mixed>, healthy: bool}> $observations What checks measured.
+	 * @param array{at: int, new: int, resolved: int, critical: int}|null     $change       Set when the set of warning/critical findings changed in this scan.
 	 */
-	public static function save( string $env, array $findings, array $errors, array $timings, array $alerted, bool $mailed, array $observations = array() ): void {
+	public static function save( string $env, array $findings, array $errors, array $timings, array $alerted, bool $mailed, array $observations = array(), ?array $change = null ): void {
 		$state                    = self::get();
 		$state['last']            = array(
 			'at'       => time(),
@@ -104,8 +105,11 @@ final class State {
 		$state['alerted']         = isset( $state['alerted'] ) && is_array( $state['alerted'] ) ? $state['alerted'] : array();
 		$state['alerted'][ $env ] = array_slice( $alerted, 0, self::MAX_FINDINGS );
 		$state['version']         = defined( 'EARLYWARD_VERSION' ) ? EARLYWARD_VERSION : '';
-		$state['baselines']       = isset( $state['baselines'] ) && is_array( $state['baselines'] ) ? $state['baselines'] : array();
-		$state['observations']    = isset( $state['observations'] ) && is_array( $state['observations'] ) ? $state['observations'] : array();
+		if ( null !== $change ) {
+			$state['last_change'] = $change;
+		}
+		$state['baselines']    = isset( $state['baselines'] ) && is_array( $state['baselines'] ) ? $state['baselines'] : array();
+		$state['observations'] = isset( $state['observations'] ) && is_array( $state['observations'] ) ? $state['observations'] : array();
 		foreach ( $observations as $check => $obs ) {
 			$state['observations'][ $check ] = $obs['data'];
 			// The first healthy observation becomes the baseline. It is never replaced

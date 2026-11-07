@@ -17,6 +17,8 @@ that is not on this list, that is a bug; please report it.
 - *Scan now* runs the scheduled job once (same writes as a scheduled scan, same email rule).
 - *Set baseline* clears the A1 baseline and records a new one from a scan right now, if the homepage looks healthy. It does nothing unless the "I changed the site on purpose" box is ticked.
 
+**Overview tab.** Writes nothing and contacts nobody. It shows what WordPress already holds (update information from WordPress's own last check, comment counts, users, the cron schedule). The one thing Earlyward adds to its existing stored state is a small record of when the set of warning or critical findings last changed (time, counts), so the tab can show it.
+
 **Site Health** (Tools → Site Health) shows the stored findings as tests. It only reads the last stored scan: no scan, no request, no write.
 
 `wp earlyward scan` writes nothing. `wp earlyward run` writes the same as a scheduled scan. `wp earlyward baseline --reset` clears the A1 baseline.

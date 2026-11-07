@@ -41,6 +41,9 @@ shows they behave on real sites. Check IDs refer to the ranked list in [PHASE-0-
 - [ ] C7 opcache serving deleted files, C8 detached PHP processes, C10-C13
 - [x] Site Health integration (reads the stored scan only; critical -> critical, warning -> recommended)
 - [x] "Copy this to your host's support" block (on the admin page)
+- [x] Overview tab: waiting updates, pending comments, administrators and newest users, cron jobs by owner, last change in findings (read-only; no login-IP log, no backup tools)
+- [ ] Backup freshness warning (reads the backup plugin's own history; read-only)
+- [ ] Optional login log for administrators (opt-in, bounded, with a retention limit)
 - [ ] External probe script
 - [x] Measured cost published in `docs/COST.md` (local site; real-hosting figures still to come)
 

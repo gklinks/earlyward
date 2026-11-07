@@ -136,7 +136,23 @@ final class Plugin {
 			$alerted = ( $send_mail && $diff['changed'] && ! $mailed && ! ( $first && empty( $diff['current'] ) ) )
 				? State::alerted( $env )
 				: $diff['current'];
-			State::save( $env, $all, $result['errors'], $result['timings'], $alerted, $mailed, $result['observations'] );
+			// Remember when the set of warnings last changed, for the Overview tab.
+			$change = null;
+			if ( $diff['changed'] && ! ( $first && empty( $diff['current'] ) ) ) {
+				$critical = 0;
+				foreach ( $diff['current'] as $item ) {
+					if ( 'critical' === (string) ( $item['severity'] ?? '' ) ) {
+						++$critical;
+					}
+				}
+				$change = array(
+					'at'       => time(),
+					'new'      => count( $diff['new'] ),
+					'resolved' => count( $diff['resolved'] ),
+					'critical' => $critical,
+				);
+			}
+			State::save( $env, $all, $result['errors'], $result['timings'], $alerted, $mailed, $result['observations'], $change );
 
 			$out = array(
 				'ran'      => true,
