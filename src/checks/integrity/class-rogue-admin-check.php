@@ -111,8 +111,8 @@ final class Rogue_Admin_Check implements Check {
 					self::ID,
 					Finding::SEVERITY_CRITICAL,
 					Finding::CONFIDENCE_HIGH,
-					'An administrator account looks machine-generated',
-					'The login is a word plus a random code, and the email address repeats the login. Real attacks created dozens of admins exactly like this, often months before anyone noticed.',
+					__( 'An administrator account looks machine-generated', 'earlyward' ),
+					__( 'The login is a word plus a random code, and the email address repeats the login. Real attacks created dozens of admins exactly like this, often months before anyone noticed.', 'earlyward' ),
 					$evidence,
 					self::steps()
 				);
@@ -121,8 +121,8 @@ final class Rogue_Admin_Check implements Check {
 					self::ID,
 					Finding::SEVERITY_WARNING,
 					Finding::CONFIDENCE_MEDIUM,
-					$generated ? 'An administrator login looks machine-generated' : 'An administrator\'s email address cannot receive mail',
-					'Make sure you know who this account belongs to. Attackers create administrators with generated names or throwaway addresses so that password-reset emails never reach anyone.',
+					$generated ? __( 'An administrator login looks machine-generated', 'earlyward' ) : __( 'An administrator\'s email address cannot receive mail', 'earlyward' ),
+					__( 'Make sure you know who this account belongs to. Attackers create administrators with generated names or throwaway addresses so that password-reset emails never reach anyone.', 'earlyward' ),
 					$evidence,
 					self::steps()
 				);
@@ -176,10 +176,14 @@ final class Rogue_Admin_Check implements Check {
 			self::ID,
 			Finding::SEVERITY_WARNING,
 			Finding::CONFIDENCE_MEDIUM,
-			sprintf( '%d administrator accounts were created within one hour', count( $best ) ),
-			'People rarely create several administrators at once. In a real attack, rogue admins appeared in synchronized waves across many sites.',
+			sprintf(
+				/* translators: %d: number of administrator accounts */
+				__( '%d administrator accounts were created within one hour', 'earlyward' ),
+				count( $best )
+			),
+			__( 'People rarely create several administrators at once. In a real attack, rogue admins appeared in synchronized waves across many sites.', 'earlyward' ),
 			$evidence,
-			array( 'Confirm each account belongs to someone you know. Check the other sites you run for accounts created at the same time.' )
+			array( __( 'Confirm each account belongs to someone you know. Check the other sites you run for accounts created at the same time.', 'earlyward' ) )
 		);
 	}
 
@@ -190,10 +194,10 @@ final class Rogue_Admin_Check implements Check {
 	 */
 	private static function steps(): array {
 		return array(
-			'If you do not recognise the account, change its role to Subscriber rather than deleting it: deleting a user forces their posts to be reassigned or removed.',
-			'Then revoke its sessions and application passwords (Users > Edit > "Log out everywhere" and the Application Passwords section). Changing the password alone does not remove application passwords.',
-			'Set a new random password on it, so the attacker\'s password stops working.',
-			'Check every other site you run for accounts with the same pattern.',
+			__( 'If you do not recognise the account, change its role to Subscriber rather than deleting it: deleting a user forces their posts to be reassigned or removed.', 'earlyward' ),
+			__( 'Then revoke its sessions and application passwords (Users > Edit > "Log out everywhere" and the Application Passwords section). Changing the password alone does not remove application passwords.', 'earlyward' ),
+			__( 'Set a new random password on it, so the attacker\'s password stops working.', 'earlyward' ),
+			__( 'Check every other site you run for accounts with the same pattern.', 'earlyward' ),
 		);
 	}
 }

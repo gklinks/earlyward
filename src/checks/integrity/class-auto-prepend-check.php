@@ -194,12 +194,12 @@ final class Auto_Prepend_Check implements Check {
 				self::ID,
 				Finding::SEVERITY_WARNING,
 				Finding::CONFIDENCE_MEDIUM,
-				'A Wordfence firewall loader is set up, but Wordfence is not installed',
-				'PHP loads this file before every request. Leftovers from an uninstalled plugin are usually harmless, but malware has used familiar names to blend in.',
+				__( 'A Wordfence firewall loader is set up, but Wordfence is not installed', 'earlyward' ),
+				__( 'PHP loads this file before every request. Leftovers from an uninstalled plugin are usually harmless, but malware has used familiar names to blend in.', 'earlyward' ),
 				$evidence,
 				array(
-					'Open the target file and check that it only loads Wordfence.',
-					'If Wordfence is no longer used, remove the line from the config file shown, then delete the loader.',
+					__( 'Open the target file and check that it only loads Wordfence.', 'earlyward' ),
+					__( 'If Wordfence is no longer used, remove the line from the config file shown, then delete the loader.', 'earlyward' ),
 				)
 			);
 		}
@@ -212,12 +212,20 @@ final class Auto_Prepend_Check implements Check {
 					self::ID,
 					Finding::SEVERITY_WARNING,
 					Finding::CONFIDENCE_LOW,
-					sprintf( 'The plugin "%s" runs before WordPress on every request', $slug ),
-					'Firewall plugins do this on purpose. Anything else doing it can see and change every request, including logins.',
+					sprintf(
+						/* translators: %s: plugin folder name */
+						__( 'The plugin "%s" runs before WordPress on every request', 'earlyward' ),
+						$slug
+					),
+					__( 'Firewall plugins do this on purpose. Anything else doing it can see and change every request, including logins.', 'earlyward' ),
 					$evidence,
 					array(
-						sprintf( 'Confirm that "%s" is a firewall or security plugin you installed.', $slug ),
-						'If it is not, remove only this line from the config file shown, then investigate the plugin.',
+						sprintf(
+							/* translators: %s: plugin folder name */
+							__( 'Confirm that "%s" is a firewall or security plugin you installed.', 'earlyward' ),
+							$slug
+						),
+						__( 'If it is not, remove only this line from the config file shown, then investigate the plugin.', 'earlyward' ),
 					)
 				);
 			}
@@ -229,15 +237,15 @@ final class Auto_Prepend_Check implements Check {
 			self::ID,
 			Finding::SEVERITY_CRITICAL,
 			( $suspicious_name || $in_content_root ) ? Finding::CONFIDENCE_HIGH : Finding::CONFIDENCE_MEDIUM,
-			'PHP is told to run an unknown file before (or after) every request',
-			'This is a classic malware loader: it runs on every page view, before WordPress and any security plugin. Deleting the loaded file alone does not help, because the loader is usually recreated from elsewhere.',
+			__( 'PHP is told to run an unknown file before (or after) every request', 'earlyward' ),
+			__( 'This is a classic malware loader: it runs on every page view, before WordPress and any security plugin. Deleting the loaded file alone does not help, because the loader is usually recreated from elsewhere.', 'earlyward' ),
 			$evidence,
 			array(
-				'Remove only the flagged line from each config file shown. Keep any genuine firewall line in the same file.',
-				'Check the same file name at the other locations listed (site root, wp-content, wp-admin, uploads).',
-				'Look at the target file and any hidden file with a similar name (starting with a dot) next to it.',
-				'PHP can cache .user.ini settings for a few minutes, so re-check after about 5 minutes.',
-				'If several sites share one hosting account, check all of them at the same time: one infected site can re-infect the others.',
+				__( 'Remove only the flagged line from each config file shown. Keep any genuine firewall line in the same file.', 'earlyward' ),
+				__( 'Check the same file name at the other locations listed (site root, wp-content, wp-admin, uploads).', 'earlyward' ),
+				__( 'Look at the target file and any hidden file with a similar name (starting with a dot) next to it.', 'earlyward' ),
+				__( 'PHP can cache .user.ini settings for a few minutes, so re-check after about 5 minutes.', 'earlyward' ),
+				__( 'If several sites share one hosting account, check all of them at the same time: one infected site can re-infect the others.', 'earlyward' ),
 			)
 		);
 	}

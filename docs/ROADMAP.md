@@ -33,7 +33,7 @@ shows they behave on real sites. Check IDs refer to the ranked list in [PHASE-0-
 - [x] Email only when findings change
 - [x] Plain admin page (Tools → Earlyward; in the development branch, not in the 0.1.0 zip)
 
-- [ ] i18n pass (finding text is English-only for now)
+- [x] i18n pass: admin screen, Site Health, email and all finding text are translatable (`languages/earlyward.pot`); WP-CLI output and the host-support text stay English on purpose
 
 ## v0.2 — dogfood
 

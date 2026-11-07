@@ -57,16 +57,18 @@ final class Shared_User_Check implements Check {
 				self::ID,
 				Finding::SEVERITY_WARNING,
 				Finding::CONFIDENCE_HIGH,
-				1 === count( $siblings )
-					? 'Another WordPress install can be read by this site'
-					: sprintf( '%d other WordPress installs can be read by this site', count( $siblings ) ),
-				'These sites run as the same system user, so code running on any one of them can read the others\' database passwords and change their files. A break-in on one site becomes a break-in on all of them, and cleaning them one at a time does not work.',
+				sprintf(
+					/* translators: %d: number of other WordPress installs this site can read. The singular is only used for exactly one, so it has no number. */
+					_n( 'Another WordPress install can be read by this site', '%d other WordPress installs can be read by this site', count( $siblings ), 'earlyward' ), // phpcs:ignore WordPress.WP.I18n.MissingSingularPlaceholder -- English "Another ..." for exactly one.
+					count( $siblings )
+				),
+				__( 'These sites run as the same system user, so code running on any one of them can read the others\' database passwords and change their files. A break-in on one site becomes a break-in on all of them, and cleaning them one at a time does not work.', 'earlyward' ),
 				$evidence,
 				array(
-					'Ask your host whether each site can run as its own system user (or in its own PHP pool), or move important sites to their own hosting account.',
-					'Delete sites you no longer use: abandoned installs are the most common way in, and here they expose every other site.',
-					'Until the sites are separated, treat them as one: if one shows signs of infection, check and clean all of them in the same pass.',
-					'Ask your host to set open_basedir per site if separate users are not possible. It is weaker, but it stops casual cross-site reads.',
+					__( 'Ask your host whether each site can run as its own system user (or in its own PHP pool), or move important sites to their own hosting account.', 'earlyward' ),
+					__( 'Delete sites you no longer use: abandoned installs are the most common way in, and here they expose every other site.', 'earlyward' ),
+					__( 'Until the sites are separated, treat them as one: if one shows signs of infection, check and clean all of them in the same pass.', 'earlyward' ),
+					__( 'Ask your host to set open_basedir per site if separate users are not possible. It is weaker, but it stops casual cross-site reads.', 'earlyward' ),
 				)
 			),
 		);

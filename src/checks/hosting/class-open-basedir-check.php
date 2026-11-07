@@ -47,8 +47,8 @@ final class Open_Basedir_Check implements Check {
 				self::ID,
 				Finding::SEVERITY_WARNING,
 				Finding::CONFIDENCE_MEDIUM,
-				'PHP on this site can open files outside the site',
-				'open_basedir is not set, so any code running here (including malware) can read everything the hosting account can read. It is a backstop, not a wall, but its absence is what let one compromised site read its neighbours on a real account.',
+				__( 'PHP on this site can open files outside the site', 'earlyward' ),
+				__( 'open_basedir is not set, so any code running here (including malware) can read everything the hosting account can read. It is a backstop, not a wall, but its absence is what let one compromised site read its neighbours on a real account.', 'earlyward' ),
 				array(
 					new Evidence(
 						'runtime',
@@ -59,8 +59,8 @@ final class Open_Basedir_Check implements Check {
 					),
 				),
 				array(
-					'Ask your host to set open_basedir for this site to its own folder plus the system temp folder.',
-					'If the host offers per-site system users or PHP pools, prefer that: it is a stronger separation.',
+					__( 'Ask your host to set open_basedir for this site to its own folder plus the system temp folder.', 'earlyward' ),
+					__( 'If the host offers per-site system users or PHP pools, prefer that: it is a stronger separation.', 'earlyward' ),
 				)
 			),
 		);

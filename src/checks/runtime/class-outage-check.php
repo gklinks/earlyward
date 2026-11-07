@@ -92,12 +92,12 @@ final class Outage_Check implements Check, Observes {
 				$this->finding(
 					Finding::SEVERITY_WARNING,
 					Finding::CONFIDENCE_LOW,
-					'The site could not load its own homepage',
-					'Earlyward checks the homepage from the server itself. Some hosts or firewalls block that, which is harmless; but it also happens when the site is down.',
+					__( 'The site could not load its own homepage', 'earlyward' ),
+					__( 'Earlyward checks the homepage from the server itself. Some hosts or firewalls block that, which is harmless; but it also happens when the site is down.', 'earlyward' ),
 					array( new Evidence( 'url', 'home', 0, $home['error'], array( 'ms' => $home['ms'] ) ) ),
 					array(
-						'Open the site in a browser. If it works, ask your host whether requests from the server to itself are blocked (WordPress Site Health shows the same "loopback" problem).',
-						'If it does not work, check the error log (see check A3).',
+						__( 'Open the site in a browser. If it works, ask your host whether requests from the server to itself are blocked (WordPress Site Health shows the same "loopback" problem).', 'earlyward' ),
+						__( 'If it does not work, check the error log (see check A3).', 'earlyward' ),
 					)
 				),
 			);
@@ -107,10 +107,14 @@ final class Outage_Check implements Check, Observes {
 				$this->finding(
 					Finding::SEVERITY_CRITICAL,
 					Finding::CONFIDENCE_HIGH,
-					sprintf( 'The homepage returns an error (HTTP %d)', $home['status'] ),
-					'Visitors see an error page.',
+					sprintf(
+						/* translators: %d: HTTP status code. */
+						__( 'The homepage returns an error (HTTP %d)', 'earlyward' ),
+						$home['status']
+					),
+					__( 'Visitors see an error page.', 'earlyward' ),
 					array( new Evidence( 'url', 'home', 0, 'HTTP ' . $home['status'], array( 'ms' => $home['ms'] ) ) ),
-					array( 'Check the error log (check A3) and any recent plugin, theme or code change.' )
+					array( __( 'Check the error log (check A3) and any recent plugin, theme or code change.', 'earlyward' ) )
 				),
 			);
 		}
@@ -119,10 +123,14 @@ final class Outage_Check implements Check, Observes {
 				$this->finding(
 					Finding::SEVERITY_WARNING,
 					Finding::CONFIDENCE_MEDIUM,
-					sprintf( 'The homepage refused the server\'s own request (HTTP %d)', $home['status'] ),
-					'A firewall or security rule may be blocking requests from the server itself, or the homepage really is unavailable.',
+					sprintf(
+						/* translators: %d: HTTP status code. */
+						__( 'The homepage refused the server\'s own request (HTTP %d)', 'earlyward' ),
+						$home['status']
+					),
+					__( 'A firewall or security rule may be blocking requests from the server itself, or the homepage really is unavailable.', 'earlyward' ),
 					array( new Evidence( 'url', 'home', 0, 'HTTP ' . $home['status'] ) ),
-					array( 'Open the site in a private browser window. If it works, the block only affects the server\'s own requests; ask your host to allow them.' )
+					array( __( 'Open the site in a private browser window. If it works, the block only affects the server\'s own requests; ask your host to allow them.', 'earlyward' ) )
 				),
 			);
 		}
@@ -133,10 +141,10 @@ final class Outage_Check implements Check, Observes {
 				$this->finding(
 					Finding::SEVERITY_CRITICAL,
 					Finding::CONFIDENCE_MEDIUM,
-					'The homepage answers "OK" but is nearly empty',
-					'An empty or non-HTML page with a success code usually means a fatal error, a firewall challenge page, or a broken cache. Uptime monitors that only check the status code will not notice.',
+					__( 'The homepage answers "OK" but is nearly empty', 'earlyward' ),
+					__( 'An empty or non-HTML page with a success code usually means a fatal error, a firewall challenge page, or a broken cache. Uptime monitors that only check the status code will not notice.', 'earlyward' ),
 					array( new Evidence( 'url', 'home', 0, substr( $home['body'], 0, 200 ), array( 'bytes' => $signals['bytes'] ) ) ),
-					array( 'Open the homepage in a private window and look at what visitors get. Check the error log (A3).' )
+					array( __( 'Open the homepage in a private window and look at what visitors get. Check the error log (A3).', 'earlyward' ) )
 				),
 			);
 		}
@@ -213,13 +221,13 @@ final class Outage_Check implements Check, Observes {
 			$this->finding(
 				$severe ? Finding::SEVERITY_CRITICAL : Finding::SEVERITY_WARNING,
 				Finding::CONFIDENCE_MEDIUM,
-				'The homepage loads, but parts that worked before are missing',
-				'The page still returns "OK", so ordinary uptime checks stay green. Missing styles, menus or API routes usually mean some code stopped loading after an error, which is how a real site stayed broken for 12 days unnoticed.',
+				__( 'The homepage loads, but parts that worked before are missing', 'earlyward' ),
+				__( 'The page still returns "OK", so ordinary uptime checks stay green. Missing styles, menus or API routes usually mean some code stopped loading after an error, which is how a real site stayed broken for 12 days unnoticed.', 'earlyward' ),
 				$evidence,
 				array(
-					'Open the homepage in a private window and compare it with how it should look.',
-					'Check the error log (A3) and crash markers (A2) for the code that owns the missing parts.',
-					'If you changed the site on purpose, record the new healthy state: wp earlyward baseline --reset',
+					__( 'Open the homepage in a private window and compare it with how it should look.', 'earlyward' ),
+					__( 'Check the error log (A3) and crash markers (A2) for the code that owns the missing parts.', 'earlyward' ),
+					__( 'If you changed the site on purpose, record the new healthy state: wp earlyward baseline --reset', 'earlyward' ),
 				)
 			),
 		);

@@ -102,9 +102,9 @@ final class Exposed_Backup_Check implements Check {
 			new Evidence( 'file', $ctx->relative( $path ), 0, '', array( 'bytes' => $ctx->fs()->size( $path ) ) ),
 		);
 		$steps    = array(
-			'Open the file\'s web address in a private browser window. If it downloads, assume someone else has a copy.',
-			'Move it out of the website folder (for example to a "backups" folder beside it), or delete it if you have another copy.',
-			'If it was downloadable and contains wp-config.php or a database, change the database password and the WordPress security keys.',
+			__( 'Open the file\'s web address in a private browser window. If it downloads, assume someone else has a copy.', 'earlyward' ),
+			__( 'Move it out of the website folder (for example to a "backups" folder beside it), or delete it if you have another copy.', 'earlyward' ),
+			__( 'If it was downloadable and contains wp-config.php or a database, change the database password and the WordPress security keys.', 'earlyward' ),
 		);
 
 		if ( 'config' === $kind ) {
@@ -112,8 +112,8 @@ final class Exposed_Backup_Check implements Check {
 				self::ID,
 				Finding::SEVERITY_CRITICAL,
 				Finding::CONFIDENCE_HIGH,
-				'A copy of wp-config.php may be readable by anyone',
-				'Copies with endings like .bak or ~ are not run as PHP, so the web server sends them as plain text: database password and security keys included.',
+				__( 'A copy of wp-config.php may be readable by anyone', 'earlyward' ),
+				__( 'Copies with endings like .bak or ~ are not run as PHP, so the web server sends them as plain text: database password and security keys included.', 'earlyward' ),
 				$evidence,
 				$steps
 			);
@@ -123,8 +123,8 @@ final class Exposed_Backup_Check implements Check {
 				self::ID,
 				Finding::SEVERITY_CRITICAL,
 				Finding::CONFIDENCE_HIGH,
-				'A database dump sits inside the website folder',
-				'A database dump contains every user, password hash and setting. Inside the website folder it can usually be downloaded by anyone who guesses the name.',
+				__( 'A database dump sits inside the website folder', 'earlyward' ),
+				__( 'A database dump contains every user, password hash and setting. Inside the website folder it can usually be downloaded by anyone who guesses the name.', 'earlyward' ),
 				$evidence,
 				$steps
 			);
@@ -133,8 +133,8 @@ final class Exposed_Backup_Check implements Check {
 			self::ID,
 			Finding::SEVERITY_WARNING,
 			$is_docroot ? Finding::CONFIDENCE_MEDIUM : Finding::CONFIDENCE_LOW,
-			$is_docroot ? 'An archive sits in the site root, where it can probably be downloaded' : 'An archive sits in wp-content, where it can probably be downloaded',
-			'Site backups always include wp-config.php, which holds the database password. Archives in a web folder are a common, easily guessed target.',
+			$is_docroot ? __( 'An archive sits in the site root, where it can probably be downloaded', 'earlyward' ) : __( 'An archive sits in wp-content, where it can probably be downloaded', 'earlyward' ),
+			__( 'Site backups always include wp-config.php, which holds the database password. Archives in a web folder are a common, easily guessed target.', 'earlyward' ),
 			$evidence,
 			$steps
 		);

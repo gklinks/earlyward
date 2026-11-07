@@ -77,13 +77,17 @@ final class Cloaked_Link_Check implements Check {
 				self::ID,
 				Finding::SEVERITY_CRITICAL,
 				Finding::CONFIDENCE_HIGH,
-				sprintf( 'Hidden links were injected into "%s"', '' === $post['title'] ? '#' . $post['id'] : $post['title'] ),
-				'An element positioned thousands of pixels off-screen holds links. Visitors never see them, search engines do: this is how paid-backlink operations use hacked sites, and it can get the site penalised.',
+				sprintf(
+					/* translators: %s: post title, or # followed by the post ID when it has no title */
+					__( 'Hidden links were injected into "%s"', 'earlyward' ),
+					'' === $post['title'] ? '#' . $post['id'] : $post['title']
+				),
+				__( 'An element positioned thousands of pixels off-screen holds links. Visitors never see them, search engines do: this is how paid-backlink operations use hacked sites, and it can get the site penalised.', 'earlyward' ),
 				$evidence,
 				array(
-					'Edit the page, switch to the code editor and remove the hidden block. Keep a copy first.',
-					'Purge any page cache, then load the page with ?nocache=1 added to the address to confirm the links are gone from the real content.',
-					'Search your other pages too: this kind of injection usually hits several.',
+					__( 'Edit the page, switch to the code editor and remove the hidden block. Keep a copy first.', 'earlyward' ),
+					__( 'Purge any page cache, then load the page with ?nocache=1 added to the address to confirm the links are gone from the real content.', 'earlyward' ),
+					__( 'Search your other pages too: this kind of injection usually hits several.', 'earlyward' ),
 				)
 			);
 		}

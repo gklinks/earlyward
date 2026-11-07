@@ -1,0 +1,938 @@
+# Copyright (C) 2026 GKLINKS
+# This file is distributed under the GPL-2.0-or-later.
+msgid ""
+msgstr ""
+"Project-Id-Version: Earlyward 0.1.0\n"
+"Report-Msgid-Bugs-To: https://github.com/gklinks/earlyward/issues\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2026-11-07T06:49:03+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.12.0\n"
+"X-Domain: earlyward\n"
+
+#. Plugin Name of the plugin
+#: earlyward.php
+#: src/admin/class-page.php:49
+#: src/admin/class-page.php:50
+#: src/admin/class-page.php:124
+#: src/admin/class-page.php:164
+#: src/admin/class-site-health.php:142
+#: src/admin/class-site-health.php:160
+#: src/admin/class-site-health.php:219
+msgid "Earlyward"
+msgstr ""
+
+#. Plugin URI of the plugin
+#: earlyward.php
+msgid "https://github.com/gklinks/earlyward"
+msgstr ""
+
+#. Description of the plugin
+#: earlyward.php
+msgid "Detection, early warning, hardening checks and hosting diagnostics, in plain language. Read-only by default."
+msgstr ""
+
+#. Author of the plugin
+#: earlyward.php
+msgid "GKLINKS"
+msgstr ""
+
+#. Author URI of the plugin
+#: earlyward.php
+msgid "https://gklinks.com"
+msgstr ""
+
+#: src/admin/class-page.php:78
+msgid "You do not have permission to do this."
+msgstr ""
+
+#: src/admin/class-page.php:119
+msgid "You do not have permission to view this page."
+msgstr ""
+
+#: src/admin/class-page.php:124
+msgid "The Earlyward screen could not be shown. The scans and the rest of the site are not affected."
+msgstr ""
+
+#: src/admin/class-page.php:140
+msgid "Scan finished. The results below are from this scan."
+msgstr ""
+
+#: src/admin/class-page.php:141
+msgid "Another scan is already running, or this one could not start. Try again in a minute."
+msgstr ""
+
+#: src/admin/class-page.php:142
+msgid "New baseline recorded from the homepage as it is now."
+msgstr ""
+
+#: src/admin/class-page.php:143
+msgid "The old baseline was cleared, but no new one was recorded because the homepage did not look healthy in this scan. Fix the problem, then try again."
+msgstr ""
+
+#: src/admin/class-page.php:144
+msgid "Nothing was changed. Tick the box to confirm that you changed the site on purpose."
+msgstr ""
+
+#: src/admin/class-page.php:171
+msgid "Early preview. Earlyward reports signs of an attack and of broken hosting. A scan with no findings is not proof that the site is clean or safe."
+msgstr ""
+
+#: src/admin/class-page.php:188
+msgid "Last scan"
+msgstr ""
+
+#: src/admin/class-page.php:190
+msgid "No scan has been stored yet. Use \"Scan now\", or wait for the hourly WP-Cron scan."
+msgstr ""
+
+#. translators: 1: date and time, 2: how long ago, 3: where the scan ran from ("web" or "cli").
+#: src/admin/class-page.php:196
+#, php-format
+msgid "%1$s (%2$s ago), run from: %3$s."
+msgstr ""
+
+#: src/admin/class-page.php:203
+msgid "The last scan is more than 3 hours old, but scans should run every hour. WP-Cron may not be running on this site. Earlyward cannot warn you if its own scheduler has stopped."
+msgstr ""
+
+#. translators: 1: check ID, 2: error message.
+#: src/admin/class-page.php:210
+#, php-format
+msgid "Check %1$s could not run: %2$s"
+msgstr ""
+
+#: src/admin/class-page.php:218
+msgid "The hourly scan is not scheduled. It is re-added when an administrator opens a WordPress admin page."
+msgstr ""
+
+#. translators: %s: date and time of the next scheduled scan.
+#: src/admin/class-page.php:223
+#, php-format
+msgid "Next scheduled scan: %s."
+msgstr ""
+
+#: src/admin/class-page.php:241
+msgid "Scan now"
+msgstr ""
+
+#: src/admin/class-page.php:242
+msgid "Runs the same read-only checks as the hourly scan, stores the result, and emails the site admin only if the set of warnings changed."
+msgstr ""
+
+#: src/admin/class-page.php:248
+msgid "I changed the site on purpose (new theme, removed feature) and it works."
+msgstr ""
+
+#: src/admin/class-page.php:249
+msgid "Set baseline"
+msgstr ""
+
+#: src/admin/class-page.php:250
+msgid "Check A1 compares the homepage with a healthy copy it recorded earlier. This forgets that copy and records a new one from a scan right now, if the homepage looks healthy."
+msgstr ""
+
+#: src/admin/class-page.php:264
+msgid "Findings"
+msgstr ""
+
+#. translators: 1: number of critical findings, 2: warnings, 3: informational findings.
+#: src/admin/class-page.php:271
+#, php-format
+msgid "%1$d critical, %2$d warning, %3$d info."
+msgstr ""
+
+#. translators: 1: findings shown, 2: findings found.
+#: src/admin/class-page.php:282
+#, php-format
+msgid "Showing %1$d of %2$d findings. The rest were not stored."
+msgstr ""
+
+#: src/admin/class-page.php:289
+msgid "No findings from the checks that ran."
+msgstr ""
+
+#: src/admin/class-page.php:294
+msgid "Critical"
+msgstr ""
+
+#: src/admin/class-page.php:295
+msgid "Warning"
+msgstr ""
+
+#: src/admin/class-page.php:296
+msgid "Info"
+msgstr ""
+
+#. translators: 1: check ID such as C1, 2: confidence level (high, medium, low).
+#: src/admin/class-page.php:305
+#: src/admin/class-site-health.php:112
+#, php-format
+msgid "Check %1$s, %2$s confidence."
+msgstr ""
+
+#: src/admin/class-page.php:310
+msgid "Why it matters:"
+msgstr ""
+
+#: src/admin/class-page.php:313
+#: src/admin/class-site-health.php:120
+msgid "Evidence:"
+msgstr ""
+
+#: src/admin/class-page.php:329
+#: src/admin/class-site-health.php:131
+msgid "What to do:"
+msgstr ""
+
+#: src/admin/class-page.php:358
+msgid "Copy for host support"
+msgstr ""
+
+#: src/admin/class-page.php:359
+msgid "Paste this into a ticket with your hosting provider. It lists the findings and the versions in use. It contains no passwords or keys, but check it before you send it."
+msgstr ""
+
+#: src/admin/class-page.php:361
+msgid "Copy to clipboard"
+msgstr ""
+
+#: src/admin/class-page.php:369
+msgid "Copied."
+msgstr ""
+
+#: src/admin/class-page.php:369
+msgid "Press Ctrl+C to copy the selected text."
+msgstr ""
+
+#: src/admin/class-site-health.php:60
+msgid "Earlyward scans are running"
+msgstr ""
+
+#: src/admin/class-site-health.php:87
+msgid "Earlyward findings"
+msgstr ""
+
+#: src/admin/class-site-health.php:165
+msgid "Earlyward has not scanned this site yet"
+msgstr ""
+
+#: src/admin/class-site-health.php:171
+msgid "No scan has been stored. Run one from the Earlyward screen, or wait for the hourly WP-Cron scan."
+msgstr ""
+
+#. translators: 1: number of critical findings, 2: number of warnings.
+#: src/admin/class-site-health.php:184
+#, php-format
+msgid "Earlyward reports %1$d critical and %2$d warning findings"
+msgstr ""
+
+#: src/admin/class-site-health.php:193
+msgid "Each one is listed separately in this report, with its evidence and fix steps."
+msgstr ""
+
+#: src/admin/class-site-health.php:199
+msgid "Earlyward found no critical or warning findings in its last scan"
+msgstr ""
+
+#: src/admin/class-site-health.php:202
+msgid "This means the checks that ran found nothing to report. It is not proof that the site is clean or safe."
+msgstr ""
+
+#: src/admin/class-site-health.php:226
+msgid "The Earlyward hourly scan is not scheduled"
+msgstr ""
+
+#: src/admin/class-site-health.php:229
+msgid "Something removed the scheduled event. It is re-added when an administrator opens a WordPress admin page. If it keeps disappearing, find out what removes it."
+msgstr ""
+
+#: src/admin/class-site-health.php:236
+msgid "The last Earlyward scan is more than 3 hours old"
+msgstr ""
+
+#: src/admin/class-site-health.php:239
+msgid "Scans should run every hour. WP-Cron may not be running on this site, and Earlyward cannot warn you if its own scheduler has stopped."
+msgstr ""
+
+#: src/admin/class-site-health.php:245
+msgid "Earlyward scans are scheduled and recent"
+msgstr ""
+
+#: src/admin/class-site-health.php:251
+msgid "The hourly scan is scheduled and has not run yet."
+msgstr ""
+
+#: src/admin/class-site-health.php:251
+msgid "The hourly scan is scheduled and the last one ran within 3 hours."
+msgstr ""
+
+#: src/admin/class-site-health.php:264
+msgid "Open Earlyward"
+msgstr ""
+
+#: src/checks/hosting/class-exposed-backup-check.php:105
+msgid "Open the file's web address in a private browser window. If it downloads, assume someone else has a copy."
+msgstr ""
+
+#: src/checks/hosting/class-exposed-backup-check.php:106
+msgid "Move it out of the website folder (for example to a \"backups\" folder beside it), or delete it if you have another copy."
+msgstr ""
+
+#: src/checks/hosting/class-exposed-backup-check.php:107
+msgid "If it was downloadable and contains wp-config.php or a database, change the database password and the WordPress security keys."
+msgstr ""
+
+#: src/checks/hosting/class-exposed-backup-check.php:115
+msgid "A copy of wp-config.php may be readable by anyone"
+msgstr ""
+
+#: src/checks/hosting/class-exposed-backup-check.php:116
+msgid "Copies with endings like .bak or ~ are not run as PHP, so the web server sends them as plain text: database password and security keys included."
+msgstr ""
+
+#: src/checks/hosting/class-exposed-backup-check.php:126
+msgid "A database dump sits inside the website folder"
+msgstr ""
+
+#: src/checks/hosting/class-exposed-backup-check.php:127
+msgid "A database dump contains every user, password hash and setting. Inside the website folder it can usually be downloaded by anyone who guesses the name."
+msgstr ""
+
+#: src/checks/hosting/class-exposed-backup-check.php:136
+msgid "An archive sits in the site root, where it can probably be downloaded"
+msgstr ""
+
+#: src/checks/hosting/class-exposed-backup-check.php:136
+msgid "An archive sits in wp-content, where it can probably be downloaded"
+msgstr ""
+
+#: src/checks/hosting/class-exposed-backup-check.php:137
+msgid "Site backups always include wp-config.php, which holds the database password. Archives in a web folder are a common, easily guessed target."
+msgstr ""
+
+#: src/checks/hosting/class-open-basedir-check.php:50
+msgid "PHP on this site can open files outside the site"
+msgstr ""
+
+#: src/checks/hosting/class-open-basedir-check.php:51
+msgid "open_basedir is not set, so any code running here (including malware) can read everything the hosting account can read. It is a backstop, not a wall, but its absence is what let one compromised site read its neighbours on a real account."
+msgstr ""
+
+#: src/checks/hosting/class-open-basedir-check.php:62
+msgid "Ask your host to set open_basedir for this site to its own folder plus the system temp folder."
+msgstr ""
+
+#: src/checks/hosting/class-open-basedir-check.php:63
+msgid "If the host offers per-site system users or PHP pools, prefer that: it is a stronger separation."
+msgstr ""
+
+#. translators: %d: number of other WordPress installs this site can read. The singular is only used for exactly one, so it has no number.
+#: src/checks/hosting/class-shared-user-check.php:62
+msgid "Another WordPress install can be read by this site"
+msgid_plural "%d other WordPress installs can be read by this site"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/checks/hosting/class-shared-user-check.php:65
+msgid "These sites run as the same system user, so code running on any one of them can read the others' database passwords and change their files. A break-in on one site becomes a break-in on all of them, and cleaning them one at a time does not work."
+msgstr ""
+
+#: src/checks/hosting/class-shared-user-check.php:68
+msgid "Ask your host whether each site can run as its own system user (or in its own PHP pool), or move important sites to their own hosting account."
+msgstr ""
+
+#: src/checks/hosting/class-shared-user-check.php:69
+msgid "Delete sites you no longer use: abandoned installs are the most common way in, and here they expose every other site."
+msgstr ""
+
+#: src/checks/hosting/class-shared-user-check.php:70
+msgid "Until the sites are separated, treat them as one: if one shows signs of infection, check and clean all of them in the same pass."
+msgstr ""
+
+#: src/checks/hosting/class-shared-user-check.php:71
+msgid "Ask your host to set open_basedir per site if separate users are not possible. It is weaker, but it stops casual cross-site reads."
+msgstr ""
+
+#. translators: 1: administrator login, 2: number of application passwords, 3: number never used
+#: src/checks/integrity/class-admin-credentials-check.php:91
+#, php-format
+msgid "Administrator \"%1$s\" has %2$d application passwords, %3$d never used"
+msgstr ""
+
+#: src/checks/integrity/class-admin-credentials-check.php:96
+msgid "Several unused application passwords on one administrator look like keys left behind for later. They keep working after the account's password is changed."
+msgstr ""
+
+#: src/checks/integrity/class-admin-credentials-check.php:99
+msgid "Revoke every application password you do not recognise (Users > Edit > Application Passwords)."
+msgstr ""
+
+#: src/checks/integrity/class-admin-credentials-check.php:100
+msgid "If the account itself is unfamiliar, see check C4: demote it and revoke its sessions too."
+msgstr ""
+
+#. translators: 1: administrator login, 2: number of application passwords
+#: src/checks/integrity/class-admin-credentials-check.php:110
+#, php-format
+msgid "Administrator \"%1$s\" has %2$d application password(s)"
+msgstr ""
+
+#: src/checks/integrity/class-admin-credentials-check.php:114
+msgid "Application passwords let apps and scripts act as this administrator. They are separate from the login password and survive password changes, so keep only the ones you use."
+msgstr ""
+
+#: src/checks/integrity/class-admin-credentials-check.php:116
+msgid "Revoke any you no longer use (Users > Edit > Application Passwords)."
+msgstr ""
+
+#: src/checks/integrity/class-archive-seed-check.php:131
+msgid "Download a copy for your records if you want one, then delete this archive, and every other copy listed, in the same cleanup pass as the PHP files. Archives first."
+msgstr ""
+
+#: src/checks/integrity/class-archive-seed-check.php:132
+msgid "Do not trust a cleanup that removed PHP files but left these archives: the malware rebuilds itself from them within seconds."
+msgstr ""
+
+#: src/checks/integrity/class-archive-seed-check.php:133
+msgid "If several sites share one hosting account, check every site for the same file name."
+msgstr ""
+
+#: src/checks/integrity/class-archive-seed-check.php:141
+msgid "A randomly named zip archive in uploads could not be inspected"
+msgstr ""
+
+#: src/checks/integrity/class-archive-seed-check.php:142
+msgid "Archives with random hex names have been used to rebuild malware after cleanup. This one could not be opened to check for PHP files (the PHP zip extension may be missing)."
+msgstr ""
+
+#: src/checks/integrity/class-archive-seed-check.php:144
+msgid "Open the archive on your computer and check whether it contains .php files."
+msgstr ""
+
+#: src/checks/integrity/class-archive-seed-check.php:153
+msgid "A randomly named zip archive containing PHP code was found"
+msgstr ""
+
+#: src/checks/integrity/class-archive-seed-check.php:153
+msgid "A randomly named zip archive sits directly in wp-content"
+msgstr ""
+
+#: src/checks/integrity/class-archive-seed-check.php:154
+msgid "Self-healing malware keeps a zip \"seed\" like this and re-extracts itself from it after every cleanup. Nothing legitimate in WordPress stores hex-named archives at this location."
+msgstr ""
+
+#: src/checks/integrity/class-auto-prepend-check.php:197
+msgid "A Wordfence firewall loader is set up, but Wordfence is not installed"
+msgstr ""
+
+#: src/checks/integrity/class-auto-prepend-check.php:198
+msgid "PHP loads this file before every request. Leftovers from an uninstalled plugin are usually harmless, but malware has used familiar names to blend in."
+msgstr ""
+
+#: src/checks/integrity/class-auto-prepend-check.php:201
+msgid "Open the target file and check that it only loads Wordfence."
+msgstr ""
+
+#: src/checks/integrity/class-auto-prepend-check.php:202
+msgid "If Wordfence is no longer used, remove the line from the config file shown, then delete the loader."
+msgstr ""
+
+#. translators: %s: plugin folder name
+#: src/checks/integrity/class-auto-prepend-check.php:217
+#, php-format
+msgid "The plugin \"%s\" runs before WordPress on every request"
+msgstr ""
+
+#: src/checks/integrity/class-auto-prepend-check.php:220
+msgid "Firewall plugins do this on purpose. Anything else doing it can see and change every request, including logins."
+msgstr ""
+
+#. translators: %s: plugin folder name
+#: src/checks/integrity/class-auto-prepend-check.php:225
+#, php-format
+msgid "Confirm that \"%s\" is a firewall or security plugin you installed."
+msgstr ""
+
+#: src/checks/integrity/class-auto-prepend-check.php:228
+msgid "If it is not, remove only this line from the config file shown, then investigate the plugin."
+msgstr ""
+
+#: src/checks/integrity/class-auto-prepend-check.php:240
+msgid "PHP is told to run an unknown file before (or after) every request"
+msgstr ""
+
+#: src/checks/integrity/class-auto-prepend-check.php:241
+msgid "This is a classic malware loader: it runs on every page view, before WordPress and any security plugin. Deleting the loaded file alone does not help, because the loader is usually recreated from elsewhere."
+msgstr ""
+
+#: src/checks/integrity/class-auto-prepend-check.php:244
+msgid "Remove only the flagged line from each config file shown. Keep any genuine firewall line in the same file."
+msgstr ""
+
+#: src/checks/integrity/class-auto-prepend-check.php:245
+msgid "Check the same file name at the other locations listed (site root, wp-content, wp-admin, uploads)."
+msgstr ""
+
+#: src/checks/integrity/class-auto-prepend-check.php:246
+msgid "Look at the target file and any hidden file with a similar name (starting with a dot) next to it."
+msgstr ""
+
+#: src/checks/integrity/class-auto-prepend-check.php:247
+msgid "PHP can cache .user.ini settings for a few minutes, so re-check after about 5 minutes."
+msgstr ""
+
+#: src/checks/integrity/class-auto-prepend-check.php:248
+msgid "If several sites share one hosting account, check all of them at the same time: one infected site can re-infect the others."
+msgstr ""
+
+#. translators: %s: post title, or # followed by the post ID when it has no title
+#: src/checks/integrity/class-cloaked-link-check.php:82
+#, php-format
+msgid "Hidden links were injected into \"%s\""
+msgstr ""
+
+#: src/checks/integrity/class-cloaked-link-check.php:85
+msgid "An element positioned thousands of pixels off-screen holds links. Visitors never see them, search engines do: this is how paid-backlink operations use hacked sites, and it can get the site penalised."
+msgstr ""
+
+#: src/checks/integrity/class-cloaked-link-check.php:88
+msgid "Edit the page, switch to the code editor and remove the hidden block. Keep a copy first."
+msgstr ""
+
+#: src/checks/integrity/class-cloaked-link-check.php:89
+msgid "Purge any page cache, then load the page with ?nocache=1 added to the address to confirm the links are gone from the real content."
+msgstr ""
+
+#: src/checks/integrity/class-cloaked-link-check.php:90
+msgid "Search your other pages too: this kind of injection usually hits several."
+msgstr ""
+
+#: src/checks/integrity/class-hidden-user-css-check.php:60
+msgid "Custom CSS hides a user from the Users screen"
+msgstr ""
+
+#: src/checks/integrity/class-hidden-user-css-check.php:61
+msgid "There is no ordinary reason to hide a specific user's row. Attackers have used exactly this to keep their administrator account out of sight."
+msgstr ""
+
+#: src/checks/integrity/class-hidden-user-css-check.php:64
+msgid "Look up each hidden user ID (Users > Edit, or ?user_id= in the address bar) and check its role."
+msgstr ""
+
+#: src/checks/integrity/class-hidden-user-css-check.php:65
+msgid "Remove the CSS rule (Appearance > Customize > Additional CSS), then treat the hidden account as in check C4."
+msgstr ""
+
+#: src/checks/integrity/class-rogue-admin-check.php:114
+msgid "An administrator account looks machine-generated"
+msgstr ""
+
+#: src/checks/integrity/class-rogue-admin-check.php:115
+msgid "The login is a word plus a random code, and the email address repeats the login. Real attacks created dozens of admins exactly like this, often months before anyone noticed."
+msgstr ""
+
+#: src/checks/integrity/class-rogue-admin-check.php:124
+msgid "An administrator login looks machine-generated"
+msgstr ""
+
+#: src/checks/integrity/class-rogue-admin-check.php:124
+msgid "An administrator's email address cannot receive mail"
+msgstr ""
+
+#: src/checks/integrity/class-rogue-admin-check.php:125
+msgid "Make sure you know who this account belongs to. Attackers create administrators with generated names or throwaway addresses so that password-reset emails never reach anyone."
+msgstr ""
+
+#. translators: %d: number of administrator accounts
+#: src/checks/integrity/class-rogue-admin-check.php:181
+#, php-format
+msgid "%d administrator accounts were created within one hour"
+msgstr ""
+
+#: src/checks/integrity/class-rogue-admin-check.php:184
+msgid "People rarely create several administrators at once. In a real attack, rogue admins appeared in synchronized waves across many sites."
+msgstr ""
+
+#: src/checks/integrity/class-rogue-admin-check.php:186
+msgid "Confirm each account belongs to someone you know. Check the other sites you run for accounts created at the same time."
+msgstr ""
+
+#: src/checks/integrity/class-rogue-admin-check.php:197
+msgid "If you do not recognise the account, change its role to Subscriber rather than deleting it: deleting a user forces their posts to be reassigned or removed."
+msgstr ""
+
+#: src/checks/integrity/class-rogue-admin-check.php:198
+msgid "Then revoke its sessions and application passwords (Users > Edit > \"Log out everywhere\" and the Application Passwords section). Changing the password alone does not remove application passwords."
+msgstr ""
+
+#: src/checks/integrity/class-rogue-admin-check.php:199
+msgid "Set a new random password on it, so the attacker's password stops working."
+msgstr ""
+
+#: src/checks/integrity/class-rogue-admin-check.php:200
+msgid "Check every other site you run for accounts with the same pattern."
+msgstr ""
+
+#: src/checks/integrity/class-unexpected-php-check.php:114
+msgid "A randomly named PHP file sits at the top of wp-content/cache"
+msgstr ""
+
+#: src/checks/integrity/class-unexpected-php-check.php:115
+msgid "Caching plugins keep their files in sub-folders. A hex-named PHP file here matches a known malware bootstrap."
+msgstr ""
+
+#: src/checks/integrity/class-unexpected-php-check.php:117
+msgid "Check which caching plugin, if any, created it. If none, treat it as part of an infection."
+msgstr ""
+
+#: src/checks/integrity/class-unexpected-php-check.php:171
+msgid "A must-use plugin named like a known self-reinstalling backdoor"
+msgstr ""
+
+#: src/checks/integrity/class-unexpected-php-check.php:172
+msgid "Files named wp-<random hex>.php in mu-plugins were used as a \"recovery channel\" that reinstalls a spam operation every 30 minutes. Must-use plugins run on every request and never appear as active plugins."
+msgstr ""
+
+#: src/checks/integrity/class-unexpected-php-check.php:175
+msgid "Check every site on the same hosting account for the same pattern at the same time."
+msgstr ""
+
+#: src/checks/integrity/class-unexpected-php-check.php:176
+msgid "Removing this file alone is not enough: also look for the plugin it reinstalls and for database settings it left behind."
+msgstr ""
+
+#: src/checks/integrity/class-unexpected-php-check.php:191
+msgid "A must-use plugin contains code patterns typical of malware"
+msgstr ""
+
+#: src/checks/integrity/class-unexpected-php-check.php:192
+msgid "Must-use plugins run on every request before normal plugins. The patterns listed are how malware hides what it does."
+msgstr ""
+
+#: src/checks/integrity/class-unexpected-php-check.php:194
+msgid "Compare the file with a known-good copy from whoever installed it. If you do not know who installed it, treat the site as compromised."
+msgstr ""
+
+#: src/checks/integrity/class-unexpected-php-check.php:203
+msgid "A must-use plugin with no name"
+msgstr ""
+
+#. translators: %s: plugin name from the file header
+#: src/checks/integrity/class-unexpected-php-check.php:205
+#, php-format
+msgid "Must-use plugin: %s"
+msgstr ""
+
+#: src/checks/integrity/class-unexpected-php-check.php:208
+msgid "Must-use plugins run on every request and cannot be switched off from the dashboard. Hosts and developers add them on purpose; malware does too. Confirm you know where this one came from."
+msgstr ""
+
+#: src/checks/integrity/class-unexpected-php-check.php:210
+#: src/checks/integrity/class-unexpected-php-check.php:310
+msgid "If you recognise it, acknowledge it so Earlyward only alerts when it changes."
+msgstr ""
+
+#. translators: %s: drop-in file name
+#: src/checks/integrity/class-unexpected-php-check.php:235
+#, php-format
+msgid "The %s drop-in contains code patterns typical of malware"
+msgstr ""
+
+#: src/checks/integrity/class-unexpected-php-check.php:238
+msgid "WordPress loads drop-ins automatically. Fake caching and database drop-ins are a known hiding place."
+msgstr ""
+
+#: src/checks/integrity/class-unexpected-php-check.php:240
+msgid "Reinstall the drop-in from the plugin that owns it (usually by turning its caching or database feature off and on), or remove it if nothing should own it."
+msgstr ""
+
+#. translators: %s: drop-in file name
+#: src/checks/integrity/class-unexpected-php-check.php:263
+#, php-format
+msgid "The %s drop-in does not belong to any installed plugin"
+msgstr ""
+
+#: src/checks/integrity/class-unexpected-php-check.php:266
+msgid "WordPress loads this file automatically. Normally it is written by a caching or database plugin and names that plugin. Malware has used fake drop-ins with these exact names."
+msgstr ""
+
+#: src/checks/integrity/class-unexpected-php-check.php:268
+msgid "Find out which plugin created it. If it belongs to a plugin you removed, delete the drop-in; if you cannot tell, compare it with a fresh copy."
+msgstr ""
+
+#: src/checks/integrity/class-unexpected-php-check.php:296
+msgid "Suspicious PHP file directly in wp-content"
+msgstr ""
+
+#: src/checks/integrity/class-unexpected-php-check.php:297
+msgid "WordPress never puts randomly named PHP files here. This matches the loader of a known self-healing malware kit."
+msgstr ""
+
+#: src/checks/integrity/class-unexpected-php-check.php:299
+msgid "Check whether a .user.ini or .htaccess points at this file (see check C1), and look for a hidden twin starting with a dot."
+msgstr ""
+
+#: src/checks/integrity/class-unexpected-php-check.php:307
+msgid "A PHP file sits directly in wp-content"
+msgstr ""
+
+#: src/checks/integrity/class-unexpected-php-check.php:308
+msgid "Some plugins put configuration files here (for example cache settings). Confirm you know where it came from."
+msgstr ""
+
+#: src/checks/integrity/class-unexpected-php-check.php:328
+msgid "A hidden PHP file (name starting with a dot)"
+msgstr ""
+
+#: src/checks/integrity/class-unexpected-php-check.php:329
+msgid "Files starting with a dot are hidden from most file listings. WordPress core never ships one; malware uses them for its bootstrap and for background processes."
+msgstr ""
+
+#: src/checks/integrity/class-unexpected-php-check.php:332
+msgid "Check running processes for anything executing this path (your host can do this): a process can keep running after the file is deleted."
+msgstr ""
+
+#: src/checks/integrity/class-unexpected-php-check.php:333
+msgid "Look for a non-hidden file with the same name next to it."
+msgstr ""
+
+#. translators: %s: name of the tool that switched the code off.
+#: src/checks/runtime/class-crash-check.php:79
+#, php-format
+msgid "%s switched off custom code after a crash"
+msgstr ""
+
+#: src/checks/runtime/class-crash-check.php:82
+msgid "While this marker exists, the code it manages does not run at all, but the site keeps answering normally. Pages can lose their styling, features and custom addresses without any error being shown."
+msgstr ""
+
+#: src/checks/runtime/class-crash-check.php:97
+msgid "Open the file named in the evidence and check it for a real error (run it in a test copy if you can). A crash can also be a one-off, such as the host killing a long request."
+msgstr ""
+
+#: src/checks/runtime/class-crash-check.php:98
+msgid "Once the file is fixed, or you are sure it was a one-off, delete the marker file to switch the code back on."
+msgstr ""
+
+#: src/checks/runtime/class-crash-check.php:99
+msgid "Purge page caches afterwards, then check the homepage (check A1)."
+msgstr ""
+
+#: src/checks/runtime/class-crash-check.php:112
+msgid "WordPress caught a fatal error recently"
+msgstr ""
+
+#: src/checks/runtime/class-crash-check.php:113
+msgid "WordPress emails a \"recovery mode\" link when a plugin or theme causes a fatal error. Visitors may have seen \"There has been a critical error on this website\"."
+msgstr ""
+
+#: src/checks/runtime/class-crash-check.php:124
+msgid "Look for the recovery-mode email sent to the admin address at that time; it names the plugin or theme."
+msgstr ""
+
+#: src/checks/runtime/class-crash-check.php:125
+msgid "Check the error log (A3) around that time for the \"PHP Fatal error\" line."
+msgstr ""
+
+#: src/checks/runtime/class-cron-check.php:80
+msgid "DISABLE_WP_CRON is set, so WordPress expects a system cron job to call wp-cron.php, and that is not happening. Updates, scheduled posts, backups and these scans have stopped."
+msgstr ""
+
+#: src/checks/runtime/class-cron-check.php:81
+msgid "Scheduled jobs are running late. WordPress only runs them when the site gets visits (or a system cron job calls wp-cron.php), and something is stopping that: very low traffic, a page cache that serves every visit, or a firewall blocking the server's request to itself."
+msgstr ""
+
+#: src/checks/runtime/class-cron-check.php:84
+msgid "Ask your host (or check the control panel) for a cron job that requests wp-cron.php every 5-15 minutes, and add one if it is missing."
+msgstr ""
+
+#: src/checks/runtime/class-cron-check.php:85
+msgid "Or remove DISABLE_WP_CRON from wp-config.php to go back to visit-triggered cron."
+msgstr ""
+
+#: src/checks/runtime/class-cron-check.php:88
+msgid "Set up a system cron job that requests your-site/wp-cron.php every 5-15 minutes, then add define( 'DISABLE_WP_CRON', true ); to wp-config.php."
+msgstr ""
+
+#: src/checks/runtime/class-cron-check.php:89
+msgid "If the site has visitors, check that your firewall allows the server to reach its own address (WordPress Site Health shows this as a loopback error)."
+msgstr ""
+
+#. translators: %d: number of hours.
+#: src/checks/runtime/class-cron-check.php:99
+#, php-format
+msgid "Scheduled jobs are %d hours overdue (WP-Cron is not running)"
+msgid_plural "Scheduled jobs are %d hours overdue (WP-Cron is not running)"
+msgstr[0] ""
+msgstr[1] ""
+
+#. translators: 1: log file path, 2: file size such as 1.5 GB.
+#: src/checks/runtime/class-error-log-check.php:127
+#, php-format
+msgid "Error log %1$s is %2$s"
+msgstr ""
+
+#. translators: 1: log file path, 2: growth per day such as 60.0 MB.
+#: src/checks/runtime/class-error-log-check.php:133
+#, php-format
+msgid "Error log %1$s is growing by about %2$s a day"
+msgstr ""
+
+#: src/checks/runtime/class-error-log-check.php:137
+msgid "A runaway log can fill the hosting account's disk quota, which stops uploads, updates, email and sometimes every site on the account. It usually comes from one warning repeated on every page view."
+msgstr ""
+
+#: src/checks/runtime/class-error-log-check.php:140
+msgid "Fix the cause first: the most frequent recent line is shown as evidence. It usually names the plugin or theme file."
+msgstr ""
+
+#: src/checks/runtime/class-error-log-check.php:141
+msgid "Then empty or delete the log file (keep a copy of the end of it if you need it)."
+msgstr ""
+
+#: src/checks/runtime/class-error-log-check.php:142
+msgid "Do not rely on setting error_reporting in wp-config.php: WordPress resets the level later during start-up, so it silently does nothing. Fix the warning, or set the level in a must-use plugin."
+msgstr ""
+
+#: src/checks/runtime/class-outage-check.php:95
+msgid "The site could not load its own homepage"
+msgstr ""
+
+#: src/checks/runtime/class-outage-check.php:96
+msgid "Earlyward checks the homepage from the server itself. Some hosts or firewalls block that, which is harmless; but it also happens when the site is down."
+msgstr ""
+
+#: src/checks/runtime/class-outage-check.php:99
+msgid "Open the site in a browser. If it works, ask your host whether requests from the server to itself are blocked (WordPress Site Health shows the same \"loopback\" problem)."
+msgstr ""
+
+#: src/checks/runtime/class-outage-check.php:100
+msgid "If it does not work, check the error log (see check A3)."
+msgstr ""
+
+#. translators: %d: HTTP status code.
+#: src/checks/runtime/class-outage-check.php:112
+#, php-format
+msgid "The homepage returns an error (HTTP %d)"
+msgstr ""
+
+#: src/checks/runtime/class-outage-check.php:115
+msgid "Visitors see an error page."
+msgstr ""
+
+#: src/checks/runtime/class-outage-check.php:117
+msgid "Check the error log (check A3) and any recent plugin, theme or code change."
+msgstr ""
+
+#. translators: %d: HTTP status code.
+#: src/checks/runtime/class-outage-check.php:128
+#, php-format
+msgid "The homepage refused the server's own request (HTTP %d)"
+msgstr ""
+
+#: src/checks/runtime/class-outage-check.php:131
+msgid "A firewall or security rule may be blocking requests from the server itself, or the homepage really is unavailable."
+msgstr ""
+
+#: src/checks/runtime/class-outage-check.php:133
+msgid "Open the site in a private browser window. If it works, the block only affects the server's own requests; ask your host to allow them."
+msgstr ""
+
+#: src/checks/runtime/class-outage-check.php:144
+msgid "The homepage answers \"OK\" but is nearly empty"
+msgstr ""
+
+#: src/checks/runtime/class-outage-check.php:145
+msgid "An empty or non-HTML page with a success code usually means a fatal error, a firewall challenge page, or a broken cache. Uptime monitors that only check the status code will not notice."
+msgstr ""
+
+#: src/checks/runtime/class-outage-check.php:147
+msgid "Open the homepage in a private window and look at what visitors get. Check the error log (A3)."
+msgstr ""
+
+#: src/checks/runtime/class-outage-check.php:224
+msgid "The homepage loads, but parts that worked before are missing"
+msgstr ""
+
+#: src/checks/runtime/class-outage-check.php:225
+msgid "The page still returns \"OK\", so ordinary uptime checks stay green. Missing styles, menus or API routes usually mean some code stopped loading after an error, which is how a real site stayed broken for 12 days unnoticed."
+msgstr ""
+
+#: src/checks/runtime/class-outage-check.php:228
+msgid "Open the homepage in a private window and compare it with how it should look."
+msgstr ""
+
+#: src/checks/runtime/class-outage-check.php:229
+msgid "Check the error log (A3) and crash markers (A2) for the code that owns the missing parts."
+msgstr ""
+
+#: src/checks/runtime/class-outage-check.php:230
+msgid "If you changed the site on purpose, record the new healthy state: wp earlyward baseline --reset"
+msgstr ""
+
+#. translators: 1: site name, 2: number of new findings, 3: number of resolved findings, 4: number of critical findings still open.
+#: src/notify/class-alert.php:75
+#, php-format
+msgid "[Earlyward] %1$s: %2$d new, %3$d resolved (%4$d critical open)"
+msgstr ""
+
+#. translators: %s: site address.
+#: src/notify/class-alert.php:84
+#, php-format
+msgid "Earlyward found a change in the checks for %s."
+msgstr ""
+
+#: src/notify/class-alert.php:85
+msgid "You get this email only when the set of findings changes."
+msgstr ""
+
+#: src/notify/class-alert.php:88
+msgid "== NEW =="
+msgstr ""
+
+#. translators: 1: severity in capitals, 2: confidence level, 3: finding title, 4: check ID.
+#: src/notify/class-alert.php:92
+#, php-format
+msgid "[%1$s, %2$s confidence] %3$s (check %4$s)"
+msgstr ""
+
+#. translators: %s: why the finding matters.
+#: src/notify/class-alert.php:94
+#, php-format
+msgid "  Why: %s"
+msgstr ""
+
+#. translators: %s: where the evidence was found, followed by an excerpt when there is one.
+#: src/notify/class-alert.php:98
+#, php-format
+msgid "  Evidence: %s"
+msgstr ""
+
+#: src/notify/class-alert.php:107
+msgid "== NO LONGER FOUND =="
+msgstr ""
+
+#. translators: 1: finding title, 2: check ID.
+#: src/notify/class-alert.php:110
+#, php-format
+msgid "- %1$s (check %2$s)"
+msgstr ""
+
+#: src/notify/class-alert.php:113
+msgid "A finding that disappears is good news only if you fixed it. If you did not, find out why: malware can hide its traces."
+msgstr ""
+
+#. translators: %d: number of open findings.
+#: src/notify/class-alert.php:117
+#, php-format
+msgid "Open findings now: %d."
+msgstr ""
+
+#: src/notify/class-alert.php:118
+msgid "No email means no change, not proof that the site is clean. Run \"wp earlyward report\" to see when the last scan ran."
+msgstr ""

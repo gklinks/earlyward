@@ -128,9 +128,9 @@ final class Archive_Seed_Check implements Check {
 		}
 
 		$steps = array(
-			'Download a copy for your records if you want one, then delete this archive, and every other copy listed, in the same cleanup pass as the PHP files. Archives first.',
-			'Do not trust a cleanup that removed PHP files but left these archives: the malware rebuilds itself from them within seconds.',
-			'If several sites share one hosting account, check every site for the same file name.',
+			__( 'Download a copy for your records if you want one, then delete this archive, and every other copy listed, in the same cleanup pass as the PHP files. Archives first.', 'earlyward' ),
+			__( 'Do not trust a cleanup that removed PHP files but left these archives: the malware rebuilds itself from them within seconds.', 'earlyward' ),
+			__( 'If several sites share one hosting account, check every site for the same file name.', 'earlyward' ),
 		);
 
 		if ( $in_uploads && null === $entries ) {
@@ -138,10 +138,10 @@ final class Archive_Seed_Check implements Check {
 				self::ID,
 				Finding::SEVERITY_WARNING,
 				Finding::CONFIDENCE_LOW,
-				'A randomly named zip archive in uploads could not be inspected',
-				'Archives with random hex names have been used to rebuild malware after cleanup. This one could not be opened to check for PHP files (the PHP zip extension may be missing).',
+				__( 'A randomly named zip archive in uploads could not be inspected', 'earlyward' ),
+				__( 'Archives with random hex names have been used to rebuild malware after cleanup. This one could not be opened to check for PHP files (the PHP zip extension may be missing).', 'earlyward' ),
 				$evidence,
-				array_merge( array( 'Open the archive on your computer and check whether it contains .php files.' ), $steps )
+				array_merge( array( __( 'Open the archive on your computer and check whether it contains .php files.', 'earlyward' ) ), $steps )
 			);
 		}
 
@@ -150,8 +150,8 @@ final class Archive_Seed_Check implements Check {
 			self::ID,
 			Finding::SEVERITY_CRITICAL,
 			$high ? Finding::CONFIDENCE_HIGH : Finding::CONFIDENCE_MEDIUM,
-			$has_php ? 'A randomly named zip archive containing PHP code was found' : 'A randomly named zip archive sits directly in wp-content',
-			'Self-healing malware keeps a zip "seed" like this and re-extracts itself from it after every cleanup. Nothing legitimate in WordPress stores hex-named archives at this location.',
+			$has_php ? __( 'A randomly named zip archive containing PHP code was found', 'earlyward' ) : __( 'A randomly named zip archive sits directly in wp-content', 'earlyward' ),
+			__( 'Self-healing malware keeps a zip "seed" like this and re-extracts itself from it after every cleanup. Nothing legitimate in WordPress stores hex-named archives at this location.', 'earlyward' ),
 			$evidence,
 			$steps
 		);

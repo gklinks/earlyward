@@ -111,10 +111,10 @@ final class Unexpected_Php_Check implements Check {
 					$path,
 					Finding::SEVERITY_WARNING,
 					Finding::CONFIDENCE_MEDIUM,
-					'A randomly named PHP file sits at the top of wp-content/cache',
-					'Caching plugins keep their files in sub-folders. A hex-named PHP file here matches a known malware bootstrap.',
+					__( 'A randomly named PHP file sits at the top of wp-content/cache', 'earlyward' ),
+					__( 'Caching plugins keep their files in sub-folders. A hex-named PHP file here matches a known malware bootstrap.', 'earlyward' ),
 					array(),
-					array( 'Check which caching plugin, if any, created it. If none, treat it as part of an infection.' )
+					array( __( 'Check which caching plugin, if any, created it. If none, treat it as part of an infection.', 'earlyward' ) )
 				);
 			}
 		}
@@ -168,12 +168,12 @@ final class Unexpected_Php_Check implements Check {
 				$path,
 				Finding::SEVERITY_CRITICAL,
 				Finding::CONFIDENCE_HIGH,
-				'A must-use plugin named like a known self-reinstalling backdoor',
-				'Files named wp-<random hex>.php in mu-plugins were used as a "recovery channel" that reinstalls a spam operation every 30 minutes. Must-use plugins run on every request and never appear as active plugins.',
+				__( 'A must-use plugin named like a known self-reinstalling backdoor', 'earlyward' ),
+				__( 'Files named wp-<random hex>.php in mu-plugins were used as a "recovery channel" that reinstalls a spam operation every 30 minutes. Must-use plugins run on every request and never appear as active plugins.', 'earlyward' ),
 				$traits,
 				array(
-					'Check every site on the same hosting account for the same pattern at the same time.',
-					'Removing this file alone is not enough: also look for the plugin it reinstalls and for database settings it left behind.',
+					__( 'Check every site on the same hosting account for the same pattern at the same time.', 'earlyward' ),
+					__( 'Removing this file alone is not enough: also look for the plugin it reinstalls and for database settings it left behind.', 'earlyward' ),
 				)
 			);
 		}
@@ -188,10 +188,10 @@ final class Unexpected_Php_Check implements Check {
 				$path,
 				Finding::SEVERITY_CRITICAL,
 				Finding::CONFIDENCE_HIGH,
-				'A must-use plugin contains code patterns typical of malware',
-				'Must-use plugins run on every request before normal plugins. The patterns listed are how malware hides what it does.',
+				__( 'A must-use plugin contains code patterns typical of malware', 'earlyward' ),
+				__( 'Must-use plugins run on every request before normal plugins. The patterns listed are how malware hides what it does.', 'earlyward' ),
 				$traits,
-				array( 'Compare the file with a known-good copy from whoever installed it. If you do not know who installed it, treat the site as compromised.' )
+				array( __( 'Compare the file with a known-good copy from whoever installed it. If you do not know who installed it, treat the site as compromised.', 'earlyward' ) )
 			);
 		}
 
@@ -200,10 +200,14 @@ final class Unexpected_Php_Check implements Check {
 			$path,
 			Finding::SEVERITY_INFO,
 			Finding::CONFIDENCE_LOW,
-			'' === $header ? 'A must-use plugin with no name' : sprintf( 'Must-use plugin: %s', $header ),
-			'Must-use plugins run on every request and cannot be switched off from the dashboard. Hosts and developers add them on purpose; malware does too. Confirm you know where this one came from.',
+			'' === $header ? __( 'A must-use plugin with no name', 'earlyward' ) : sprintf(
+				/* translators: %s: plugin name from the file header */
+				__( 'Must-use plugin: %s', 'earlyward' ),
+				$header
+			),
+			__( 'Must-use plugins run on every request and cannot be switched off from the dashboard. Hosts and developers add them on purpose; malware does too. Confirm you know where this one came from.', 'earlyward' ),
 			array(),
-			array( 'If you recognise it, acknowledge it so Earlyward only alerts when it changes.' )
+			array( __( 'If you recognise it, acknowledge it so Earlyward only alerts when it changes.', 'earlyward' ) )
 		);
 	}
 
@@ -226,10 +230,14 @@ final class Unexpected_Php_Check implements Check {
 				$path,
 				Finding::SEVERITY_CRITICAL,
 				Finding::CONFIDENCE_HIGH,
-				sprintf( 'The %s drop-in contains code patterns typical of malware', $name ),
-				'WordPress loads drop-ins automatically. Fake caching and database drop-ins are a known hiding place.',
+				sprintf(
+					/* translators: %s: drop-in file name */
+					__( 'The %s drop-in contains code patterns typical of malware', 'earlyward' ),
+					$name
+				),
+				__( 'WordPress loads drop-ins automatically. Fake caching and database drop-ins are a known hiding place.', 'earlyward' ),
 				$traits,
-				array( 'Reinstall the drop-in from the plugin that owns it (usually by turning its caching or database feature off and on), or remove it if nothing should own it.' )
+				array( __( 'Reinstall the drop-in from the plugin that owns it (usually by turning its caching or database feature off and on), or remove it if nothing should own it.', 'earlyward' ) )
 			);
 		}
 
@@ -250,10 +258,14 @@ final class Unexpected_Php_Check implements Check {
 			$path,
 			Finding::SEVERITY_WARNING,
 			Finding::CONFIDENCE_MEDIUM,
-			sprintf( 'The %s drop-in does not belong to any installed plugin', $name ),
-			'WordPress loads this file automatically. Normally it is written by a caching or database plugin and names that plugin. Malware has used fake drop-ins with these exact names.',
+			sprintf(
+				/* translators: %s: drop-in file name */
+				__( 'The %s drop-in does not belong to any installed plugin', 'earlyward' ),
+				$name
+			),
+			__( 'WordPress loads this file automatically. Normally it is written by a caching or database plugin and names that plugin. Malware has used fake drop-ins with these exact names.', 'earlyward' ),
 			array(),
-			array( 'Find out which plugin created it. If it belongs to a plugin you removed, delete the drop-in; if you cannot tell, compare it with a fresh copy.' )
+			array( __( 'Find out which plugin created it. If it belongs to a plugin you removed, delete the drop-in; if you cannot tell, compare it with a fresh copy.', 'earlyward' ) )
 		);
 	}
 
@@ -281,10 +293,10 @@ final class Unexpected_Php_Check implements Check {
 				$path,
 				Finding::SEVERITY_CRITICAL,
 				Finding::CONFIDENCE_HIGH,
-				'Suspicious PHP file directly in wp-content',
-				'WordPress never puts randomly named PHP files here. This matches the loader of a known self-healing malware kit.',
+				__( 'Suspicious PHP file directly in wp-content', 'earlyward' ),
+				__( 'WordPress never puts randomly named PHP files here. This matches the loader of a known self-healing malware kit.', 'earlyward' ),
 				$traits,
-				array( 'Check whether a .user.ini or .htaccess points at this file (see check C1), and look for a hidden twin starting with a dot.' )
+				array( __( 'Check whether a .user.ini or .htaccess points at this file (see check C1), and look for a hidden twin starting with a dot.', 'earlyward' ) )
 			);
 		}
 		return $this->make(
@@ -292,10 +304,10 @@ final class Unexpected_Php_Check implements Check {
 			$path,
 			Finding::SEVERITY_INFO,
 			Finding::CONFIDENCE_LOW,
-			'A PHP file sits directly in wp-content',
-			'Some plugins put configuration files here (for example cache settings). Confirm you know where it came from.',
+			__( 'A PHP file sits directly in wp-content', 'earlyward' ),
+			__( 'Some plugins put configuration files here (for example cache settings). Confirm you know where it came from.', 'earlyward' ),
 			array(),
-			array( 'If you recognise it, acknowledge it so Earlyward only alerts when it changes.' )
+			array( __( 'If you recognise it, acknowledge it so Earlyward only alerts when it changes.', 'earlyward' ) )
 		);
 	}
 
@@ -313,12 +325,12 @@ final class Unexpected_Php_Check implements Check {
 			$path,
 			Finding::SEVERITY_CRITICAL,
 			Finding::CONFIDENCE_HIGH,
-			'A hidden PHP file (name starting with a dot)',
-			'Files starting with a dot are hidden from most file listings. WordPress core never ships one; malware uses them for its bootstrap and for background processes.',
+			__( 'A hidden PHP file (name starting with a dot)', 'earlyward' ),
+			__( 'Files starting with a dot are hidden from most file listings. WordPress core never ships one; malware uses them for its bootstrap and for background processes.', 'earlyward' ),
 			Code_Traits::find( $code ),
 			array(
-				'Check running processes for anything executing this path (your host can do this): a process can keep running after the file is deleted.',
-				'Look for a non-hidden file with the same name next to it.',
+				__( 'Check running processes for anything executing this path (your host can do this): a process can keep running after the file is deleted.', 'earlyward' ),
+				__( 'Look for a non-hidden file with the same name next to it.', 'earlyward' ),
 			)
 		);
 	}

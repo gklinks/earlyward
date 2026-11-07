@@ -13,6 +13,7 @@ mkdir -p "$OUT"
 cp earlyward.php readme.txt LICENSE "$OUT/"
 [ -f uninstall.php ] && cp uninstall.php "$OUT/"
 cp -r src "$OUT/src"
+[ -d languages ] && cp -r languages "$OUT/languages"
 
 # Refuse to ship anything that looks private or developmental.
 if grep -rIl -E '(/home/[a-z]|@gmail\.com|BEGIN (RSA|OPENSSH) PRIVATE KEY)' "$OUT"; then

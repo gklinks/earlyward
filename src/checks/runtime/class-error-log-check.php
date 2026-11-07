@@ -122,14 +122,24 @@ final class Error_Log_Check implements Check, Observes {
 				$size >= $critical ? Finding::SEVERITY_CRITICAL : Finding::SEVERITY_WARNING,
 				Finding::CONFIDENCE_HIGH,
 				$too_big
-					? sprintf( 'Error log %s is %s', $rel, self::human( $size ) )
-					: sprintf( 'Error log %s is growing by about %s a day', $rel, self::human( (int) $per_day ) ),
-				'A runaway log can fill the hosting account\'s disk quota, which stops uploads, updates, email and sometimes every site on the account. It usually comes from one warning repeated on every page view.',
+					? sprintf(
+						/* translators: 1: log file path, 2: file size such as 1.5 GB. */
+						__( 'Error log %1$s is %2$s', 'earlyward' ),
+						$rel,
+						self::human( $size )
+					)
+					: sprintf(
+						/* translators: 1: log file path, 2: growth per day such as 60.0 MB. */
+						__( 'Error log %1$s is growing by about %2$s a day', 'earlyward' ),
+						$rel,
+						self::human( (int) $per_day )
+					),
+				__( 'A runaway log can fill the hosting account\'s disk quota, which stops uploads, updates, email and sometimes every site on the account. It usually comes from one warning repeated on every page view.', 'earlyward' ),
 				array( new Evidence( 'file', $rel, 0, $top['line'], $facts ) ),
 				array(
-					'Fix the cause first: the most frequent recent line is shown as evidence. It usually names the plugin or theme file.',
-					'Then empty or delete the log file (keep a copy of the end of it if you need it).',
-					'Do not rely on setting error_reporting in wp-config.php: WordPress resets the level later during start-up, so it silently does nothing. Fix the warning, or set the level in a must-use plugin.',
+					__( 'Fix the cause first: the most frequent recent line is shown as evidence. It usually names the plugin or theme file.', 'earlyward' ),
+					__( 'Then empty or delete the log file (keep a copy of the end of it if you need it).', 'earlyward' ),
+					__( 'Do not rely on setting error_reporting in wp-config.php: WordPress resets the level later during start-up, so it silently does nothing. Fix the warning, or set the level in a must-use plugin.', 'earlyward' ),
 				)
 			);
 		}

@@ -18,7 +18,23 @@ if ( ! function_exists( '__' ) ) {
 	 * @return string
 	 */
 	function __( $text, $domain = 'default' ) { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound,Universal.NamingConventions.NoReservedKeywordParameterNames,Generic.CodeAnalysis.UnusedFunctionParameter.Found,Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- stands in for WordPress in unit tests.
-		return $text;
+		return isset( $GLOBALS['earlyward_test_translate'] ) ? (string) call_user_func( $GLOBALS['earlyward_test_translate'], $text ) : $text; // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- test hook.
+	}
+}
+
+if ( ! function_exists( '_n' ) ) {
+	/**
+	 * Plural translation stand-in for tests: English rule (1 is singular).
+	 *
+	 * @param string $single Singular text.
+	 * @param string $plural Plural text.
+	 * @param int    $number Number.
+	 * @param string $domain Text domain.
+	 * @return string
+	 */
+	function _n( $single, $plural, $number, $domain = 'default' ) { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound,Universal.NamingConventions.NoReservedKeywordParameterNames,Generic.CodeAnalysis.UnusedFunctionParameter.Found,Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- stands in for WordPress in unit tests.
+		$text = 1 === (int) $number ? $single : $plural;
+		return isset( $GLOBALS['earlyward_test_translate'] ) ? (string) call_user_func( $GLOBALS['earlyward_test_translate'], $text ) : $text; // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- test hook.
 	}
 }
 

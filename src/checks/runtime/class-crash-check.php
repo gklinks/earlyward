@@ -74,8 +74,12 @@ final class Crash_Check implements Check {
 				self::ID,
 				Finding::SEVERITY_CRITICAL,
 				Finding::CONFIDENCE_HIGH,
-				sprintf( '%s switched off custom code after a crash', $marker['product'] ),
-				'While this marker exists, the code it manages does not run at all, but the site keeps answering normally. Pages can lose their styling, features and custom addresses without any error being shown.',
+				sprintf(
+					/* translators: %s: name of the tool that switched the code off. */
+					__( '%s switched off custom code after a crash', 'earlyward' ),
+					$marker['product']
+				),
+				__( 'While this marker exists, the code it manages does not run at all, but the site keeps answering normally. Pages can lose their styling, features and custom addresses without any error being shown.', 'earlyward' ),
 				array(
 					new Evidence(
 						'file',
@@ -90,9 +94,9 @@ final class Crash_Check implements Check {
 					),
 				),
 				array(
-					'Open the file named in the evidence and check it for a real error (run it in a test copy if you can). A crash can also be a one-off, such as the host killing a long request.',
-					'Once the file is fixed, or you are sure it was a one-off, delete the marker file to switch the code back on.',
-					'Purge page caches afterwards, then check the homepage (check A1).',
+					__( 'Open the file named in the evidence and check it for a real error (run it in a test copy if you can). A crash can also be a one-off, such as the host killing a long request.', 'earlyward' ),
+					__( 'Once the file is fixed, or you are sure it was a one-off, delete the marker file to switch the code back on.', 'earlyward' ),
+					__( 'Purge page caches afterwards, then check the homepage (check A1).', 'earlyward' ),
 				)
 			);
 		}
@@ -105,8 +109,8 @@ final class Crash_Check implements Check {
 					self::ID,
 					Finding::SEVERITY_WARNING,
 					Finding::CONFIDENCE_HIGH,
-					'WordPress caught a fatal error recently',
-					'WordPress emails a "recovery mode" link when a plugin or theme causes a fatal error. Visitors may have seen "There has been a critical error on this website".',
+					__( 'WordPress caught a fatal error recently', 'earlyward' ),
+					__( 'WordPress emails a "recovery mode" link when a plugin or theme causes a fatal error. Visitors may have seen "There has been a critical error on this website".', 'earlyward' ),
 					array(
 						new Evidence(
 							'option',
@@ -117,8 +121,8 @@ final class Crash_Check implements Check {
 						),
 					),
 					array(
-						'Look for the recovery-mode email sent to the admin address at that time; it names the plugin or theme.',
-						'Check the error log (A3) around that time for the "PHP Fatal error" line.',
+						__( 'Look for the recovery-mode email sent to the admin address at that time; it names the plugin or theme.', 'earlyward' ),
+						__( 'Check the error log (A3) around that time for the "PHP Fatal error" line.', 'earlyward' ),
 					)
 				);
 			}

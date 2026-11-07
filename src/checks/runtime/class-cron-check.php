@@ -77,16 +77,16 @@ final class Cron_Check implements Check {
 		$hours    = (int) floor( ( $now - $oldest ) / 3600 );
 		$disabled = (bool) $ctx->constant( 'DISABLE_WP_CRON' );
 		$why      = $disabled
-			? 'DISABLE_WP_CRON is set, so WordPress expects a system cron job to call wp-cron.php, and that is not happening. Updates, scheduled posts, backups and these scans have stopped.'
-			: 'Scheduled jobs are running late. WordPress only runs them when the site gets visits (or a system cron job calls wp-cron.php), and something is stopping that: very low traffic, a page cache that serves every visit, or a firewall blocking the server\'s request to itself.';
+			? __( 'DISABLE_WP_CRON is set, so WordPress expects a system cron job to call wp-cron.php, and that is not happening. Updates, scheduled posts, backups and these scans have stopped.', 'earlyward' )
+			: __( 'Scheduled jobs are running late. WordPress only runs them when the site gets visits (or a system cron job calls wp-cron.php), and something is stopping that: very low traffic, a page cache that serves every visit, or a firewall blocking the server\'s request to itself.', 'earlyward' );
 		$steps    = $disabled
 			? array(
-				'Ask your host (or check the control panel) for a cron job that requests wp-cron.php every 5-15 minutes, and add one if it is missing.',
-				'Or remove DISABLE_WP_CRON from wp-config.php to go back to visit-triggered cron.',
+				__( 'Ask your host (or check the control panel) for a cron job that requests wp-cron.php every 5-15 minutes, and add one if it is missing.', 'earlyward' ),
+				__( 'Or remove DISABLE_WP_CRON from wp-config.php to go back to visit-triggered cron.', 'earlyward' ),
 			)
 			: array(
-				'Set up a system cron job that requests your-site/wp-cron.php every 5-15 minutes, then add define( \'DISABLE_WP_CRON\', true ); to wp-config.php.',
-				'If the site has visitors, check that your firewall allows the server to reach its own address (WordPress Site Health shows this as a loopback error).',
+				__( 'Set up a system cron job that requests your-site/wp-cron.php every 5-15 minutes, then add define( \'DISABLE_WP_CRON\', true ); to wp-config.php.', 'earlyward' ),
+				__( 'If the site has visitors, check that your firewall allows the server to reach its own address (WordPress Site Health shows this as a loopback error).', 'earlyward' ),
 			);
 
 		return array(
@@ -94,7 +94,16 @@ final class Cron_Check implements Check {
 				self::ID,
 				Finding::SEVERITY_WARNING,
 				$now - $oldest >= self::STRONG_AFTER ? Finding::CONFIDENCE_HIGH : Finding::CONFIDENCE_MEDIUM,
-				sprintf( 'Scheduled jobs are %d hours overdue (WP-Cron is not running)', $hours ),
+				sprintf(
+					/* translators: %d: number of hours. */
+					_n(
+						'Scheduled jobs are %d hours overdue (WP-Cron is not running)',
+						'Scheduled jobs are %d hours overdue (WP-Cron is not running)',
+						$hours,
+						'earlyward'
+					),
+					$hours
+				),
 				$why,
 				array(
 					new Evidence(

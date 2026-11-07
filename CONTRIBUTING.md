@@ -19,6 +19,13 @@ security tool that cries wolf, or breaks a site, does more harm than good.
    before they enter a fixture, an issue or a commit. Truncate payloads to the few bytes a rule needs.
 8. **Measure before claiming.** Docs and copy state only what the test suite or a documented
    measurement shows.
+9. **Everything a site owner reads is translatable.** Titles, "why" text and fix steps go through
+   `__()` with the text domain `earlyward` (whole sentences, numbered placeholders and a
+   `/* translators: */` comment when there is more than one; `_n()` for counts). Evidence (file names,
+   excerpts, option names) is data and stays untranslated. WP-CLI output and the "copy for host
+   support" block stay English on purpose: they are for developers and hosting support.
+   `TranslationTest` fails if a check shows hard-coded English. Refresh the template with
+   `wp i18n make-pot . languages/earlyward.pot --slug=earlyward --exclude=vendor,tests,build,bin,docs,private`.
 
 ## Development setup
 

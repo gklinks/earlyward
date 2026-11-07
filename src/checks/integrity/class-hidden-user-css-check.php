@@ -57,12 +57,12 @@ final class Hidden_User_Css_Check implements Check {
 				self::ID,
 				Finding::SEVERITY_CRITICAL,
 				Finding::CONFIDENCE_HIGH,
-				'Custom CSS hides a user from the Users screen',
-				'There is no ordinary reason to hide a specific user\'s row. Attackers have used exactly this to keep their administrator account out of sight.',
+				__( 'Custom CSS hides a user from the Users screen', 'earlyward' ),
+				__( 'There is no ordinary reason to hide a specific user\'s row. Attackers have used exactly this to keep their administrator account out of sight.', 'earlyward' ),
 				$evidence,
 				array(
-					'Look up each hidden user ID (Users > Edit, or ?user_id= in the address bar) and check its role.',
-					'Remove the CSS rule (Appearance > Customize > Additional CSS), then treat the hidden account as in check C4.',
+					__( 'Look up each hidden user ID (Users > Edit, or ?user_id= in the address bar) and check its role.', 'earlyward' ),
+					__( 'Remove the CSS rule (Appearance > Customize > Additional CSS), then treat the hidden account as in check C4.', 'earlyward' ),
 				)
 			);
 		}

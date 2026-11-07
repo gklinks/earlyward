@@ -86,12 +86,18 @@ final class Admin_Credentials_Check implements Check {
 					self::ID,
 					Finding::SEVERITY_WARNING,
 					Finding::CONFIDENCE_MEDIUM,
-					sprintf( 'Administrator "%s" has %d application passwords, %d never used', $admin['login'], count( $evidence ), $unused ),
-					'Several unused application passwords on one administrator look like keys left behind for later. They keep working after the account\'s password is changed.',
+					sprintf(
+						/* translators: 1: administrator login, 2: number of application passwords, 3: number never used */
+						__( 'Administrator "%1$s" has %2$d application passwords, %3$d never used', 'earlyward' ),
+						$admin['login'],
+						count( $evidence ),
+						$unused
+					),
+					__( 'Several unused application passwords on one administrator look like keys left behind for later. They keep working after the account\'s password is changed.', 'earlyward' ),
 					$evidence,
 					array(
-						'Revoke every application password you do not recognise (Users > Edit > Application Passwords).',
-						'If the account itself is unfamiliar, see check C4: demote it and revoke its sessions too.',
+						__( 'Revoke every application password you do not recognise (Users > Edit > Application Passwords).', 'earlyward' ),
+						__( 'If the account itself is unfamiliar, see check C4: demote it and revoke its sessions too.', 'earlyward' ),
 					)
 				);
 			} else {
@@ -99,10 +105,15 @@ final class Admin_Credentials_Check implements Check {
 					self::ID,
 					Finding::SEVERITY_INFO,
 					Finding::CONFIDENCE_LOW,
-					sprintf( 'Administrator "%s" has %d application password(s)', $admin['login'], count( $evidence ) ),
-					'Application passwords let apps and scripts act as this administrator. They are separate from the login password and survive password changes, so keep only the ones you use.',
+					sprintf(
+						/* translators: 1: administrator login, 2: number of application passwords */
+						__( 'Administrator "%1$s" has %2$d application password(s)', 'earlyward' ),
+						$admin['login'],
+						count( $evidence )
+					),
+					__( 'Application passwords let apps and scripts act as this administrator. They are separate from the login password and survive password changes, so keep only the ones you use.', 'earlyward' ),
 					$evidence,
-					array( 'Revoke any you no longer use (Users > Edit > Application Passwords).' )
+					array( __( 'Revoke any you no longer use (Users > Edit > Application Passwords).', 'earlyward' ) )
 				);
 			}
 		}

@@ -71,26 +71,31 @@ final class Alert {
 			}
 		}
 		$subject = sprintf(
-			'[Earlyward] %s: %d new, %d resolved (%d critical open)',
+			/* translators: 1: site name, 2: number of new findings, 3: number of resolved findings, 4: number of critical findings still open. */
+			__( '[Earlyward] %1$s: %2$d new, %3$d resolved (%4$d critical open)', 'earlyward' ),
 			self::line( $site_name ),
 			count( $diff['new'] ),
 			count( $diff['resolved'] ),
 			$critical
 		);
 
-		$lines   = array();
-		$lines[] = 'Earlyward found a change in the checks for ' . self::line( $site_url ) . '.';
-		$lines[] = 'You get this email only when the set of findings changes.';
+		$lines = array();
+		/* translators: %s: site address. */
+		$lines[] = sprintf( __( 'Earlyward found a change in the checks for %s.', 'earlyward' ), self::line( $site_url ) );
+		$lines[] = __( 'You get this email only when the set of findings changes.', 'earlyward' );
 		$lines[] = '';
 		if ( ! empty( $diff['new'] ) ) {
-			$lines[] = '== NEW ==';
+			$lines[] = __( '== NEW ==', 'earlyward' );
 			foreach ( $diff['new'] as $item ) {
 				$lines[] = '';
-				$lines[] = sprintf( '[%s, %s confidence] %s (check %s)', strtoupper( (string) $item['severity'] ), $item['confidence'], self::line( (string) $item['title'] ), $item['check'] );
-				$lines[] = '  Why: ' . self::line( (string) $item['why'] );
+				/* translators: 1: severity in capitals, 2: confidence level, 3: finding title, 4: check ID. */
+				$lines[] = sprintf( __( '[%1$s, %2$s confidence] %3$s (check %4$s)', 'earlyward' ), strtoupper( (string) $item['severity'] ), $item['confidence'], self::line( (string) $item['title'] ), $item['check'] );
+				/* translators: %s: why the finding matters. */
+				$lines[] = sprintf( __( '  Why: %s', 'earlyward' ), self::line( (string) $item['why'] ) );
 				foreach ( (array) $item['evidence'] as $e ) {
-					$where   = $e['location'] . ( $e['line'] ? ':' . $e['line'] : '' );
-					$lines[] = '  Evidence: ' . self::line( (string) $where ) . ( '' !== $e['excerpt'] ? '  ' . self::line( (string) $e['excerpt'] ) : '' );
+					$where = $e['location'] . ( $e['line'] ? ':' . $e['line'] : '' );
+					/* translators: %s: where the evidence was found, followed by an excerpt when there is one. */
+					$lines[] = sprintf( __( '  Evidence: %s', 'earlyward' ), self::line( (string) $where ) . ( '' !== $e['excerpt'] ? '  ' . self::line( (string) $e['excerpt'] ) : '' ) );
 				}
 				foreach ( (array) $item['fix_steps'] as $i => $step ) {
 					$lines[] = sprintf( '  %d. %s', $i + 1, self::line( (string) $step ) );
@@ -99,16 +104,18 @@ final class Alert {
 			$lines[] = '';
 		}
 		if ( ! empty( $diff['resolved'] ) ) {
-			$lines[] = '== NO LONGER FOUND ==';
+			$lines[] = __( '== NO LONGER FOUND ==', 'earlyward' );
 			foreach ( $diff['resolved'] as $item ) {
-				$lines[] = '- ' . self::line( (string) $item['title'] ) . ' (check ' . $item['check'] . ')';
+				/* translators: 1: finding title, 2: check ID. */
+				$lines[] = sprintf( __( '- %1$s (check %2$s)', 'earlyward' ), self::line( (string) $item['title'] ), $item['check'] );
 			}
 			$lines[] = '';
-			$lines[] = 'A finding that disappears is good news only if you fixed it. If you did not, find out why: malware can hide its traces.';
+			$lines[] = __( 'A finding that disappears is good news only if you fixed it. If you did not, find out why: malware can hide its traces.', 'earlyward' );
 			$lines[] = '';
 		}
-		$lines[] = sprintf( 'Open findings now: %d.', count( $diff['current'] ) );
-		$lines[] = 'No email means no change, not proof that the site is clean. Run "wp earlyward report" to see when the last scan ran.';
+		/* translators: %d: number of open findings. */
+		$lines[] = sprintf( __( 'Open findings now: %d.', 'earlyward' ), count( $diff['current'] ) );
+		$lines[] = __( 'No email means no change, not proof that the site is clean. Run "wp earlyward report" to see when the last scan ran.', 'earlyward' );
 
 		return array(
 			'subject' => $subject,
