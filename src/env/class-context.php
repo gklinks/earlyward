@@ -93,6 +93,14 @@ final class Context {
 	private $constants;
 
 	/**
+	 * File permission bits by path relative to the root, or null to read them from disk.
+	 * Tests set it, because fixture files cannot carry real modes (and Windows has none).
+	 *
+	 * @var array<string, int>|null
+	 */
+	private $file_modes;
+
+	/**
 	 * Current Unix time (fixed in tests).
 	 *
 	 * @var int
@@ -106,7 +114,7 @@ final class Context {
 	 * @param string                $content_dir wp-content.
 	 * @param string                $uploads_dir uploads base.
 	 * @param array<string, string> $ini         Effective ini values the checks may read.
-	 * @param array<string, mixed>  $extra       Optional: mu_plugins_dir, db, loopback, baselines, previous, constants, now.
+	 * @param array<string, mixed>  $extra       Optional: mu_plugins_dir, db, loopback, baselines, previous, constants, file_modes, now.
 	 */
 	public function __construct( string $root, string $content_dir, string $uploads_dir, array $ini = array(), array $extra = array() ) {
 		$this->root           = Filesystem::normalise( $root );
@@ -120,6 +128,7 @@ final class Context {
 		$this->baselines      = isset( $extra['baselines'] ) && is_array( $extra['baselines'] ) ? $extra['baselines'] : array();
 		$this->previous       = isset( $extra['previous'] ) && is_array( $extra['previous'] ) ? $extra['previous'] : array();
 		$this->constants      = isset( $extra['constants'] ) && is_array( $extra['constants'] ) ? $extra['constants'] : array();
+		$this->file_modes     = isset( $extra['file_modes'] ) && is_array( $extra['file_modes'] ) ? $extra['file_modes'] : null;
 		$this->now            = isset( $extra['now'] ) && is_int( $extra['now'] ) ? $extra['now'] : time();
 		$this->ini            = $ini;
 		$this->fs             = new Filesystem( array( $this->root, $this->content_dir, $this->uploads_dir, $this->mu_plugins_dir ) );
@@ -199,6 +208,20 @@ final class Context {
 	 */
 	public function constant( string $name ) {
 		return $this->constants[ $name ] ?? null;
+	}
+
+	/**
+	 * Permission bits of a file, or null when unknown.
+	 *
+	 * @param string $path Absolute path.
+	 * @return int|null
+	 */
+	public function file_mode( string $path ): ?int {
+		if ( null !== $this->file_modes ) {
+			$mode = $this->file_modes[ $this->relative( $path ) ] ?? null;
+			return is_int( $mode ) ? $mode : null;
+		}
+		return $this->fs->mode( $path );
 	}
 
 	/**

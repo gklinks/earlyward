@@ -1,0 +1,3 @@
+[
+	{ "check": "B4", "severity": "warning", "confidence": "high", "where": [ "wp-config.php" ] }
+]

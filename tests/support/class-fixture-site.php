@@ -8,6 +8,7 @@
  *   expected.json   the findings the default scanner must return, no more, no less
  *   db.json         optional database contents (see Fixture_Database)
  *   loopback.json   optional loopback answers (see Fixture_Loopback)
+ *   modes.json      optional file permissions, path => octal string, for example {"wp-config.php": "0644"}
  *   baseline.json / previous.json / constants.json   optional, by check ID / constant name
  *   The clock is fixed at Fixture_Site::NOW.
  *   layout.json     optional {"root": "dir"}: tree/ holds several sites, tree/dir is scanned
@@ -104,6 +105,14 @@ final class Fixture_Site {
 				$extra[ $key ] = (array) json_decode( (string) file_get_contents( $this->case_dir . '/' . $file ), true );
 			}
 		}
+		// File modes are always declared, never read from the temporary tree: modes.json maps a path to an octal string.
+		$modes = array();
+		if ( is_file( $this->case_dir . '/modes.json' ) ) {
+			foreach ( (array) json_decode( (string) file_get_contents( $this->case_dir . '/modes.json' ), true ) as $path => $mode ) {
+				$modes[ (string) $path ] = (int) octdec( (string) $mode );
+			}
+		}
+		$extra['file_modes'] = $modes;
 		if ( is_file( $this->case_dir . '/loopback.json' ) ) {
 			$extra['loopback'] = new Fixture_Loopback( $this->case_dir, (array) json_decode( (string) file_get_contents( $this->case_dir . '/loopback.json' ), true ) );
 		}

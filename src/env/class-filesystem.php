@@ -198,6 +198,21 @@ final class Filesystem {
 	}
 
 	/**
+	 * Permission bits of a file (for example 0644), or null when they cannot be told.
+	 * Windows reports made-up modes, so it never answers there.
+	 *
+	 * @param string $path Path.
+	 * @return int|null
+	 */
+	public function mode( string $path ): ?int {
+		if ( '/' !== DIRECTORY_SEPARATOR || ! $this->is_file( $path ) ) {
+			return null;
+		}
+		$perms = fileperms( $path );
+		return false === $perms ? null : $perms & 0777;
+	}
+
+	/**
 	 * Last-modified time, or 0.
 	 *
 	 * @param string $path Path.
