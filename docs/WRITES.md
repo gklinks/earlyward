@@ -7,11 +7,12 @@ that is not on this list, that is a bug; please report it.
 
 | What | Where | Why | Removed on uninstall |
 |---|---|---|---|
-| Plugin settings | option `wallwarden_settings` (not autoloaded) | Your choices | Yes |
-| Last scan results and fingerprints | option `wallwarden_state` (not autoloaded) | Show findings; email only on change | Yes |
-| Scan cursor | transient `wallwarden_cursor` | Resume a long scan across cron runs | Yes |
-| Scheduled scan | one WP-Cron event `wallwarden_scan` | Run scans off the front end | Yes |
-| Alert email | `wp_mail()` to the site admin address | Only when the set of findings changes | n/a |
+| Last scan result and the set of open alerts (per environment: web, command line) | option `wallwarden_state`, not autoloaded, capped at 500 findings | Show findings; email only when the set changes | Yes |
+| Scan lock | transient `wallwarden_scan_lock` (10 minutes) | Stop two scans overlapping | Yes |
+| Scheduled scan | WP-Cron event `wallwarden_scan`, hourly; re-added on admin pages if something removed it | Run scans off the front end | Yes (also removed on deactivation) |
+| Alert email | `wp_mail()` to the site's admin email address | Only when the set of warning/critical findings changes; info findings never email | n/a |
+
+`wp wallwarden scan` writes nothing. `wp wallwarden run` writes the same as a scheduled scan.
 
 ## Only after you confirm (none implemented yet)
 

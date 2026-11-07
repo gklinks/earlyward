@@ -174,7 +174,7 @@ final class Filesystem {
 			return $names;
 		};
 
-		// Siblings: /home/user/<other-site>/ and /home/user/<other-site>/public_html/.
+		// Siblings: <account>/<other-site>/ and <account>/<other-site>/public_html/.
 		foreach ( $scan( $parent, $max_entries ) as $name ) {
 			$dir = self::normalise( $parent . '/' . $name );
 			if ( $dir === $root ) {

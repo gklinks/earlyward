@@ -33,6 +33,9 @@ define( 'WALLWARDEN_DIR', __DIR__ );
 require_once __DIR__ . '/src/class-autoloader.php';
 \Wallwarden\Autoloader::register( __DIR__ . '/src' );
 
+register_activation_hook( __FILE__, array( \Wallwarden\Plugin::class, 'activate' ) );
+register_deactivation_hook( __FILE__, array( \Wallwarden\Plugin::class, 'deactivate' ) );
+
 // Fail open: nothing thrown while wiring hooks may take the site down.
 try {
 	\Wallwarden\Plugin::boot();

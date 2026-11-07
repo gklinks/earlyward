@@ -8,7 +8,9 @@
 namespace Wallwarden;
 
 use Wallwarden\Env\Context;
+use Wallwarden\Notify\Alert;
 use Wallwarden\Scanner\Scanner;
+use Wallwarden\Store\State;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -18,12 +20,15 @@ defined( 'ABSPATH' ) || exit;
 final class Plugin {
 
 	const CRON_HOOK = 'wallwarden_scan';
+	const LOCK      = 'wallwarden_scan_lock';
 
 	/**
 	 * Register hooks. Nothing here runs on front-end requests.
 	 */
 	public static function boot(): void {
 		add_action( self::CRON_HOOK, array( __CLASS__, 'run_scheduled_scan' ) );
+		// Self-heal the schedule (malware and migrations both drop cron events). Admin requests only.
+		add_action( 'admin_init', array( __CLASS__, 'ensure_scheduled' ) );
 
 		if ( defined( 'WP_CLI' ) && WP_CLI && class_exists( '\WP_CLI' ) ) {
 			\WP_CLI::add_command( 'wallwarden', Cli\Command::class );
@@ -31,7 +36,35 @@ final class Plugin {
 	}
 
 	/**
-	 * Run a scan and return the raw result. Never throws.
+	 * Activation: schedule the hourly scan.
+	 */
+	public static function activate(): void {
+		self::ensure_scheduled();
+	}
+
+	/**
+	 * Deactivation: remove the schedule. Stored results stay until uninstall.
+	 */
+	public static function deactivate(): void {
+		wp_clear_scheduled_hook( self::CRON_HOOK );
+		delete_transient( self::LOCK );
+	}
+
+	/**
+	 * Schedule the scan if it is missing.
+	 */
+	public static function ensure_scheduled(): void {
+		try {
+			if ( false === wp_next_scheduled( self::CRON_HOOK ) ) {
+				wp_schedule_event( time() + 300, 'hourly', self::CRON_HOOK );
+			}
+		} catch ( \Throwable $e ) {
+			return; // Fail open.
+		}
+	}
+
+	/**
+	 * Run a scan and return the raw result. Never throws, never writes.
 	 *
 	 * @return array{findings: \Wallwarden\Finding\Finding[], errors: array<string, string>, timings: array<string, float>}
 	 */
@@ -48,9 +81,66 @@ final class Plugin {
 	}
 
 	/**
-	 * WP-Cron callback. Storage and alerts arrive in a later milestone.
+	 * WP-Cron callback.
 	 */
 	public static function run_scheduled_scan(): void {
-		self::scan();
+		self::run( true );
+	}
+
+	/**
+	 * Scan, store the result, and email only if the alerting set changed.
+	 *
+	 * @param bool $send_mail Whether a change may send an email.
+	 * @return array{ran: bool, changed: bool, mailed: bool, findings: int, errors: int}
+	 */
+	public static function run( bool $send_mail ): array {
+		$out = array(
+			'ran'      => false,
+			'changed'  => false,
+			'mailed'   => false,
+			'findings' => 0,
+			'errors'   => 0,
+		);
+		try {
+			if ( get_transient( self::LOCK ) ) {
+				return $out; // Another scan is running.
+			}
+			set_transient( self::LOCK, time(), 10 * MINUTE_IN_SECONDS );
+
+			// Web and command line can see different PHP settings; compare like with like.
+			$env    = 'cli' === PHP_SAPI ? 'cli' : 'web';
+			$result = self::scan();
+			$diff   = Alert::diff( State::alerted( $env ), $result['findings'] );
+			$first  = empty( State::get() );
+
+			$mailed = false;
+			if ( $send_mail && $diff['changed'] && ! ( $first && empty( $diff['current'] ) ) ) {
+				$mail   = Alert::compose( (string) get_bloginfo( 'name' ), (string) home_url( '/' ), $diff );
+				$mailed = (bool) wp_mail( (string) get_option( 'admin_email' ), $mail['subject'], $mail['body'] );
+			}
+
+			$all = array();
+			foreach ( $result['findings'] as $finding ) {
+				$all[] = $finding->to_array();
+			}
+			// If the email failed, keep the old alerted set so the next run tries again.
+			$alerted = ( $send_mail && $diff['changed'] && ! $mailed && ! ( $first && empty( $diff['current'] ) ) )
+				? State::alerted( $env )
+				: $diff['current'];
+			State::save( $env, $all, $result['errors'], $result['timings'], $alerted, $mailed );
+
+			$out = array(
+				'ran'      => true,
+				'changed'  => $diff['changed'],
+				'mailed'   => $mailed,
+				'findings' => count( $all ),
+				'errors'   => count( $result['errors'] ),
+			);
+		} catch ( \Throwable $e ) {
+			$out['errors'] = 1; // Fail open.
+		} finally {
+			delete_transient( self::LOCK );
+		}
+		return $out;
 	}
 }

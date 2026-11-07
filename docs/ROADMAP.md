@@ -8,26 +8,31 @@ shows they behave on real sites. Check IDs refer to the ranked list in [PHASE-0-
 - [x] Plugin skeleton: bootstrap, kill switch, fail-open wrappers, autoloader
 - [x] Finding model with evidence, severity, confidence, fingerprint
 - [x] Env layer: filesystem
-- [ ] Env layer: database, `/proc`, loopback, with fixture twins
+- [x] Env layer: database, with fixture twin
+- [ ] Env layer: `/proc`, loopback
 - [x] Fixtures suite (runs locally; CI workflow written, not yet run on GitHub)
 - [x] C1 `auto_prepend_file` per-line classification
 - [x] C2 hex-named archive seeds
-- [ ] C3 unrecognised must-use plugins and drop-ins
-- [ ] C4 look-alike admin accounts
-- [ ] C5 sessions and application passwords on admin accounts
-- [ ] C6 `custom_css` hiding a user row
-- [ ] C9 cloaked off-screen links
+- [x] C3 unrecognised must-use plugins and drop-ins
+- [x] C4 look-alike admin accounts
+- [x] C5 sessions and application passwords on admin accounts
+- [x] C6 `custom_css` hiding a user row
+- [x] C9 cloaked off-screen links
 - [ ] A1 silent outage (loopback vs baseline)
 - [ ] A2 fatal-error recovery and crash markers
 - [ ] A3 error log size and repeating lines
 - [ ] A4 WP-Cron health
-- [ ] B1 several sites sharing one Linux user
-- [ ] B2 `open_basedir` unset
-- [ ] B3 backups and dumps reachable in the docroot
+- [x] B1 several sites sharing one Linux user
+- [x] B2 `open_basedir` unset
+- [x] B3 backups and dumps reachable in the docroot
 - [x] WP-CLI command `wp wallwarden scan`
-- [ ] Scanner in WP-Cron with a time budget
-- [ ] Email only when findings change
+- [x] Hourly WP-Cron scan with a lock; `wp wallwarden run` and `report`
+- [ ] Verify WP-Cron spawning on a real host (not reproducible in the local SQLite test site)
+- [ ] Overall time budget, measured
+- [x] Email only when findings change
 - [ ] Plain admin page
+
+- [ ] i18n pass (finding text is English-only for now)
 
 ## v0.2 — dogfood
 

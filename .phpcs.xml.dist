@@ -3,6 +3,7 @@
 	<description>WordPress Coding Standards plus PHP 7.4+ compatibility.</description>
 
 	<file>wallwarden.php</file>
+	<file>uninstall.php</file>
 	<file>src</file>
 	<file>tests</file>
 	<exclude-pattern>tests/fixtures/*</exclude-pattern>
