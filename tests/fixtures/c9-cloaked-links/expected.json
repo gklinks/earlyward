@@ -1,0 +1,4 @@
+[
+	{ "check": "C9", "severity": "critical", "confidence": "high", "where": [ "post:20" ] },
+	{ "check": "C9", "severity": "critical", "confidence": "high", "where": [ "post:21" ] }
+]

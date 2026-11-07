@@ -1,0 +1,25 @@
+{
+	"posts": [
+		{
+			"id": 30,
+			"type": "page",
+			"status": "publish",
+			"title": "Home",
+			"content": "<style>.hero::before{position:absolute;top:-200px;left:-5000px;background:linear-gradient(#fff,#eee)}</style><div class=\"hero\" style=\"position:relative; padding:2em\"><a href=\"/shop\">Shop</a></div>"
+		},
+		{
+			"id": 31,
+			"type": "page",
+			"status": "publish",
+			"title": "Newsletter",
+			"content": "<form action=\"https://list.fixture/subscribe\"><input type=\"email\" name=\"EMAIL\"><div style=\"position: absolute; left: -5000px;\" aria-hidden=\"true\"><input type=\"text\" name=\"b_hp\" tabindex=\"-1\" value=\"\"></div><input type=\"submit\" value=\"Subscribe\"></form>"
+		},
+		{
+			"id": 32,
+			"type": "post",
+			"status": "publish",
+			"title": "Badge",
+			"content": "<div style=\"position:absolute; top:-20px; right:-12px\"><a href=\"/sale\">Sale</a></div>"
+		}
+	]
+}

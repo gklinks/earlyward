@@ -1,0 +1,8 @@
+{
+	"posts": [
+		{ "id": 20, "type": "page", "status": "publish", "title": "About us",
+		  "content": "<p>We are a small team.</p>\n<!-- wp:html -->\n<div style=\"position:fixed; top:-4568px; left:-4039px\"><a href=\"https://spam.fixture/a\">casino</a> <a href=\"https://spam.fixture/b\">bonus</a></div>\n<!-- /wp:html -->" },
+		{ "id": 21, "type": "post", "status": "publish", "title": "News", "content": "<div style='position: absolute; left: -35255px'><a href='https://spam.fixture/c'>x</a></div>" },
+		{ "id": 22, "type": "page", "status": "draft", "title": "Draft", "content": "<div style=\"position:fixed;top:-9999px\"><a href=\"https://spam.fixture/d\">x</a></div>" }
+	]
+}

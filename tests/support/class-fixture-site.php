@@ -6,6 +6,7 @@
  *   tree/           the site root (wp-content/, wp-content/uploads/, ...)
  *   ini.json        optional effective ini values
  *   expected.json   the findings the default scanner must return, no more, no less
+ *   db.json         optional database contents (see Fixture_Database)
  *   layout.json     optional {"root": "dir"}: tree/ holds several sites, tree/dir is scanned
  *
  * Conventions inside tree/:
@@ -80,8 +81,12 @@ final class Fixture_Site {
 			$raw = str_replace( '{ROOT}', $this->root, (string) file_get_contents( $ini_file ) );
 			$ini = (array) json_decode( $raw, true );
 		}
-		$ini += array( 'wallwarden.sapi' => 'fpm-fcgi' );
-		return new Context( $this->root, $this->root . '/wp-content', $this->root . '/wp-content/uploads', $ini );
+		$ini  += array( 'wallwarden.sapi' => 'fpm-fcgi' );
+		$extra = array();
+		if ( is_file( $this->case_dir . '/db.json' ) ) {
+			$extra['db'] = new Fixture_Database( (array) json_decode( (string) file_get_contents( $this->case_dir . '/db.json' ), true ) );
+		}
+		return new Context( $this->root, $this->root . '/wp-content', $this->root . '/wp-content/uploads', $ini, $extra );
 	}
 
 	/**

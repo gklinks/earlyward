@@ -1,0 +1,70 @@
+[
+	{
+		"check": "C4",
+		"severity": "critical",
+		"confidence": "high",
+		"where": [
+			"user:2"
+		]
+	},
+	{
+		"check": "C4",
+		"severity": "critical",
+		"confidence": "high",
+		"where": [
+			"user:3"
+		]
+	},
+	{
+		"check": "C4",
+		"severity": "critical",
+		"confidence": "high",
+		"where": [
+			"user:4"
+		]
+	},
+	{
+		"check": "C4",
+		"severity": "warning",
+		"confidence": "medium",
+		"where": [
+			"user:5"
+		]
+	},
+	{
+		"check": "C4",
+		"severity": "warning",
+		"confidence": "medium",
+		"where": [
+			"user:8"
+		]
+	},
+	{
+		"check": "C4",
+		"severity": "warning",
+		"confidence": "medium",
+		"where": [
+			"user:2",
+			"user:3",
+			"user:4"
+		]
+	},
+	{
+		"check": "C5",
+		"severity": "info",
+		"confidence": "low",
+		"where": [
+			"user:1:app-password:a1"
+		]
+	},
+	{
+		"check": "C5",
+		"severity": "warning",
+		"confidence": "medium",
+		"where": [
+			"user:2:app-password:s1",
+			"user:2:app-password:s2",
+			"user:2:app-password:s3"
+		]
+	}
+]

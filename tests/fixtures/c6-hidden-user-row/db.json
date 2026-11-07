@@ -1,0 +1,6 @@
+{
+	"posts": [
+		{ "id": 10, "type": "custom_css", "status": "publish", "title": "theme", "content": "body{color:#222}\ntr#user-4,tr#user_4{display:none!important}" },
+		{ "id": 11, "type": "custom_css", "status": "publish", "title": "other-theme", "content": ".user-card{display:none}\n#user-profile .avatar{display:none}\n#user-menu{display:block}" }
+	]
+}

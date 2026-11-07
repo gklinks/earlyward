@@ -1,0 +1,11 @@
+{
+	"users": [
+		{ "id": 1, "login": "anna", "email": "anna@site.fixture", "registered": "2024-01-15 09:00:00", "roles": ["administrator"], "meta": {} },
+		{ "id": 2, "login": "dev_facade", "email": "dev_facade@site.fixture", "registered": "2024-01-15 11:30:00", "roles": ["administrator"], "meta": {} },
+		{ "id": 3, "login": "web_team", "email": "webteam@site.fixture", "registered": "2024-01-15 14:00:00", "roles": ["administrator"],
+		  "meta": { "_application_passwords": [
+		    { "uuid": "d1", "name": "deploy", "created": 1705300000, "last_used": 1760000000 },
+		    { "uuid": "d2", "name": "backup tool", "created": 1705300100, "last_used": 1760000100 },
+		    { "uuid": "d3", "name": "old laptop", "created": 1705300200, "last_used": null } ] } }
+	]
+}

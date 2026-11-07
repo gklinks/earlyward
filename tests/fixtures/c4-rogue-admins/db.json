@@ -1,0 +1,124 @@
+{
+	"users": [
+		{
+			"id": 1,
+			"login": "siteowner",
+			"email": "owner@site.fixture",
+			"registered": "2019-03-02 09:00:00",
+			"roles": [
+				"administrator"
+			],
+			"meta": {
+				"_application_passwords": [
+					{
+						"uuid": "a1",
+						"name": "phone app",
+						"created": 1700000000,
+						"last_used": 1760000000,
+						"password": "NEVER-SHOWN"
+					}
+				]
+			}
+		},
+		{
+			"id": 2,
+			"login": "support_d59e31",
+			"email": "support_d59e31@site.fixture",
+			"registered": "2026-04-10 14:13:00",
+			"roles": [
+				"administrator"
+			],
+			"meta": {
+				"session_tokens": {
+					"h1": {
+						"expiration": 1,
+						"login": 1
+					}
+				},
+				"_application_passwords": [
+					{
+						"uuid": "s1",
+						"name": "sentinel",
+						"created": 1775800000,
+						"last_used": null,
+						"password": "NEVER-SHOWN"
+					},
+					{
+						"uuid": "s2",
+						"name": "sentinel",
+						"created": 1775800001,
+						"last_used": null,
+						"password": "NEVER-SHOWN"
+					},
+					{
+						"uuid": "s3",
+						"name": "bot-token",
+						"created": 1775800002,
+						"last_used": null,
+						"password": "NEVER-SHOWN"
+					}
+				]
+			}
+		},
+		{
+			"id": 3,
+			"login": "backup_a1b2c3d4",
+			"email": "backup_a1b2c3d4@site.fixture",
+			"registered": "2026-04-10 14:40:00",
+			"roles": [
+				"administrator"
+			],
+			"meta": {}
+		},
+		{
+			"id": 4,
+			"login": "team_0f9e8d7c6b",
+			"email": "team_0f9e8d7c6b@site.fixture",
+			"registered": "2026-04-10 15:05:00",
+			"roles": [
+				"administrator"
+			],
+			"meta": {}
+		},
+		{
+			"id": 5,
+			"login": "bot",
+			"email": "bot@local.invalid",
+			"registered": "2026-04-21 08:00:00",
+			"roles": [
+				"administrator"
+			],
+			"meta": {}
+		},
+		{
+			"id": 6,
+			"login": "editor_5a6b7c8d",
+			"email": "editor_5a6b7c8d@site.fixture",
+			"registered": "2026-04-10 14:20:00",
+			"roles": [
+				"editor"
+			],
+			"meta": {}
+		},
+		{
+			"id": 7,
+			"login": "maria_2020",
+			"email": "maria@site.fixture",
+			"registered": "2021-06-01 10:00:00",
+			"roles": [
+				"administrator"
+			],
+			"meta": {}
+		},
+		{
+			"id": 8,
+			"login": "support_7c4e2a91",
+			"email": "it-desk@site.fixture",
+			"registered": "2025-02-03 10:00:00",
+			"roles": [
+				"administrator"
+			],
+			"meta": {}
+		}
+	]
+}

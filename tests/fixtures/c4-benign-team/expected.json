@@ -1,0 +1,3 @@
+[
+	{ "check": "C5", "severity": "info", "confidence": "low", "where": [ "user:3:app-password:d1", "user:3:app-password:d2", "user:3:app-password:d3" ] }
+]
