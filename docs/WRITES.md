@@ -28,7 +28,9 @@ that is not on this list, that is a bug; please report it.
 
 ## Network
 
-Each scan makes two requests to the site's own address (`/` and `/wp-json/`, with a cache-busting query string) for check A1. Check B3 also sends a header-only request (HTTP HEAD, nothing is downloaded, redirects not followed) to the site's own address for each backup, dump or config copy it finds, at most 8 per scan, and none when there are no such files. Nothing else is contacted.
+Each scan makes two requests to the site's own address (`/` and `/wp-json/`, with a cache-busting query string) for check A1. Check B3 also sends a header-only request (HTTP HEAD, nothing is downloaded, redirects not followed) to the site's own address for each backup, dump or config copy it finds, at most 8 per scan, and none when there are no such files. Nothing else is contacted, with one opt-in exception below.
+
+**Check E1 (known vulnerabilities), off unless you turn it on.** Define `EARLYWARD_WORDFENCE_KEY` in `wp-config.php` with a free Wordfence Intelligence API key and each scan may download the public vulnerability feed from `www.wordfence.com` (`GET /api/intelligence/v3/vulnerabilities/scanner`, at most every 12 hours; after a failure, every hour). The request carries the key and nothing about your site: no URL, no plugin list. Matching against your installed plugins, themes and WordPress version happens on your server. The reduced result (only records for software you have installed) is cached in the option `earlyward_vuln_cache`, not autoloaded, removed on uninstall. Without the constant, nothing is contacted and the check does nothing. Vulnerability data is Wordfence Intelligence (Copyright Defiant Inc.); findings show the notice and a link to each record.
 
 ## Only after you confirm (Findings tab, "Fix it here")
 

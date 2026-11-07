@@ -72,6 +72,20 @@ final class Context {
 	private $loopback;
 
 	/**
+	 * Vulnerability feed, or null when unavailable.
+	 *
+	 * @var Vuln_Feed|null
+	 */
+	private $vuln_feed;
+
+	/**
+	 * Installed core, plugins and themes.
+	 *
+	 * @var array<int, array{type: string, slug: string, name: string, version: string}>
+	 */
+	private $software;
+
+	/**
 	 * Stored healthy baselines, by check ID.
 	 *
 	 * @var array<string, array<string, mixed>>
@@ -114,7 +128,7 @@ final class Context {
 	 * @param string                $content_dir wp-content.
 	 * @param string                $uploads_dir uploads base.
 	 * @param array<string, string> $ini         Effective ini values the checks may read.
-	 * @param array<string, mixed>  $extra       Optional: mu_plugins_dir, db, loopback, baselines, previous, constants, file_modes, now.
+	 * @param array<string, mixed>  $extra       Optional: mu_plugins_dir, db, loopback, vuln_feed, software, baselines, previous, constants, file_modes, now.
 	 */
 	public function __construct( string $root, string $content_dir, string $uploads_dir, array $ini = array(), array $extra = array() ) {
 		$this->root           = Filesystem::normalise( $root );
@@ -125,6 +139,8 @@ final class Context {
 			: $this->content_dir . '/mu-plugins';
 		$this->db             = isset( $extra['db'] ) && $extra['db'] instanceof Database ? $extra['db'] : null;
 		$this->loopback       = isset( $extra['loopback'] ) && $extra['loopback'] instanceof Loopback ? $extra['loopback'] : null;
+		$this->vuln_feed      = isset( $extra['vuln_feed'] ) && $extra['vuln_feed'] instanceof Vuln_Feed ? $extra['vuln_feed'] : null;
+		$this->software       = isset( $extra['software'] ) && is_array( $extra['software'] ) ? $extra['software'] : array();
 		$this->baselines      = isset( $extra['baselines'] ) && is_array( $extra['baselines'] ) ? $extra['baselines'] : array();
 		$this->previous       = isset( $extra['previous'] ) && is_array( $extra['previous'] ) ? $extra['previous'] : array();
 		$this->constants      = isset( $extra['constants'] ) && is_array( $extra['constants'] ) ? $extra['constants'] : array();
@@ -165,11 +181,69 @@ final class Context {
 				'mu_plugins_dir' => WPMU_PLUGIN_DIR,
 				'db'             => new Wpdb_Database( $wpdb ),
 				'loopback'       => $network ? new Wp_Loopback() : null,
+				'vuln_feed'      => $network ? new Wp_Vuln_Feed() : null,
+				'software'       => self::installed_software(),
 				'baselines'      => $baselines,
 				'previous'       => $previous,
 				'constants'      => $constants,
 			)
 		);
+	}
+
+	/**
+	 * Core, every installed plugin (active or not: the files are still reachable) and every installed theme.
+	 *
+	 * @return array<int, array{type: string, slug: string, name: string, version: string}>
+	 */
+	private static function installed_software(): array {
+		global $wp_version;
+		$out = array(
+			array(
+				'type'    => 'core',
+				'slug'    => 'wordpress',
+				'name'    => 'WordPress',
+				'version' => (string) $wp_version,
+			),
+		);
+		if ( ! function_exists( 'get_plugins' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/plugin.php';
+		}
+		foreach ( get_plugins() as $file => $data ) {
+			$dir   = dirname( (string) $file );
+			$out[] = array(
+				'type'    => 'plugin',
+				'slug'    => '.' === $dir ? basename( (string) $file, '.php' ) : $dir,
+				'name'    => (string) $data['Name'],
+				'version' => (string) $data['Version'],
+			);
+		}
+		foreach ( wp_get_themes() as $slug => $theme ) {
+			$out[] = array(
+				'type'    => 'theme',
+				'slug'    => (string) $slug,
+				'name'    => (string) $theme->get( 'Name' ),
+				'version' => (string) $theme->get( 'Version' ),
+			);
+		}
+		return $out;
+	}
+
+	/**
+	 * Vulnerability feed, or null.
+	 *
+	 * @return Vuln_Feed|null
+	 */
+	public function vuln_feed(): ?Vuln_Feed {
+		return $this->vuln_feed;
+	}
+
+	/**
+	 * Installed software.
+	 *
+	 * @return array<int, array{type: string, slug: string, name: string, version: string}>
+	 */
+	public function software(): array {
+		return $this->software;
 	}
 
 	/**

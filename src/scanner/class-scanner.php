@@ -57,6 +57,7 @@ final class Scanner {
 				new \Earlyward\Checks\Hosting\Open_Basedir_Check(),
 				new \Earlyward\Checks\Hosting\Exposed_Backup_Check(),
 				new \Earlyward\Checks\Hosting\Config_Permissions_Check(),
+				new \Earlyward\Checks\Vulnerabilities\Known_Vulnerability_Check(),
 			)
 		);
 	}
