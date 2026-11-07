@@ -50,7 +50,7 @@ only when the set of warning or critical findings changes.
 
 ## Planned
 
-Site Health integration, more checks (PHP limits, disk space, certificates,
+More checks (PHP limits, disk space, certificates,
 opcache), reversible one-click hardening, and an external
 probe script. See the [roadmap](docs/ROADMAP.md).
 

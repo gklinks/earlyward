@@ -30,6 +30,9 @@ final class Plugin {
 		// Self-heal the schedule (malware and migrations both drop cron events). Admin requests only.
 		add_action( 'admin_init', array( __CLASS__, 'ensure_scheduled' ) );
 
+		// Not admin-only: WordPress also runs Site Health tests from its own scheduled check.
+		Admin\Site_Health::boot();
+
 		if ( is_admin() ) {
 			Admin\Page::boot();
 		}
