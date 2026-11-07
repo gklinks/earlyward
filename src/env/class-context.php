@@ -167,11 +167,19 @@ final class Context {
 		}
 		$uploads = wp_upload_dir( null, false );
 		$ini     = array();
-		foreach ( array( 'auto_prepend_file', 'auto_append_file', 'open_basedir', 'error_log' ) as $name ) {
+		foreach ( array( 'auto_prepend_file', 'auto_append_file', 'open_basedir', 'error_log', 'memory_limit' ) as $name ) {
 			$value        = ini_get( $name );
 			$ini[ $name ] = false === $value ? '' : (string) $value;
 		}
-		$ini['earlyward.sapi'] = PHP_SAPI;
+		$ini['earlyward.sapi']        = PHP_SAPI;
+		$ini['earlyward.php_version'] = PHP_VERSION;
+		// A disabled or restricted function is a normal case on shared hosting, so the errors are not shown.
+		$free  = function_exists( 'disk_free_space' ) ? @disk_free_space( ABSPATH ) : false; // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
+		$total = function_exists( 'disk_total_space' ) ? @disk_total_space( ABSPATH ) : false; // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
+		if ( false !== $free && false !== $total ) {
+			$ini['earlyward.disk_free']  = (string) (int) $free;
+			$ini['earlyward.disk_total'] = (string) (int) $total;
+		}
 		return new self(
 			ABSPATH,
 			WP_CONTENT_DIR,

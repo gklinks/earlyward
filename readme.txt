@@ -4,7 +4,7 @@ Tags: security, malware, diagnostics, monitoring, hardening
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 0.2.0
+Stable tag: 0.3.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -41,6 +41,11 @@ Scans run in WP-Cron or WP-CLI, never while a visitor loads a page. Measured cos
 Privately, through the Security tab of the GitHub repository. Please do not open a public issue.
 
 == Changelog ==
+
+= 0.3.0 =
+* Still an early preview: not yet recommended for production sites.
+* New checks: PHP past end of life or with a very low memory limit (B5), disk nearly full (B6), PHP files inside the uploads folder (C12), newest backup older than 14 days (H2, shown under Housekeeping, never sends an alert email).
+* Each new check stays quiet when it cannot read the value it needs.
 
 = 0.2.0 =
 * Still an early preview: not yet recommended for production sites.

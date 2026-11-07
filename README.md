@@ -16,7 +16,7 @@ on one shared hosting account, a second paid-backlink campaign hiding inside the
 separate outage where the site kept answering HTTP 200 while it was broken, for 12 days, without
 anyone noticing.
 
-## What works in 0.2
+## What works in 0.3
 
 Every finding says what is wrong, how sure the check is, and the exact steps to fix it, and shows its
 evidence (file and line, user, option or URL) so you can judge it yourself.
@@ -34,6 +34,9 @@ evidence (file and line, user, option or URL) so you can judge it yourself.
 - **B1** Other WordPress sites readable by this site's PHP (one break-in reaches all of them).
 - **B2** No `open_basedir` limit, so PHP can open files anywhere the account can.
 - **B4** `wp-config.php` that other accounts on the server can read (a note) or change (a warning). It does not help against sites that share one system user; B1 covers that.
+- **B5** PHP past end of life (or within 90 days of it), and a PHP memory limit under 64 MB.
+- **B6** A disk that is nearly full (free space as a percentage and in absolute terms).
+- **H2** (housekeeping, info only) the newest backup in UpdraftPlus's own history is more than 14 days old.
 - **H1** (housekeeping, info only) older local UpdraftPlus backup copies that use space on the server. It offers to delete them only when UpdraftPlus's own history shows the newest backup was uploaded to remote storage. It is shown in its own "Housekeeping" section and never sends an alert.
 - **B3** Backups, database dumps and config copies where the web server can serve them. For archives it asks the site itself for the file's headers, and an archive that is really being served is reported as critical.
 
@@ -46,6 +49,7 @@ evidence (file and line, user, option or URL) so you can judge it yourself.
 - **C5** Application passwords on administrator accounts (they survive password changes).
 - **C6** Custom CSS that hides a user from the Users screen.
 - **C9** Links hidden off-screen inside published content.
+- **C12** PHP files inside the uploads folder (tiny "Silence is golden" placeholders are ignored; files with malware traits are critical).
 
 **Known vulnerabilities (opt-in)**
 

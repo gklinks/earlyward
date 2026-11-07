@@ -2,14 +2,14 @@
 # This file is distributed under the GPL-2.0-or-later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Earlyward 0.2.0\n"
+"Project-Id-Version: Earlyward 0.3.0\n"
 "Report-Msgid-Bugs-To: https://github.com/gklinks/earlyward/issues\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-11-07T15:17:22+00:00\n"
+"POT-Creation-Date: 2026-11-07T15:34:42+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: earlyward\n"
@@ -747,6 +747,30 @@ msgstr ""
 msgid "The file holds your database password and keys. Most hosts keep accounts apart, so this is often harmless, but owner-only access costs nothing and closes the gap on hosts that do not."
 msgstr ""
 
+#: src/checks/hosting/class-disk-space-check.php:69
+msgid "The disk is almost full"
+msgstr ""
+
+#: src/checks/hosting/class-disk-space-check.php:69
+msgid "The disk is getting full"
+msgstr ""
+
+#: src/checks/hosting/class-disk-space-check.php:70
+msgid "When the disk is full, uploads, backups and database writes fail, and error logs stop, often without a clear message. On shared hosting this figure can describe the whole server rather than only your account."
+msgstr ""
+
+#: src/checks/hosting/class-disk-space-check.php:84
+msgid "Delete old backups, caches and unused media, and check the Housekeeping section of Earlyward for old backup copies."
+msgstr ""
+
+#: src/checks/hosting/class-disk-space-check.php:85
+msgid "Look for very large error logs (debug.log, error_log) and remove or rotate them."
+msgstr ""
+
+#: src/checks/hosting/class-disk-space-check.php:86
+msgid "If the figure describes your whole account or plan, ask your host about the quota."
+msgstr ""
+
 #: src/checks/hosting/class-exposed-backup-check.php:164
 msgid "Open the file's web address in a private browser window. If it downloads, assume someone else has a copy."
 msgstr ""
@@ -823,6 +847,46 @@ msgstr ""
 msgid "If the host offers per-site system users or PHP pools, prefer that: it is a stronger separation."
 msgstr ""
 
+#: src/checks/hosting/class-php-runtime-check.php:99
+msgid "PHP memory limit is very low"
+msgstr ""
+
+#: src/checks/hosting/class-php-runtime-check.php:100
+msgid "Pages, imports and updates can fail with a blank screen or a \"memory exhausted\" error when PHP is allowed less than 64 MB."
+msgstr ""
+
+#: src/checks/hosting/class-php-runtime-check.php:103
+msgid "Ask your host to raise memory_limit to at least 128M, or raise it yourself in the hosting control panel (PHP settings)."
+msgstr ""
+
+#: src/checks/hosting/class-php-runtime-check.php:135
+msgid "Ask your host to switch this site to a supported PHP version (the hosting control panel usually has a \"PHP version\" selector)."
+msgstr ""
+
+#: src/checks/hosting/class-php-runtime-check.php:136
+msgid "Before switching, update your plugins and theme, and keep a backup, because very old plugins can stop working on newer PHP."
+msgstr ""
+
+#. translators: %s: PHP version, for example 7.4.33
+#: src/checks/hosting/class-php-runtime-check.php:144
+#, php-format
+msgid "PHP %s no longer receives security fixes"
+msgstr ""
+
+#: src/checks/hosting/class-php-runtime-check.php:145
+msgid "This PHP branch reached end of life. Security problems found in it are no longer fixed, so a flaw in PHP itself stays open on this server."
+msgstr ""
+
+#. translators: %s: PHP version, for example 8.1.2
+#: src/checks/hosting/class-php-runtime-check.php:155
+#, php-format
+msgid "PHP %s reaches end of life soon"
+msgstr ""
+
+#: src/checks/hosting/class-php-runtime-check.php:156
+msgid "After the end-of-life date this PHP branch no longer receives security fixes. Plan the switch to a supported version now."
+msgstr ""
+
 #. translators: %d: number of other WordPress installs this site can read. The singular is only used for exactly one, so it has no number.
 #: src/checks/hosting/class-shared-user-check.php:62
 msgid "Another WordPress install can be read by this site"
@@ -848,6 +912,26 @@ msgstr ""
 
 #: src/checks/hosting/class-shared-user-check.php:71
 msgid "Ask your host to set open_basedir per site if separate users are not possible. It is weaker, but it stops casual cross-site reads."
+msgstr ""
+
+#. translators: %d: number of days
+#: src/checks/housekeeping/class-backup-freshness-check.php:75
+#, php-format
+msgid "The newest backup is %d day old"
+msgid_plural "The newest backup is %d days old"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/checks/housekeeping/class-backup-freshness-check.php:76
+msgid "The backup plugin's own history shows no recent backup. Scheduled backups may have stopped, for example because WP-Cron is not running or the plan limit was reached."
+msgstr ""
+
+#: src/checks/housekeeping/class-backup-freshness-check.php:87
+msgid "Open the backup plugin and check that a schedule is set and that the last run did not report an error."
+msgstr ""
+
+#: src/checks/housekeeping/class-backup-freshness-check.php:88
+msgid "Run a backup now and confirm that it reaches your remote storage."
 msgstr ""
 
 #: src/checks/housekeeping/class-old-backups-check.php:145
@@ -1229,6 +1313,34 @@ msgstr ""
 
 #: src/checks/integrity/class-unexpected-php-check.php:350
 msgid "Look for a non-hidden file with the same name next to it."
+msgstr ""
+
+#: src/checks/integrity/class-uploads-php-check.php:140
+msgid "Open the file in a text editor (do not run it) and check what it does. Image and document uploads never need PHP."
+msgstr ""
+
+#: src/checks/integrity/class-uploads-php-check.php:141
+msgid "If you do not recognise it, download a copy for your records, then delete it, and look for other files with the same name or a similar one added at the same time."
+msgstr ""
+
+#: src/checks/integrity/class-uploads-php-check.php:142
+msgid "Ask your host to block PHP execution inside the uploads folder, so a file like this cannot run even if one is planted."
+msgstr ""
+
+#: src/checks/integrity/class-uploads-php-check.php:149
+msgid "A PHP file with malware traits sits in uploads"
+msgstr ""
+
+#: src/checks/integrity/class-uploads-php-check.php:150
+msgid "The file contains code patterns used to hide and run attacker code, and uploads is a folder anyone can reach from the web. Treat the site as possibly compromised."
+msgstr ""
+
+#: src/checks/integrity/class-uploads-php-check.php:159
+msgid "A PHP file sits in the uploads folder"
+msgstr ""
+
+#: src/checks/integrity/class-uploads-php-check.php:160
+msgid "Uploads should contain images and documents only. Some plugins keep PHP there on purpose, but attackers use this folder because it is writable and public."
 msgstr ""
 
 #. translators: %s: name of the tool that switched the code off.

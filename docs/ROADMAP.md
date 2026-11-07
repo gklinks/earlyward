@@ -42,12 +42,13 @@ shows they behave on real sites. Check IDs refer to the ranked list in [PHASE-0-
 
 ## v0.2 — dogfood
 
-- [ ] Remaining runtime and hosting checks (A5-A8, B4-B9)
+- [x] B5 PHP end of life and memory limit, B6 disk space, C12 PHP in uploads, H2 backup freshness
+- [ ] Remaining runtime and hosting checks (A5-A8, B7-B9)
 - [ ] C7 opcache serving deleted files, C8 detached PHP processes, C10-C13
 - [x] Site Health integration (reads the stored scan only; critical -> critical, warning -> recommended)
 - [x] "Copy this to your host's support" block (on the admin page)
 - [x] Overview tab: waiting updates, pending comments, administrators and newest users, cron jobs by owner, last change in findings (read-only; no login-IP log, no backup tools)
-- [ ] Backup freshness warning (reads the backup plugin's own history; read-only)
+- [x] Backup freshness note (H2: reads the backup plugin's own history; read-only)
 - [ ] Optional login log for administrators (opt-in, bounded, with a retention limit)
 - [ ] External probe script
 - [x] Measured cost published in `docs/COST.md` (local site; real-hosting figures still to come)
