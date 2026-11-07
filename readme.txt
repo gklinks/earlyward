@@ -43,4 +43,9 @@ Privately, through the Security tab of the GitHub repository. Please do not open
 == Changelog ==
 
 = 0.1.0 =
-* Pre-release: auto_prepend_file loader check (C1) and zip seed check (C2), WP-CLI command.
+* Early preview. Not yet recommended for production sites.
+* Runtime checks: silent outage against a known-good baseline (A1), code switched off after a crash and recovery mode (A2), runaway error logs (A3), WP-Cron not firing (A4).
+* Hosting checks: other sites readable by this site's PHP (B1), no open_basedir (B2), backups and dumps the web server can serve (B3).
+* Malware indicators: auto_prepend_file loaders (C1), self-healing zip seeds (C2), unexpected PHP in wp-content (C3), automation-shaped administrators (C4), application passwords on administrators (C5), CSS hiding a user (C6), links hidden off-screen (C9).
+* Hourly scan in WP-Cron; email only when warning or critical findings change.
+* WP-CLI: `wp earlyward scan`, `run`, `report`, `baseline`. No admin screen yet.

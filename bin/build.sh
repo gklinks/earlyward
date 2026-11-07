@@ -23,6 +23,19 @@ fi
 if command -v zip >/dev/null 2>&1; then
 	(cd build && zip -qr "earlyward-${VERSION}.zip" earlyward)
 	echo "built build/earlyward-${VERSION}.zip"
+elif command -v "${PHP:-php}" >/dev/null 2>&1; then
+	# No zip tool (e.g. Git Bash on Windows): use PHP's ZipArchive, forward-slash paths.
+	"${PHP:-php}" -r '
+		$zip = new ZipArchive();
+		if ( true !== $zip->open( $argv[1], ZipArchive::CREATE | ZipArchive::OVERWRITE ) ) { exit( 1 ); }
+		$it = new RecursiveIteratorIterator( new RecursiveDirectoryIterator( "build/earlyward", FilesystemIterator::SKIP_DOTS ) );
+		foreach ( $it as $file ) {
+			$path = str_replace( "\\", "/", $file->getPathname() );
+			$zip->addFile( $file->getPathname(), substr( $path, strlen( "build/" ) ) );
+		}
+		exit( $zip->close() ? 0 : 1 );
+	' "build/earlyward-${VERSION}.zip"
+	echo "built build/earlyward-${VERSION}.zip"
 else
 	echo "built $OUT (zip not available, archive skipped)"
 fi

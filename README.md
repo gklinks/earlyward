@@ -71,8 +71,9 @@ PHP 7.4 or newer, WordPress 6.4 or newer.
 
 ## Install
 
-There is no packaged release yet. To try the preview on a test site, build it from source (see
-[CONTRIBUTING.md](CONTRIBUTING.md)) and copy `build/earlyward` to `wp-content/plugins/`, then:
+Try the preview on a test site, not a production one. Download `earlyward-<version>.zip` from
+[Releases](https://github.com/gklinks/earlyward/releases) and upload it under Plugins → Add New →
+Upload Plugin (or build it from source, see [CONTRIBUTING.md](CONTRIBUTING.md)). Then:
 
 ```sh
 wp plugin activate earlyward
