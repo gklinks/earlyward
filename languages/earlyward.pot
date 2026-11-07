@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-11-07T11:25:25+00:00\n"
+"POT-Creation-Date: 2026-11-07T11:36:19+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: earlyward\n"
@@ -20,9 +20,12 @@ msgstr ""
 #: src/admin/class-page.php:50
 #: src/admin/class-page.php:128
 #: src/admin/class-page.php:193
-#: src/admin/class-site-health.php:142
 #: src/admin/class-site-health.php:160
-#: src/admin/class-site-health.php:219
+#: src/admin/class-site-health.php:178
+#: src/admin/class-site-health.php:292
+#: src/admin/class-site-health.php:325
+#: src/admin/class-site-health.php:400
+#: src/admin/class-site-health.php:420
 #: src/admin/class-status.php:155
 msgid "Earlyward"
 msgstr ""
@@ -301,6 +304,7 @@ msgstr ""
 #. translators: %d: number of critical and warning findings.
 #: src/admin/class-page.php:174
 #: src/admin/class-page.php:300
+#: src/admin/class-site-health.php:384
 msgid "Findings"
 msgstr ""
 
@@ -309,6 +313,7 @@ msgid "Early preview. Earlyward reports signs of an attack and of broken hosting
 msgstr ""
 
 #: src/admin/class-page.php:224
+#: src/admin/class-site-health.php:380
 msgid "Last scan"
 msgstr ""
 
@@ -392,7 +397,7 @@ msgstr ""
 
 #. translators: 1: check ID such as C1, 2: confidence level (high, medium, low).
 #: src/admin/class-page.php:341
-#: src/admin/class-site-health.php:112
+#: src/admin/class-site-health.php:130
 #, php-format
 msgid "Check %1$s, %2$s confidence."
 msgstr ""
@@ -402,12 +407,12 @@ msgid "Why it matters:"
 msgstr ""
 
 #: src/admin/class-page.php:349
-#: src/admin/class-site-health.php:120
+#: src/admin/class-site-health.php:138
 msgid "Evidence:"
 msgstr ""
 
 #: src/admin/class-page.php:365
-#: src/admin/class-site-health.php:131
+#: src/admin/class-site-health.php:149
 msgid "What to do:"
 msgstr ""
 
@@ -431,69 +436,191 @@ msgstr ""
 msgid "Press Ctrl+C to copy the selected text."
 msgstr ""
 
-#: src/admin/class-site-health.php:60
+#: src/admin/class-site-health.php:61
 msgid "Earlyward scans are running"
 msgstr ""
 
-#: src/admin/class-site-health.php:87
+#: src/admin/class-site-health.php:89
+msgid "Earlyward checks that found nothing"
+msgstr ""
+
+#: src/admin/class-site-health.php:96
+msgid "Some Earlyward checks could not run"
+msgstr ""
+
+#: src/admin/class-site-health.php:105
 msgid "Earlyward findings"
 msgstr ""
 
-#: src/admin/class-site-health.php:165
+#: src/admin/class-site-health.php:183
 msgid "Earlyward has not scanned this site yet"
 msgstr ""
 
-#: src/admin/class-site-health.php:171
+#: src/admin/class-site-health.php:189
 msgid "No scan has been stored. Run one from the Earlyward screen, or wait for the hourly WP-Cron scan."
 msgstr ""
 
 #. translators: 1: number of critical findings, 2: number of warnings.
-#: src/admin/class-site-health.php:184
+#: src/admin/class-site-health.php:202
 #, php-format
 msgid "Earlyward reports %1$d critical and %2$d warning findings"
 msgstr ""
 
-#: src/admin/class-site-health.php:193
+#: src/admin/class-site-health.php:211
 msgid "Each one is listed separately in this report, with its evidence and fix steps."
 msgstr ""
 
-#: src/admin/class-site-health.php:199
+#: src/admin/class-site-health.php:217
 msgid "Earlyward found no critical or warning findings in its last scan"
 msgstr ""
 
-#: src/admin/class-site-health.php:202
+#: src/admin/class-site-health.php:220
 msgid "This means the checks that ran found nothing to report. It is not proof that the site is clean or safe."
 msgstr ""
 
-#: src/admin/class-site-health.php:226
-msgid "The Earlyward hourly scan is not scheduled"
+#: src/admin/class-site-health.php:233
+msgid "Homepage and REST API answer normally"
 msgstr ""
 
-#: src/admin/class-site-health.php:229
-msgid "Something removed the scheduled event. It is re-added when an administrator opens a WordPress admin page. If it keeps disappearing, find out what removes it."
+#: src/admin/class-site-health.php:234
+msgid "No recent PHP crashes"
+msgstr ""
+
+#: src/admin/class-site-health.php:235
+msgid "PHP error log is a normal size"
 msgstr ""
 
 #: src/admin/class-site-health.php:236
-msgid "The last Earlyward scan is more than 3 hours old"
+msgid "WP-Cron is running on time"
+msgstr ""
+
+#: src/admin/class-site-health.php:237
+msgid "No code is injected before every request"
+msgstr ""
+
+#: src/admin/class-site-health.php:238
+msgid "No disguised archives holding PHP code"
 msgstr ""
 
 #: src/admin/class-site-health.php:239
-msgid "Scans should run every hour. WP-Cron may not be running on this site, and Earlyward cannot warn you if its own scheduler has stopped."
+msgid "No unexpected PHP files or drop-ins"
+msgstr ""
+
+#: src/admin/class-site-health.php:240
+msgid "Administrator accounts look normal"
+msgstr ""
+
+#: src/admin/class-site-health.php:241
+msgid "No unusual administrator credentials"
+msgstr ""
+
+#: src/admin/class-site-health.php:242
+msgid "No hidden user rows"
+msgstr ""
+
+#: src/admin/class-site-health.php:243
+msgid "No hidden links in content"
+msgstr ""
+
+#: src/admin/class-site-health.php:244
+msgid "Other sites cannot be read from here"
 msgstr ""
 
 #: src/admin/class-site-health.php:245
+msgid "PHP is limited to this site's files"
+msgstr ""
+
+#: src/admin/class-site-health.php:246
+msgid "No backups or dumps can be downloaded"
+msgstr ""
+
+#: src/admin/class-site-health.php:247
+msgid "wp-config.php is not open to other accounts"
+msgstr ""
+
+#. translators: %d: number of checks.
+#: src/admin/class-site-health.php:286
+#, php-format
+msgid "%d Earlyward check found nothing to report"
+msgid_plural "%d Earlyward checks found nothing to report"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/admin/class-site-health.php:295
+msgid "These checks ran in the last scan and found nothing. That is not proof that the site is clean or safe."
+msgstr ""
+
+#. translators: %d: number of checks.
+#: src/admin/class-site-health.php:319
+#, php-format
+msgid "%d Earlyward check could not run"
+msgid_plural "%d Earlyward checks could not run"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/admin/class-site-health.php:328
+msgid "A check that fails is skipped so the rest of the site keeps working, which means nothing was checked for it. The error is on the Earlyward screen; please include it when you report the problem."
+msgstr ""
+
+#: src/admin/class-site-health.php:349
+msgid "never"
+msgstr ""
+
+#: src/admin/class-site-health.php:350
+msgid "not scheduled"
+msgstr ""
+
+#. translators: 1: critical count, 2: warning count, 3: info count.
+#: src/admin/class-site-health.php:355
+#, php-format
+msgid "%1$d critical, %2$d warning, %3$d info"
+msgstr ""
+
+#: src/admin/class-site-health.php:379
+msgid "Version"
+msgstr ""
+
+#: src/admin/class-site-health.php:381
+msgid "Next scan"
+msgstr ""
+
+#: src/admin/class-site-health.php:382
+msgid "Checks run"
+msgstr ""
+
+#: src/admin/class-site-health.php:383
+msgid "Checks failed"
+msgstr ""
+
+#: src/admin/class-site-health.php:427
+msgid "The Earlyward hourly scan is not scheduled"
+msgstr ""
+
+#: src/admin/class-site-health.php:430
+msgid "Something removed the scheduled event. It is re-added when an administrator opens a WordPress admin page. If it keeps disappearing, find out what removes it."
+msgstr ""
+
+#: src/admin/class-site-health.php:437
+msgid "The last Earlyward scan is more than 3 hours old"
+msgstr ""
+
+#: src/admin/class-site-health.php:440
+msgid "Scans should run every hour. WP-Cron may not be running on this site, and Earlyward cannot warn you if its own scheduler has stopped."
+msgstr ""
+
+#: src/admin/class-site-health.php:446
 msgid "Earlyward scans are scheduled and recent"
 msgstr ""
 
-#: src/admin/class-site-health.php:251
+#: src/admin/class-site-health.php:452
 msgid "The hourly scan is scheduled and has not run yet."
 msgstr ""
 
-#: src/admin/class-site-health.php:251
+#: src/admin/class-site-health.php:452
 msgid "The hourly scan is scheduled and the last one ran within 3 hours."
 msgstr ""
 
-#: src/admin/class-site-health.php:264
+#: src/admin/class-site-health.php:465
 #: src/admin/class-status.php:195
 msgid "Open Earlyward"
 msgstr ""

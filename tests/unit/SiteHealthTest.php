@@ -125,4 +125,53 @@ final class SiteHealthTest extends TestCase {
 		$this->assertSame( 'recommended', Site_Health::freshness_result( array( 'at' => $now - 4 * 3600 ), $now + 600, $now, self::URL )['status'] );
 		$this->assertSame( 'recommended', Site_Health::freshness_result( array( 'at' => $now - 60 ), false, $now, self::URL )['status'] );
 	}
+	/**
+	 * A check "found nothing" only if it ran, reported nothing and did not fail.
+	 */
+	public function test_passed_ids(): void {
+		$last = array(
+			'timings'  => array(
+				'A1' => 0.1,
+				'C1' => 0.1,
+				'C9' => 0.1,
+				'B1' => 0.1,
+			),
+			'errors'   => array( 'C1' => 'Error: boom' ),
+			'findings' => array( self::f( 'info' ) ), // From check C9.
+		);
+		$this->assertSame( array( 'A1', 'B1' ), Site_Health::passed_ids( $last ) );
+		$r = Site_Health::passed_result( $last, self::URL );
+		$this->assertSame( 'good', $r['status'] );
+		$this->assertStringContainsString( 'A1: ', $r['description'] );
+		$this->assertStringNotContainsString( 'C1: ', $r['description'] );
+	}
+
+	/**
+	 * A failed check is reported, so fail-open never means silently unchecked.
+	 */
+	public function test_failed_result_lists_the_check(): void {
+		$r = Site_Health::failed_result( array( 'errors' => array( 'C3' => '<b>x</b>' ) ), self::URL );
+		$this->assertSame( 'recommended', $r['status'] );
+		$this->assertStringContainsString( 'C3: ', $r['description'] );
+		$this->assertStringNotContainsString( '<b>', $r['description'], 'The error text is not shown here.' );
+	}
+
+	/**
+	 * The Info tab fields are plain facts.
+	 */
+	public function test_debug_fields(): void {
+		$fields = Site_Health::debug_fields(
+			array(
+				'timings'  => array( 'A1' => 1 ),
+				'findings' => array( self::f( 'warning' ) ),
+			),
+			'0.1.0',
+			'2026-11-07 12:00:00 UTC',
+			''
+		);
+		$this->assertSame( '0.1.0', $fields['Version'] );
+		$this->assertSame( 'not scheduled', $fields['Next scan'] );
+		$this->assertSame( '0 critical, 1 warning, 0 info', $fields['Findings'] );
+		$this->assertSame( 'never', Site_Health::debug_fields( array(), '0.1.0', '', '' )['Last scan'] );
+	}
 }
