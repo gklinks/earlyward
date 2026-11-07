@@ -1,0 +1,3 @@
+[
+	{ "check": "B3", "severity": "warning", "confidence": "medium", "where": [ "backup.zip" ] }
+]

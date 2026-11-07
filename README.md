@@ -33,7 +33,7 @@ evidence (file and line, user, option or URL) so you can judge it yourself.
 
 - **B1** Other WordPress sites readable by this site's PHP (one break-in reaches all of them).
 - **B2** No `open_basedir` limit, so PHP can open files anywhere the account can.
-- **B3** Backups, database dumps and config copies where the web server can serve them.
+- **B3** Backups, database dumps and config copies where the web server can serve them. For archives it asks the site itself for the file's headers, and an archive that is really being served is reported as critical.
 
 **Malware indicators**
 

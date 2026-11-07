@@ -23,7 +23,7 @@ that is not on this list, that is a bug; please report it.
 
 ## Network
 
-Each scan makes two requests to the site's own address (`/` and `/wp-json/`, with a cache-busting query string) for check A1. Nothing else is contacted.
+Each scan makes two requests to the site's own address (`/` and `/wp-json/`, with a cache-busting query string) for check A1. Check B3 also sends a header-only request (HTTP HEAD, nothing is downloaded, redirects not followed) to the site's own address for each backup, dump or config copy it finds, at most 8 per scan, and none when there are no such files. Nothing else is contacted.
 
 ## Only after you confirm (none implemented yet)
 

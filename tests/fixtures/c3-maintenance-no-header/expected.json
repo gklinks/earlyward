@@ -1,0 +1,1 @@
+[ { "check": "C3", "severity": "warning", "confidence": "medium", "where": [ "wp-content/maintenance.php" ] } ]

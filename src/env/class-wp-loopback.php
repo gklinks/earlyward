@@ -17,6 +17,44 @@ final class Wp_Loopback implements Loopback {
 	const MAX_BYTES = 2097152;
 
 	/**
+	 * Headers only. Redirects are not followed: a redirect to a login page is not a download.
+	 *
+	 * @param string $path Path starting with "/".
+	 * @return array{status: int, type: string, length: int, error: string}
+	 */
+	public function head( string $path ): array {
+		$url  = add_query_arg( 'earlyward_probe', (string) time(), home_url( $path ) );
+		$resp = wp_remote_head(
+			$url,
+			array(
+				'timeout'     => 8,
+				'redirection' => 0,
+				'user-agent'  => 'Earlyward/' . ( defined( 'EARLYWARD_VERSION' ) ? EARLYWARD_VERSION : '0' ) . ' (exposure check, headers only)',
+				'headers'     => array( 'Cache-Control' => 'no-cache' ),
+				'cookies'     => array(),
+				/** This filter is documented in wp-includes/class-wp-http-streams.php */
+				'sslverify'   => apply_filters( 'https_local_ssl_verify', false ), // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- core filter.
+			)
+		);
+		if ( is_wp_error( $resp ) ) {
+			return array(
+				'status' => 0,
+				'type'   => '',
+				'length' => -1,
+				'error'  => $resp->get_error_message(),
+			);
+		}
+		$length = wp_remote_retrieve_header( $resp, 'content-length' );
+		$type   = wp_remote_retrieve_header( $resp, 'content-type' );
+		return array(
+			'status' => (int) wp_remote_retrieve_response_code( $resp ),
+			'type'   => is_string( $type ) ? strtolower( $type ) : '',
+			'length' => is_string( $length ) && ctype_digit( $length ) ? (int) $length : -1,
+			'error'  => '',
+		);
+	}
+
+	/**
 	 * Fetch.
 	 *
 	 * @param string $path Path starting with "/".

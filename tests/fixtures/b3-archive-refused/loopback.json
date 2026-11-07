@@ -1,0 +1,14 @@
+{
+    "/backup.zip": {
+        "status": 403,
+        "type": "text/html"
+    },
+    "/": {
+        "status": 200,
+        "file": "home.html"
+    },
+    "/wp-json/": {
+        "status": 200,
+        "file": "rest.json"
+    }
+}

@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-11-07T06:49:03+00:00\n"
+"POT-Creation-Date: 2026-11-07T07:45:17+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: earlyward\n"
@@ -275,43 +275,63 @@ msgstr ""
 msgid "Open Earlyward"
 msgstr ""
 
-#: src/checks/hosting/class-exposed-backup-check.php:105
+#: src/checks/hosting/class-exposed-backup-check.php:164
 msgid "Open the file's web address in a private browser window. If it downloads, assume someone else has a copy."
 msgstr ""
 
-#: src/checks/hosting/class-exposed-backup-check.php:106
+#: src/checks/hosting/class-exposed-backup-check.php:165
 msgid "Move it out of the website folder (for example to a \"backups\" folder beside it), or delete it if you have another copy."
 msgstr ""
 
-#: src/checks/hosting/class-exposed-backup-check.php:107
+#: src/checks/hosting/class-exposed-backup-check.php:166
 msgid "If it was downloadable and contains wp-config.php or a database, change the database password and the WordPress security keys."
 msgstr ""
 
-#: src/checks/hosting/class-exposed-backup-check.php:115
+#: src/checks/hosting/class-exposed-backup-check.php:174
 msgid "A copy of wp-config.php may be readable by anyone"
 msgstr ""
 
-#: src/checks/hosting/class-exposed-backup-check.php:116
+#: src/checks/hosting/class-exposed-backup-check.php:175
 msgid "Copies with endings like .bak or ~ are not run as PHP, so the web server sends them as plain text: database password and security keys included."
 msgstr ""
 
-#: src/checks/hosting/class-exposed-backup-check.php:126
+#: src/checks/hosting/class-exposed-backup-check.php:185
 msgid "A database dump sits inside the website folder"
 msgstr ""
 
-#: src/checks/hosting/class-exposed-backup-check.php:127
+#: src/checks/hosting/class-exposed-backup-check.php:186
 msgid "A database dump contains every user, password hash and setting. Inside the website folder it can usually be downloaded by anyone who guesses the name."
 msgstr ""
 
-#: src/checks/hosting/class-exposed-backup-check.php:136
+#: src/checks/hosting/class-exposed-backup-check.php:196
+msgid "An archive in the site root can be downloaded by anyone"
+msgstr ""
+
+#: src/checks/hosting/class-exposed-backup-check.php:196
+msgid "An archive in wp-content can be downloaded by anyone"
+msgstr ""
+
+#: src/checks/hosting/class-exposed-backup-check.php:197
+msgid "The site itself asked for this file over the web and the server said it would send it. Site backups always include wp-config.php, which holds the database password, so assume the contents are exposed."
+msgstr ""
+
+#: src/checks/hosting/class-exposed-backup-check.php:200
+msgid "Move it out of the website folder (for example to a \"backups\" folder beside it), or delete it if you have another copy. Do this first: the web server is sending it right now."
+msgstr ""
+
+#: src/checks/hosting/class-exposed-backup-check.php:201
+msgid "Open the file's web address again afterwards. It should say \"not found\"."
+msgstr ""
+
+#: src/checks/hosting/class-exposed-backup-check.php:210
 msgid "An archive sits in the site root, where it can probably be downloaded"
 msgstr ""
 
-#: src/checks/hosting/class-exposed-backup-check.php:136
+#: src/checks/hosting/class-exposed-backup-check.php:210
 msgid "An archive sits in wp-content, where it can probably be downloaded"
 msgstr ""
 
-#: src/checks/hosting/class-exposed-backup-check.php:137
+#: src/checks/hosting/class-exposed-backup-check.php:211
 msgid "Site backups always include wp-config.php, which holds the database password. Archives in a web folder are a common, easily guessed target."
 msgstr ""
 
@@ -633,7 +653,7 @@ msgid "Must-use plugins run on every request and cannot be switched off from the
 msgstr ""
 
 #: src/checks/integrity/class-unexpected-php-check.php:210
-#: src/checks/integrity/class-unexpected-php-check.php:310
+#: src/checks/integrity/class-unexpected-php-check.php:327
 msgid "If you recognise it, acknowledge it so Earlyward only alerts when it changes."
 msgstr ""
 
@@ -651,53 +671,65 @@ msgstr ""
 msgid "Reinstall the drop-in from the plugin that owns it (usually by turning its caching or database feature off and on), or remove it if nothing should own it."
 msgstr ""
 
+#: src/checks/integrity/class-unexpected-php-check.php:266
+msgid "A leftover maintenance page sits in wp-content"
+msgstr ""
+
+#: src/checks/integrity/class-unexpected-php-check.php:267
+msgid "WordPress only loads maintenance.php while it is updating itself, and this file looks like an automatically generated maintenance page from a plugin that is no longer installed. It is harmless on its own, but a file nobody owns is worth removing."
+msgstr ""
+
+#: src/checks/integrity/class-unexpected-php-check.php:269
+msgid "If you removed a maintenance-mode plugin, delete wp-content/maintenance.php. If you did not, find out how it got there."
+msgstr ""
+
 #. translators: %s: drop-in file name
-#: src/checks/integrity/class-unexpected-php-check.php:263
+#: src/checks/integrity/class-unexpected-php-check.php:280
 #, php-format
 msgid "The %s drop-in does not belong to any installed plugin"
 msgstr ""
 
-#: src/checks/integrity/class-unexpected-php-check.php:266
+#: src/checks/integrity/class-unexpected-php-check.php:283
 msgid "WordPress loads this file automatically. Normally it is written by a caching or database plugin and names that plugin. Malware has used fake drop-ins with these exact names."
 msgstr ""
 
-#: src/checks/integrity/class-unexpected-php-check.php:268
+#: src/checks/integrity/class-unexpected-php-check.php:285
 msgid "Find out which plugin created it. If it belongs to a plugin you removed, delete the drop-in; if you cannot tell, compare it with a fresh copy."
 msgstr ""
 
-#: src/checks/integrity/class-unexpected-php-check.php:296
+#: src/checks/integrity/class-unexpected-php-check.php:313
 msgid "Suspicious PHP file directly in wp-content"
 msgstr ""
 
-#: src/checks/integrity/class-unexpected-php-check.php:297
+#: src/checks/integrity/class-unexpected-php-check.php:314
 msgid "WordPress never puts randomly named PHP files here. This matches the loader of a known self-healing malware kit."
 msgstr ""
 
-#: src/checks/integrity/class-unexpected-php-check.php:299
+#: src/checks/integrity/class-unexpected-php-check.php:316
 msgid "Check whether a .user.ini or .htaccess points at this file (see check C1), and look for a hidden twin starting with a dot."
 msgstr ""
 
-#: src/checks/integrity/class-unexpected-php-check.php:307
+#: src/checks/integrity/class-unexpected-php-check.php:324
 msgid "A PHP file sits directly in wp-content"
 msgstr ""
 
-#: src/checks/integrity/class-unexpected-php-check.php:308
+#: src/checks/integrity/class-unexpected-php-check.php:325
 msgid "Some plugins put configuration files here (for example cache settings). Confirm you know where it came from."
 msgstr ""
 
-#: src/checks/integrity/class-unexpected-php-check.php:328
+#: src/checks/integrity/class-unexpected-php-check.php:345
 msgid "A hidden PHP file (name starting with a dot)"
 msgstr ""
 
-#: src/checks/integrity/class-unexpected-php-check.php:329
+#: src/checks/integrity/class-unexpected-php-check.php:346
 msgid "Files starting with a dot are hidden from most file listings. WordPress core never ships one; malware uses them for its bootstrap and for background processes."
 msgstr ""
 
-#: src/checks/integrity/class-unexpected-php-check.php:332
+#: src/checks/integrity/class-unexpected-php-check.php:349
 msgid "Check running processes for anything executing this path (your host can do this): a process can keep running after the file is deleted."
 msgstr ""
 
-#: src/checks/integrity/class-unexpected-php-check.php:333
+#: src/checks/integrity/class-unexpected-php-check.php:350
 msgid "Look for a non-hidden file with the same name next to it."
 msgstr ""
 

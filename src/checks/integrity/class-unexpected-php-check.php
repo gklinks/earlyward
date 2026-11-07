@@ -253,6 +253,23 @@ final class Unexpected_Php_Check implements Check {
 			}
 		}
 
+		// maintenance.php is only loaded while WordPress is updating itself (when a .maintenance file
+		// exists), not on normal requests. A small, clearly generated page with no malware patterns is
+		// what a removed maintenance-mode plugin leaves behind: worth removing, not worth a warning.
+		// Anything with code patterns was already reported as critical above.
+		if ( 'maintenance.php' === $name && strlen( $code ) <= 20000 && 1 === preg_match( '/generated automatically|do not modify this file/i', $code ) ) {
+			return $this->make(
+				$ctx,
+				$path,
+				Finding::SEVERITY_INFO,
+				Finding::CONFIDENCE_LOW,
+				__( 'A leftover maintenance page sits in wp-content', 'earlyward' ),
+				__( 'WordPress only loads maintenance.php while it is updating itself, and this file looks like an automatically generated maintenance page from a plugin that is no longer installed. It is harmless on its own, but a file nobody owns is worth removing.', 'earlyward' ),
+				array(),
+				array( __( 'If you removed a maintenance-mode plugin, delete wp-content/maintenance.php. If you did not, find out how it got there.', 'earlyward' ) )
+			);
+		}
+
 		return $this->make(
 			$ctx,
 			$path,

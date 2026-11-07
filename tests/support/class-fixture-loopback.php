@@ -42,6 +42,22 @@ final class Fixture_Loopback implements Loopback {
 	}
 
 	/**
+	 * Headers for a path. A route may set "type" and "length"; unlisted paths answer 404 as HTML.
+	 *
+	 * @param string $path Path.
+	 * @return array{status: int, type: string, length: int, error: string}
+	 */
+	public function head( string $path ): array {
+		$route = $this->routes[ $path ] ?? array( 'status' => 404 );
+		return array(
+			'status' => (int) $route['status'],
+			'type'   => strtolower( (string) ( $route['type'] ?? 'text/html' ) ),
+			'length' => (int) ( $route['length'] ?? -1 ),
+			'error'  => (string) ( $route['error'] ?? '' ),
+		);
+	}
+
+	/**
 	 * Fetch.
 	 *
 	 * @param string $path Path.

@@ -1,0 +1,4 @@
+[
+	{ "check": "B3", "severity": "critical", "confidence": "high", "where": [ "backup.zip" ] },
+	{ "check": "B3", "severity": "critical", "confidence": "high", "where": [ "wp-content/old.zip" ] }
+]

@@ -1,0 +1,10 @@
+<?php
+
+//  ATTENTION!
+//
+//  DO NOT MODIFY THIS FILE BECAUSE IT WAS GENERATED AUTOMATICALLY,
+//  SO ALL YOUR CHANGES WILL BE LOST THE NEXT TIME THE FILE IS GENERATED.
+//  IF YOU REQUIRE TO APPLY CUSTOM MODIFICATIONS, PERFORM THEM IN THE FOLLOWING FILE:
+//  /site/wp-content/maintenance/template.phtml
+$protocol = $_SERVER["SERVER_PROTOCOL"];
+$inert_fixture_string = chr(97) . chr(98) . chr(99) . chr(100) . chr(101) . chr(102) . chr(103);
