@@ -31,7 +31,7 @@ shows they behave on real sites. Check IDs refer to the ranked list in [PHASE-0-
 - [ ] Verify WP-Cron spawning on a real host (not reproducible in the local SQLite test site)
 - [ ] Overall time budget, measured
 - [x] Email only when findings change
-- [ ] Plain admin page
+- [x] Plain admin page (Tools → Earlyward; in the development branch, not in the 0.1.0 zip)
 
 - [ ] i18n pass (finding text is English-only for now)
 
@@ -40,7 +40,7 @@ shows they behave on real sites. Check IDs refer to the ranked list in [PHASE-0-
 - [ ] Remaining runtime and hosting checks (A5-A8, B4-B9)
 - [ ] C7 opcache serving deleted files, C8 detached PHP processes, C10-C13
 - [ ] Site Health integration
-- [ ] "Copy this to your host's support" block
+- [x] "Copy this to your host's support" block (on the admin page)
 - [ ] External probe script
 - [ ] Measured cost published in `docs/COST.md`
 

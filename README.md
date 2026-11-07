@@ -3,8 +3,9 @@
 **Status: early preview (0.1). Not yet recommended for production sites.** The code is developed in
 the open. It has been tested against the fixtures in this repository and on a local WordPress, not yet
 on live hosting. The first release for production sites comes after weeks of testing on real sites
-(see [the release gate](docs/PHASE-0-PLAN.md#7-dogfood-and-the-false-positive-gate)). There is no
-admin screen yet: results come through WP-CLI and email.
+(see [the release gate](docs/PHASE-0-PLAN.md#7-dogfood-and-the-false-positive-gate)). The released
+0.1.0 has no admin screen: results come through WP-CLI and email. The development branch adds a
+screen under Tools → Earlyward (unreleased).
 
 Earlyward is a free, open-source WordPress plugin. It looks for signs of an attack, spots hardening
 that is missing or broken, and explains hosting and runtime problems in plain language: what is wrong,
@@ -49,8 +50,8 @@ only when the set of warning or critical findings changes.
 
 ## Planned
 
-An admin screen and Site Health integration, more checks (PHP limits, disk space, certificates,
-opcache), a "copy this to your host's support" block, reversible one-click hardening, and an external
+Site Health integration, more checks (PHP limits, disk space, certificates,
+opcache), reversible one-click hardening, and an external
 probe script. See the [roadmap](docs/ROADMAP.md).
 
 ## What it does NOT do

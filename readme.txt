@@ -48,4 +48,4 @@ Privately, through the Security tab of the GitHub repository. Please do not open
 * Hosting checks: other sites readable by this site's PHP (B1), no open_basedir (B2), backups and dumps the web server can serve (B3).
 * Malware indicators: auto_prepend_file loaders (C1), self-healing zip seeds (C2), unexpected PHP in wp-content (C3), automation-shaped administrators (C4), application passwords on administrators (C5), CSS hiding a user (C6), links hidden off-screen (C9).
 * Hourly scan in WP-Cron; email only when warning or critical findings change.
-* WP-CLI: `wp earlyward scan`, `run`, `report`, `baseline`. No admin screen yet.
+* WP-CLI: `wp earlyward scan`, `run`, `report`, `baseline`. An admin screen (Tools, Earlyward) is in development and not part of 0.1.0.

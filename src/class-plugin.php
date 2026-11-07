@@ -30,6 +30,10 @@ final class Plugin {
 		// Self-heal the schedule (malware and migrations both drop cron events). Admin requests only.
 		add_action( 'admin_init', array( __CLASS__, 'ensure_scheduled' ) );
 
+		if ( is_admin() ) {
+			Admin\Page::boot();
+		}
+
 		if ( defined( 'WP_CLI' ) && WP_CLI && class_exists( '\WP_CLI' ) ) {
 			\WP_CLI::add_command( 'earlyward', Cli\Command::class );
 		}

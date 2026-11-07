@@ -12,6 +12,11 @@ that is not on this list, that is a bug; please report it.
 | Scheduled scan | WP-Cron event `earlyward_scan`, hourly; re-added on admin pages if something removed it | Run scans off the front end | Yes (also removed on deactivation) |
 | Alert email | `wp_mail()` to the site's admin email address | Only when the set of warning/critical findings changes; info findings never email | n/a |
 
+**Admin screen (Tools → Earlyward).** Viewing it writes nothing. Two buttons write, both need the `manage_options` capability and a nonce, and both only do what the CLI already does:
+
+- *Scan now* runs the scheduled job once (same writes as a scheduled scan, same email rule).
+- *Set baseline* clears the A1 baseline and records a new one from a scan right now, if the homepage looks healthy. It does nothing unless the "I changed the site on purpose" box is ticked.
+
 `wp earlyward scan` writes nothing. `wp earlyward run` writes the same as a scheduled scan. `wp earlyward baseline --reset` clears the A1 baseline.
 
 ## Network
