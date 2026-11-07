@@ -23,6 +23,8 @@ that is not on this list, that is a bug; please report it.
 
 `wp earlyward scan` writes nothing. `wp earlyward run` writes the same as a scheduled scan. `wp earlyward baseline --reset` clears the A1 baseline.
 
+- The admin bar badge and the dashboard widget only read the stored scan result. They write nothing and start no scan.
+
 ## Network
 
 Each scan makes two requests to the site's own address (`/` and `/wp-json/`, with a cache-busting query string) for check A1. Check B3 also sends a header-only request (HTTP HEAD, nothing is downloaded, redirects not followed) to the site's own address for each backup, dump or config copy it finds, at most 8 per scan, and none when there are no such files. Nothing else is contacted.

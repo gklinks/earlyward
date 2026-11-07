@@ -23,7 +23,7 @@ final class Plugin {
 	const LOCK      = 'earlyward_scan_lock';
 
 	/**
-	 * Register hooks. Nothing here runs on front-end requests.
+	 * Register hooks. Scans never run on front-end requests; the admin bar badge only reads the stored result.
 	 */
 	public static function boot(): void {
 		add_action( self::CRON_HOOK, array( __CLASS__, 'run_scheduled_scan' ) );
@@ -32,6 +32,9 @@ final class Plugin {
 
 		// Not admin-only: WordPress also runs Site Health tests from its own scheduled check.
 		Admin\Site_Health::boot();
+
+		// Admin bar badge and dashboard widget: callbacks check the capability and only read the stored scan.
+		Admin\Status::boot();
 
 		if ( is_admin() ) {
 			Admin\Page::boot();

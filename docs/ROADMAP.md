@@ -26,6 +26,8 @@ shows they behave on real sites. Check IDs refer to the ranked list in [PHASE-0-
 - [x] B1 several sites sharing one Linux user
 - [x] B2 `open_basedir` unset
 - [x] B3 backups and dumps reachable in the docroot
+- [x] B4 wp-config.php readable or writable by other accounts
+- [x] Admin bar status badge and dashboard widget (administrators only, read-only)
 - [x] WP-CLI command `wp earlyward scan`
 - [x] Hourly WP-Cron scan with a lock; `wp earlyward run` and `report`
 - [ ] Verify WP-Cron spawning on a real host (not reproducible in the local SQLite test site)
