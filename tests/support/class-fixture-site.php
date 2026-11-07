@@ -6,6 +6,7 @@
  *   tree/           the site root (wp-content/, wp-content/uploads/, ...)
  *   ini.json        optional effective ini values
  *   expected.json   the findings the default scanner must return, no more, no less
+ *   layout.json     optional {"root": "dir"}: tree/ holds several sites, tree/dir is scanned
  *
  * Conventions inside tree/:
  *   - the text {ROOT} is replaced by the temporary site root (real configs hold absolute paths);
@@ -39,15 +40,27 @@ final class Fixture_Site {
 	public $case_dir;
 
 	/**
+	 * Per-case temporary directory that holds the site (and any sibling sites).
+	 *
+	 * @var string
+	 */
+	public $base;
+
+	/**
 	 * Build from a case directory.
 	 *
 	 * @param string $case_dir Case directory.
 	 */
 	public function __construct( string $case_dir ) {
 		$this->case_dir = $case_dir;
-		$this->root     = str_replace( '\\', '/', sys_get_temp_dir() ) . '/wallwarden-fixture-' . bin2hex( random_bytes( 6 ) );
+		$this->base     = str_replace( '\\', '/', sys_get_temp_dir() ) . '/wallwarden-fixture-' . bin2hex( random_bytes( 6 ) );
+		// Default: tree/ is the site root. With layout.json {"root": "x"}: tree/ holds several
+		// sites side by side and tree/x is this one (used for shared-hosting cases).
+		$layout     = is_file( $case_dir . '/layout.json' ) ? (array) json_decode( (string) file_get_contents( $case_dir . '/layout.json' ), true ) : array();
+		$has_layout = isset( $layout['root'] ) && is_string( $layout['root'] );
+		$this->root = $this->base . '/' . ( $has_layout ? $layout['root'] : 'site' );
 		mkdir( $this->root, 0777, true );
-		$this->copy( $case_dir . '/tree', $this->root );
+		$this->copy( $case_dir . '/tree', $has_layout ? $this->base : $this->root );
 		foreach ( array( '/wp-content', '/wp-content/uploads' ) as $dir ) {
 			if ( ! is_dir( $this->root . $dir ) ) {
 				mkdir( $this->root . $dir, 0777, true );
@@ -84,7 +97,7 @@ final class Fixture_Site {
 	 * Remove the temporary tree.
 	 */
 	public function destroy(): void {
-		self::remove( $this->root );
+		self::remove( $this->base );
 	}
 
 	/**
@@ -105,7 +118,9 @@ final class Fixture_Site {
 			if ( is_dir( $src ) && '.zip.src' === substr( $name, -8 ) ) {
 				$this->zip( $src, $to . '/' . substr( $name, 0, -4 ) );
 			} elseif ( is_dir( $src ) ) {
-				mkdir( $to . '/' . $name, 0777, true );
+				if ( ! is_dir( $to . '/' . $name ) ) {
+					mkdir( $to . '/' . $name, 0777, true );
+				}
 				$this->copy( $src, $to . '/' . $name );
 			} else {
 				file_put_contents( $to . '/' . $name, str_replace( '{ROOT}', $this->root, (string) file_get_contents( $src ) ) );

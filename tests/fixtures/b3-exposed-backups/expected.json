@@ -1,0 +1,6 @@
+[
+	{ "check": "B3", "severity": "critical", "confidence": "high", "where": [ "wp-config.php.bak" ] },
+	{ "check": "B3", "severity": "critical", "confidence": "high", "where": [ "db-export.sql" ] },
+	{ "check": "B3", "severity": "warning", "confidence": "medium", "where": [ "site-backup-2026.zip" ] },
+	{ "check": "B3", "severity": "warning", "confidence": "low", "where": [ "wp-content/backup.tar.gz" ] }
+]

@@ -46,8 +46,7 @@ final class Wpdb_Database implements Database {
 		if ( ! is_string( $value ) || ! is_serialized( $value ) ) {
 			return $value;
 		}
-		// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_unserialize -- objects disabled; attacker-written data.
-		$decoded = @unserialize( trim( $value ), array( 'allowed_classes' => false ) ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged -- malformed data is expected here.
+		$decoded = @unserialize( trim( $value ), array( 'allowed_classes' => false ) ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_unserialize, WordPress.PHP.NoSilencedErrors.Discouraged -- objects disabled (attacker-written data); malformed values are expected.
 		return ( false === $decoded && 'b:0;' !== trim( $value ) ) ? null : $decoded;
 	}
 
@@ -57,18 +56,19 @@ final class Wpdb_Database implements Database {
 	 * @return array<int, array{id: int, login: string, email: string, registered: string}>
 	 */
 	public function administrators(): array {
-		$key  = $this->wpdb->get_blog_prefix() . 'capabilities';
-		$rows = $this->wpdb->get_results(
-			$this->wpdb->prepare(
+		$wpdb = $this->wpdb;
+		$key  = $wpdb->get_blog_prefix() . 'capabilities';
+		$rows = $wpdb->get_results(
+			$wpdb->prepare(
 				'SELECT u.ID, u.user_login, u.user_email, u.user_registered, m.meta_value
 				FROM %i u
 				INNER JOIN %i m ON m.user_id = u.ID AND m.meta_key = %s
 				WHERE m.meta_value LIKE %s
 				LIMIT 1000',
-				$this->wpdb->users,
-				$this->wpdb->usermeta,
+				$wpdb->users,
+				$wpdb->usermeta,
 				$key,
-				'%' . $this->wpdb->esc_like( '"administrator"' ) . '%'
+				'%' . $wpdb->esc_like( '"administrator"' ) . '%'
 			),
 			ARRAY_A
 		);
@@ -96,10 +96,11 @@ final class Wpdb_Database implements Database {
 	 * @return mixed
 	 */
 	public function user_meta( int $user_id, string $key ) {
-		$value = $this->wpdb->get_var(
-			$this->wpdb->prepare(
+		$wpdb  = $this->wpdb;
+		$value = $wpdb->get_var(
+			$wpdb->prepare(
 				'SELECT meta_value FROM %i WHERE user_id = %d AND meta_key = %s LIMIT 1',
-				$this->wpdb->usermeta,
+				$wpdb->usermeta,
 				$user_id,
 				$key
 			)
@@ -117,6 +118,7 @@ final class Wpdb_Database implements Database {
 	 * @return array<int, array{id: int, type: string, title: string, content: string}>
 	 */
 	public function posts_containing( array $needles, array $types, array $statuses, int $limit ): array {
+		$wpdb    = $this->wpdb;
 		$needles = array_values( $needles );
 		if ( empty( $needles ) || empty( $types ) || empty( $statuses ) ) {
 			return array();
@@ -126,15 +128,15 @@ final class Wpdb_Database implements Database {
 		$out = array();
 		foreach ( $types as $type ) {
 			foreach ( $statuses as $status ) {
-				$rows = $this->wpdb->get_results(
-					$this->wpdb->prepare(
+				$rows = $wpdb->get_results(
+					$wpdb->prepare(
 						'SELECT ID, post_type, post_title, post_content FROM %i
 						WHERE post_type = %s AND post_status = %s AND post_content LIKE %s
 						ORDER BY ID LIMIT %d',
-						$this->wpdb->posts,
+						$wpdb->posts,
 						$type,
 						$status,
-						'%' . $this->wpdb->esc_like( $needles[0] ) . '%',
+						'%' . $wpdb->esc_like( $needles[0] ) . '%',
 						max( 1, $limit )
 					),
 					ARRAY_A
@@ -168,8 +170,9 @@ final class Wpdb_Database implements Database {
 	 * @return mixed
 	 */
 	public function option( string $name ) {
-		$value = $this->wpdb->get_var(
-			$this->wpdb->prepare( 'SELECT option_value FROM %i WHERE option_name = %s LIMIT 1', $this->wpdb->options, $name )
+		$wpdb  = $this->wpdb;
+		$value = $wpdb->get_var(
+			$wpdb->prepare( 'SELECT option_value FROM %i WHERE option_name = %s LIMIT 1', $wpdb->options, $name )
 		);
 		return null === $value ? null : self::decode( $value );
 	}

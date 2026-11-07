@@ -1,0 +1,3 @@
+[
+	{ "check": "B1", "severity": "warning", "confidence": "high", "where": [ "../site-b", "../site-c/public_html", "staging" ] }
+]

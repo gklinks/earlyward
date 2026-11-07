@@ -176,6 +176,25 @@ final class Context {
 	}
 
 	/**
+	 * Whether an ini value is known at all (as opposed to known to be empty).
+	 *
+	 * @param string $name Name.
+	 * @return bool
+	 */
+	public function has_ini( string $name ): bool {
+		return isset( $this->ini[ $name ] );
+	}
+
+	/**
+	 * Whether the scan runs from the command line, where PHP settings can differ from the web server's.
+	 *
+	 * @return bool
+	 */
+	public function is_cli(): bool {
+		return 'cli' === $this->ini( 'wallwarden.sapi' );
+	}
+
+	/**
 	 * Path relative to the WordPress root (or content dir), for evidence.
 	 * Keeps server paths out of emails and screenshots.
 	 *

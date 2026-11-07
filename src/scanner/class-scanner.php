@@ -45,6 +45,9 @@ final class Scanner {
 				new \Wallwarden\Checks\Integrity\Auto_Prepend_Check(),
 				new \Wallwarden\Checks\Integrity\Archive_Seed_Check(),
 				new \Wallwarden\Checks\Integrity\Unexpected_Php_Check(),
+				new \Wallwarden\Checks\Hosting\Shared_User_Check(),
+				new \Wallwarden\Checks\Hosting\Open_Basedir_Check(),
+				new \Wallwarden\Checks\Hosting\Exposed_Backup_Check(),
 			)
 		);
 	}

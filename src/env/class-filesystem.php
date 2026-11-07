@@ -128,6 +128,76 @@ final class Filesystem {
 	}
 
 	/**
+	 * Other WordPress installs this PHP process can read, found next to (or inside) a site root.
+	 *
+	 * The single deliberate exception to the allowed-roots rule: it only asks whether a file
+	 * named wp-config.php exists and is readable at a fixed set of shapes. It never opens one.
+	 * Returns nothing when open_basedir is set, because PHP would refuse (and warn) anyway.
+	 *
+	 * @param string $root        This site's root.
+	 * @param bool   $open_basedir Whether open_basedir is in effect.
+	 * @param int    $max_entries  Cap on directory entries examined per level.
+	 * @return string[] Locations relative to the parent of $root, for example "../other-site".
+	 */
+	public function readable_sibling_installs( string $root, bool $open_basedir, int $max_entries = 500 ): array {
+		if ( $open_basedir ) {
+			return array();
+		}
+		$root   = self::canonical( $root );
+		$parent = dirname( $root );
+		$found  = array();
+
+		$probe = static function ( string $dir ) {
+			$config = $dir . '/wp-config.php';
+			return is_file( $config ) && is_readable( $config );
+		};
+
+		$scan = static function ( string $dir, int $max ) {
+			$names  = array();
+			$handle = is_dir( $dir ) && is_readable( $dir ) ? opendir( $dir ) : false;
+			if ( false === $handle ) {
+				return $names;
+			}
+			$count = 0;
+			while ( $count < $max ) {
+				$name = readdir( $handle );
+				if ( false === $name ) {
+					break;
+				}
+				if ( '.' !== $name && '..' !== $name && is_dir( $dir . '/' . $name ) && ! is_link( $dir . '/' . $name ) ) {
+					$names[] = $name;
+					++$count;
+				}
+			}
+			closedir( $handle );
+			sort( $names );
+			return $names;
+		};
+
+		// Siblings: /home/user/<other-site>/ and /home/user/<other-site>/public_html/.
+		foreach ( $scan( $parent, $max_entries ) as $name ) {
+			$dir = self::normalise( $parent . '/' . $name );
+			if ( $dir === $root ) {
+				continue;
+			}
+			if ( $probe( $dir ) ) {
+				$found[] = '../' . $name;
+			} elseif ( $probe( $dir . '/public_html' ) ) {
+				$found[] = '../' . $name . '/public_html';
+			}
+		}
+
+		// Copies inside this site, such as a staging folder.
+		foreach ( $scan( $root, $max_entries ) as $name ) {
+			if ( 0 !== strpos( $name, 'wp-' ) && $probe( $root . '/' . $name ) ) {
+				$found[] = $name;
+			}
+		}
+
+		return $found;
+	}
+
+	/**
 	 * SHA-256 of the whole file (streamed), or '' when unreadable.
 	 *
 	 * @param string $path Path.

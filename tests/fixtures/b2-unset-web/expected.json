@@ -1,0 +1,3 @@
+[
+	{ "check": "B2", "severity": "warning", "confidence": "medium", "where": [ "php:open_basedir" ] }
+]
