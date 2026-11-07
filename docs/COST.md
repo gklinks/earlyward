@@ -26,7 +26,7 @@ Site Health reads the stored result and does not scan.
 | | |
 |---|---|
 | Date | 2026-11-07 |
-| Earlyward | development build after 0.1.0 (14 checks) |
+| Earlyward | development build after 0.1.0 (14 checks; later checks not yet measured) |
 | Machine | Windows 11, 32 GB RAM, local disk |
 | PHP / WordPress | 8.3.36, command line / 7.1.4 with SQLite instead of MySQL |
 | Site | 5 posts, 2 users, 9 plugins, about 3,600 files under `wp-content` (about 1,900 of them PHP) |

@@ -4,7 +4,7 @@ Tags: security, malware, diagnostics, monitoring, hardening
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 0.1.0
+Stable tag: 0.2.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -21,7 +21,7 @@ It was built from a real incident on a shared hosting account: a self-healing ma
 = What it does NOT do =
 
 * It does not make a site unhackable. Nothing installed inside WordPress can.
-* It does not remove malware or change anything automatically. Scans never write. A few confirmed one-click fixes exist on the Findings tab (owner-only wp-config.php, delete an exposed backup file, delete a leftover maintenance page); each is logged, and the constant EARLYWARD_NO_FIXES switches them off.
+* It does not remove malware or change anything automatically. Scans never write. A few confirmed one-click fixes exist on the Findings tab (owner-only wp-config.php, delete an exposed backup file, delete a leftover maintenance page, delete older local backup copies); each is logged, and the constant EARLYWARD_NO_FIXES switches them off.
 * It is not a firewall and does not block traffic.
 * It cannot see a total outage from inside: if PHP is down, so is the plugin.
 * It does not contact any outside server unless you switch that on. No telemetry.
@@ -41,6 +41,16 @@ Scans run in WP-Cron or WP-CLI, never while a visitor loads a page. Measured cos
 Privately, through the Security tab of the GitHub repository. Please do not open a public issue.
 
 == Changelog ==
+
+= 0.2.0 =
+* Still an early preview: not yet recommended for production sites.
+* New admin screen (Tools, Earlyward): Overview and Findings tabs, Scan now, Set baseline, a block to copy for your host's support.
+* Site Health integration, an admin bar status badge and a dashboard widget. They only show the last stored scan.
+* Confirmed one-click fixes: owner-only wp-config.php, delete an exposed backup file, delete a leftover maintenance page, delete older local backup copies (only when the newest backup is proven to be stored remotely). Each fix is logged; EARLYWARD_NO_FIXES switches them off.
+* New checks: wp-config.php permissions (B4); known vulnerabilities from the Wordfence Intelligence feed (E1, off unless you define EARLYWARD_WORDFENCE_KEY); older local backup copies (H1, shown under Housekeeping, never sends an alert email).
+* B3 now confirms through the site's own loopback that a backup or dump is actually served before raising it to critical.
+* Fewer false alarms: a generated maintenance page without malware patterns is info only.
+* Translatable text, and `wp earlyward cost` to measure what a scan costs on your site.
 
 = 0.1.0 =
 * Early preview. Not yet recommended for production sites.

@@ -1,11 +1,11 @@
 # Earlyward
 
-**Status: early preview (0.1). Not yet recommended for production sites.** The code is developed in
-the open. It has been tested against the fixtures in this repository and on a local WordPress, not yet
-on live hosting. The first release for production sites comes after weeks of testing on real sites
-(see [the release gate](docs/PHASE-0-PLAN.md#7-dogfood-and-the-false-positive-gate)). The released
-0.1.0 has no admin screen: results come through WP-CLI and email. The development branch adds a
-screen under Tools → Earlyward (unreleased): an Overview tab (waiting updates, pending comments, administrators and newest users, scheduled jobs and who registered them, when the findings last changed) and a Findings tab (evidence, fix steps, Scan now, Set baseline, a block to copy for your host's support). Site Health (Tools → Site Health) lists each warning or critical finding, one entry for the checks that found nothing, one for any check that could not run, and an Earlyward block on its Info tab. Administrators also get a coloured status badge in the admin bar (on the site and in wp-admin) and a widget on the dashboard home; both only show the last stored scan.
+**Status: early preview (0.2). Not yet recommended for production sites.** The code is developed in
+the open. It has been tested against the fixtures in this repository, on a local WordPress and on one live site, not yet
+on a range of real hosting. The first release for production sites comes after weeks of testing on real sites
+(see [the release gate](docs/PHASE-0-PLAN.md#7-dogfood-and-the-false-positive-gate)).
+
+0.2.0 adds an admin screen under Tools → Earlyward: an Overview tab (waiting updates, pending comments, administrators and newest users, scheduled jobs and who registered them, when the findings last changed) and a Findings tab (evidence, fix steps, Scan now, Set baseline, a block to copy for your host's support, and a Housekeeping section for tidy-up suggestions that are not security problems). Site Health (Tools → Site Health) lists each warning or critical finding, one entry for the checks that found nothing, one for any check that could not run, and an Earlyward block on its Info tab. Administrators also get a coloured status badge in the admin bar (on the site and in wp-admin) and a widget on the dashboard home; both only show the last stored scan.
 
 Earlyward is a free, open-source WordPress plugin. It looks for signs of an attack, spots hardening
 that is missing or broken, and explains hosting and runtime problems in plain language: what is wrong,
@@ -16,7 +16,7 @@ on one shared hosting account, a second paid-backlink campaign hiding inside the
 separate outage where the site kept answering HTTP 200 while it was broken, for 12 days, without
 anyone noticing.
 
-## What works in 0.1
+## What works in 0.2
 
 Every finding says what is wrong, how sure the check is, and the exact steps to fix it, and shows its
 evidence (file and line, user, option or URL) so you can judge it yourself.
@@ -47,6 +47,12 @@ evidence (file and line, user, option or URL) so you can judge it yourself.
 - **C6** Custom CSS that hides a user from the Users screen.
 - **C9** Links hidden off-screen inside published content.
 
+**Known vulnerabilities (opt-in)**
+
+- **E1** Plugins, themes or WordPress versions with a published vulnerability, matched on your server
+  against the Wordfence Intelligence feed. Off unless you define `EARLYWARD_WORDFENCE_KEY`; see
+  [docs/WRITES.md](docs/WRITES.md) for exactly what is contacted.
+
 **Alerts that are not noise.** Scans run hourly in WP-Cron, never on visitor requests. Email goes out
 only when the set of warning or critical findings changes.
 
@@ -61,8 +67,9 @@ probe script. See the [roadmap](docs/ROADMAP.md).
 - It does **not** make a site unhackable. Nothing installed inside WordPress can.
 - It does **not** remove malware or change anything automatically. Scans never write. A few fixes exist as
   buttons on the Findings tab (make `wp-config.php` owner-only, delete an exposed backup file, delete a
-  harmless leftover maintenance page). Each one needs a confirmation, re-checks the finding at the moment
-  you click, never touches PHP code other than those two named files, and is recorded in a fix log. Set
+  harmless leftover maintenance page, delete older local backup copies once the newest is proven to be stored
+  elsewhere). Each one needs a confirmation, re-checks the finding at the moment
+  you click, never touches PHP code other than those two named files (wp-config.php and maintenance.php), and is recorded in a fix log. Set
   `EARLYWARD_NO_FIXES` to switch them all off. Every write is listed in [docs/WRITES.md](docs/WRITES.md).
 - It is **not** a firewall and does not block traffic.
 - It **cannot** see a total outage from inside: if PHP is down, so is the plugin. Use the external
