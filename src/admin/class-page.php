@@ -8,7 +8,11 @@
 
 namespace Earlyward\Admin;
 
+use Earlyward\Env\Context;
+use Earlyward\Fix\Fixer;
+use Earlyward\Fix\Writer;
 use Earlyward\Plugin;
+use Earlyward\Scanner\Scanner;
 use Earlyward\Store\State;
 
 defined( 'ABSPATH' ) || exit;
@@ -23,13 +27,14 @@ final class Page {
 
 	const ACTION_SCAN     = 'earlyward_scan_now';
 	const ACTION_BASELINE = 'earlyward_set_baseline';
+	const ACTION_FIX      = 'earlyward_fix';
 
 	/**
 	 * Notice codes that may arrive in the query string. Anything else is ignored.
 	 *
 	 * @var string[]
 	 */
-	const NOTICES = array( 'scanned', 'busy', 'baseline_set', 'baseline_missing', 'baseline_unconfirmed' );
+	const NOTICES = array( 'scanned', 'busy', 'baseline_set', 'baseline_missing', 'baseline_unconfirmed', 'fixed', 'fix_gone', 'fix_unconfirmed', 'fix_refused', 'fix_failed' );
 
 	/**
 	 * Register hooks. Called on admin requests only.
@@ -38,6 +43,7 @@ final class Page {
 		add_action( 'admin_menu', array( __CLASS__, 'add_menu' ) );
 		add_action( 'admin_post_' . self::ACTION_SCAN, array( __CLASS__, 'handle_scan' ) );
 		add_action( 'admin_post_' . self::ACTION_BASELINE, array( __CLASS__, 'handle_baseline' ) );
+		add_action( 'admin_post_' . self::ACTION_FIX, array( __CLASS__, 'handle_fix' ) );
 	}
 
 	/**
@@ -116,6 +122,65 @@ final class Page {
 	}
 
 	/**
+	 * "Fix": one confirmed change. The request names a finding, never a path: the target comes from a
+	 * fresh scan run here, so nothing outside what the checks report can be touched.
+	 */
+	public static function handle_fix(): void {
+		self::authorise( self::ACTION_FIX );
+		// phpcs:disable WordPress.Security.NonceVerification.Missing -- Nonce and capability are checked by authorise() above.
+		$id          = isset( $_POST['earlyward_fix_id'] ) ? sanitize_key( wp_unslash( $_POST['earlyward_fix_id'] ) ) : '';
+		$fingerprint = isset( $_POST['earlyward_fingerprint'] ) ? sanitize_key( wp_unslash( $_POST['earlyward_fingerprint'] ) ) : '';
+		$confirmed   = ! empty( $_POST['earlyward_confirm'] );
+		$has_copy    = ! empty( $_POST['earlyward_copy'] );
+		// phpcs:enable WordPress.Security.NonceVerification.Missing
+
+		if ( Fixer::disabled() || ! in_array( $id, Fixer::ids(), true ) || 1 !== preg_match( '/^[0-9a-f]{40}$/', $fingerprint ) ) {
+			wp_safe_redirect( self::url( 'fix_refused', 'findings' ) );
+			exit;
+		}
+		if ( ! $confirmed || ( Fixer::ID_DELETE_BACKUP === $id && ! $has_copy ) ) {
+			wp_safe_redirect( self::url( 'fix_unconfirmed', 'findings' ) );
+			exit;
+		}
+
+		// What the page showed, looked up by fingerprint in the stored scan. Only a check ID and a file name
+		// are taken from it, and only to find the same finding in a fresh scan.
+		$shown = null;
+		$state = State::get();
+		$last  = isset( $state['last'] ) && is_array( $state['last'] ) ? $state['last'] : array();
+		foreach ( isset( $last['findings'] ) && is_array( $last['findings'] ) ? $last['findings'] : array() as $stored ) {
+			if ( (string) ( $stored['fingerprint'] ?? '' ) === $fingerprint ) {
+				$shown = $stored;
+				break;
+			}
+		}
+		if ( null === $shown || ! isset( $shown['evidence'][0]['location'] ) ) {
+			wp_safe_redirect( self::url( 'fix_gone', 'findings' ) );
+			exit;
+		}
+
+		$ctx      = Context::from_wordpress( array(), array(), false ); // No requests to the site: the click must not wait on a loopback.
+		$run      = Scanner::with_default_checks()->run( $ctx );
+		$findings = array();
+		foreach ( $run['findings'] as $finding ) {
+			$findings[] = $finding->to_array();
+		}
+		$result = Fixer::apply( $id, (string) ( $shown['check'] ?? '' ), (string) $shown['evidence'][0]['location'], $findings, $ctx, new Writer(), get_current_user_id(), time() );
+		Fixer::record( $result['log'] );
+		if ( $result['ok'] ) {
+			wp_schedule_single_event( time() + 5, Plugin::CRON_HOOK ); // Refresh the stored result soon, off this request.
+		}
+		$codes = array(
+			'fixed'   => 'fixed',
+			'gone'    => 'fix_gone',
+			'refused' => 'fix_refused',
+			'failed'  => 'fix_failed',
+		);
+		wp_safe_redirect( self::url( $codes[ $result['code'] ] ?? 'fix_failed', 'findings' ) );
+		exit;
+	}
+
+	/**
 	 * Render the screen. A failure here shows a short message, never a white page.
 	 */
 	public static function render(): void {
@@ -146,6 +211,11 @@ final class Page {
 			'baseline_set'         => array( 'notice-success', __( 'New baseline recorded from the homepage as it is now.', 'earlyward' ) ),
 			'baseline_missing'     => array( 'notice-warning', __( 'The old baseline was cleared, but no new one was recorded because the homepage did not look healthy in this scan. Fix the problem, then try again.', 'earlyward' ) ),
 			'baseline_unconfirmed' => array( 'notice-warning', __( 'Nothing was changed. Tick the box to confirm that you changed the site on purpose.', 'earlyward' ) ),
+			'fixed'                => array( 'notice-success', __( 'Done. The change is in the fix log at the bottom of this page. A new scan is queued, so the finding should disappear within a minute.', 'earlyward' ) ),
+			'fix_gone'             => array( 'notice-warning', __( 'Nothing was changed. This finding is no longer reported by a fresh scan, so the site has changed since the page was drawn.', 'earlyward' ) ),
+			'fix_unconfirmed'      => array( 'notice-warning', __( 'Nothing was changed. Tick the boxes to confirm.', 'earlyward' ) ),
+			'fix_refused'          => array( 'notice-warning', __( 'Nothing was changed. Earlyward could not do this safely (for example PHP does not own the file). Follow the steps listed with the finding instead.', 'earlyward' ) ),
+			'fix_failed'           => array( 'notice-error', __( 'The change could not be made, and anything half-done was put back. The fix log at the bottom of this page has the detail.', 'earlyward' ) ),
 		);
 		return $map[ $code ];
 	}
@@ -209,6 +279,7 @@ final class Page {
 			self::render_actions();
 			self::render_findings( $last, $findings, $counts );
 			self::render_support( $last );
+			self::render_fix_log();
 		}
 
 		echo '</div>';
@@ -368,8 +439,56 @@ final class Page {
 				}
 				echo '</ol>';
 			}
+			self::render_fix( $finding );
 			echo '</div>';
 		}
+	}
+
+	/**
+	 * The confirm-first fix a finding offers, if any.
+	 *
+	 * @param array<string, mixed> $finding Finding.
+	 */
+	private static function render_fix( array $finding ): void {
+		$offer = Fixer::offer( $finding, Fixer::disabled() );
+		if ( null === $offer ) {
+			return;
+		}
+		echo '<form method="post" class="earlyward-fix" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '">';
+		echo '<input type="hidden" name="action" value="' . esc_attr( self::ACTION_FIX ) . '" />';
+		echo '<input type="hidden" name="earlyward_fix_id" value="' . esc_attr( $offer['id'] ) . '" />';
+		echo '<input type="hidden" name="earlyward_fingerprint" value="' . esc_attr( (string) ( $finding['fingerprint'] ?? '' ) ) . '" />';
+		wp_nonce_field( self::ACTION_FIX );
+		echo '<p><strong>' . esc_html__( 'Fix it here:', 'earlyward' ) . '</strong> ' . esc_html( $offer['what'] ) . '</p>';
+		if ( $offer['needs_copy'] ) {
+			echo '<p><label><input type="checkbox" name="earlyward_copy" value="1" /> ' . esc_html__( 'I have another copy of this file, or I do not need it.', 'earlyward' ) . '</label></p>';
+		}
+		echo '<p><label><input type="checkbox" name="earlyward_confirm" value="1" /> ' . esc_html__( 'I understand what this changes.', 'earlyward' ) . '</label> ';
+		echo '<button type="submit" class="button">' . esc_html( $offer['label'] ) . '</button></p>';
+		echo '</form>';
+	}
+
+	/**
+	 * The last changes Earlyward made, newest first.
+	 */
+	private static function render_fix_log(): void {
+		$log = array_reverse( Fixer::log() );
+		if ( empty( $log ) ) {
+			return;
+		}
+		echo '<h2>' . esc_html__( 'Fix log', 'earlyward' ) . '</h2>';
+		echo '<table class="widefat striped earlyward-table"><thead><tr><th>' . esc_html__( 'When', 'earlyward' ) . '</th><th>' . esc_html__( 'What', 'earlyward' ) . '</th><th>' . esc_html__( 'Target', 'earlyward' ) . '</th><th>' . esc_html__( 'Result', 'earlyward' ) . '</th></tr></thead><tbody>';
+		foreach ( array_slice( $log, 0, 10 ) as $entry ) {
+			$detail = (string) ( $entry['result'] ?? '' );
+			if ( isset( $entry['mode_before'] ) ) {
+				$detail .= ' (' . (string) $entry['mode_before'] . ' to ' . (string) ( $entry['mode_after'] ?? '?' ) . ')';
+			}
+			if ( ! empty( $entry['sha256'] ) ) {
+				$detail .= ' sha256 ' . substr( (string) $entry['sha256'], 0, 12 );
+			}
+			echo '<tr><td>' . esc_html( (string) wp_date( 'Y-m-d H:i', (int) ( $entry['at'] ?? 0 ) ) ) . '</td><td>' . esc_html( (string) ( $entry['action'] ?? '' ) ) . '</td><td><code>' . esc_html( (string) ( $entry['target'] ?? '' ) ) . '</code></td><td>' . esc_html( $detail ) . '</td></tr>';
+		}
+		echo '</tbody></table>';
 	}
 
 	/**
@@ -417,6 +536,6 @@ final class Page {
 			. '.earlyward-critical{border-left-color:#d63638}.earlyward-warning{border-left-color:#dba617}.earlyward-info{border-left-color:#72aee6}'
 			. '.earlyward-badge{display:inline-block;font-size:12px;font-weight:600;padding:1px 8px;border:1px solid currentColor;border-radius:3px;vertical-align:middle}'
 			. '.earlyward-evidence pre{white-space:pre-wrap;word-break:break-all;margin:4px 0 8px;padding:6px 8px;background:#f6f7f7;max-height:8em;overflow:auto}'
-			. '#earlyward-support{max-width:960px}';
+			. '.earlyward-fix{border-top:1px solid #dcdcde;margin-top:8px;padding-top:4px}#earlyward-support{max-width:960px}';
 	}
 }

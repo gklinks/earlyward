@@ -7,8 +7,8 @@ security tool that cries wolf, or breaks a site, does more harm than good.
 
 1. **False positives are bugs.** A check that flags a legitimate site is as wrong as one that misses
    malware. Every new check ships with at least one *malicious* fixture and one *benign* fixture.
-2. **Read-only by default.** Checks never write. Any new write must be added to
-   [docs/WRITES.md](docs/WRITES.md), sit behind a capability check, a nonce and an explicit
+2. **Scans never write.** Checks never write; changes happen only in `src/fix/` after a person confirms, and are listed in
+   [docs/WRITES.md](docs/WRITES.md). Any new write must be added there, sit behind a capability check, a nonce and an explicit
    confirmation, and be reversible.
 3. **No network calls** beyond the site's own loopback unless the site owner opts in or clicks a
    button that says what will be contacted.

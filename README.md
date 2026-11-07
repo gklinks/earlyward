@@ -58,8 +58,11 @@ probe script. See the [roadmap](docs/ROADMAP.md).
 ## What it does NOT do
 
 - It does **not** make a site unhackable. Nothing installed inside WordPress can.
-- It does **not** remove malware or edit your files automatically. It is read-only by default; every
-  write it can make is listed in [docs/WRITES.md](docs/WRITES.md) and needs your confirmation.
+- It does **not** remove malware or change anything automatically. Scans never write. A few fixes exist as
+  buttons on the Findings tab (make `wp-config.php` owner-only, delete an exposed backup file, delete a
+  harmless leftover maintenance page). Each one needs a confirmation, re-checks the finding at the moment
+  you click, never touches PHP code other than those two named files, and is recorded in a fix log. Set
+  `EARLYWARD_NO_FIXES` to switch them all off. Every write is listed in [docs/WRITES.md](docs/WRITES.md).
 - It is **not** a firewall and does not block traffic.
 - It **cannot** see a total outage from inside: if PHP is down, so is the plugin. Use the external
   probe script (planned) or any uptime monitor for that.

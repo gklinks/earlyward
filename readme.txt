@@ -21,7 +21,7 @@ It was built from a real incident on a shared hosting account: a self-healing ma
 = What it does NOT do =
 
 * It does not make a site unhackable. Nothing installed inside WordPress can.
-* It does not remove malware or edit your files. It is read-only by default.
+* It does not remove malware or change anything automatically. Scans never write. A few confirmed one-click fixes exist on the Findings tab (owner-only wp-config.php, delete an exposed backup file, delete a leftover maintenance page); each is logged, and the constant EARLYWARD_NO_FIXES switches them off.
 * It is not a firewall and does not block traffic.
 * It cannot see a total outage from inside: if PHP is down, so is the plugin.
 * It does not contact any outside server unless you switch that on. No telemetry.

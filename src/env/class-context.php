@@ -139,9 +139,10 @@ final class Context {
 	 *
 	 * @param array<string, array<string, mixed>> $baselines Stored baselines by check ID.
 	 * @param array<string, array<string, mixed>> $previous  Previous observations by check ID.
+	 * @param bool                                $network   Whether checks may make requests to the site itself. A fix re-checks without them.
 	 * @return self
 	 */
-	public static function from_wordpress( array $baselines = array(), array $previous = array() ): self {
+	public static function from_wordpress( array $baselines = array(), array $previous = array(), bool $network = true ): self {
 		global $wpdb;
 		$constants = array();
 		$names     = array( 'DISABLE_WP_CRON', 'ALTERNATE_WP_CRON', 'WP_DEBUG', 'WP_DEBUG_LOG', 'EARLYWARD_LOG_WARN_BYTES', 'EARLYWARD_LOG_CRITICAL_BYTES', 'EARLYWARD_LOG_GROWTH_BYTES_PER_DAY' );
@@ -163,7 +164,7 @@ final class Context {
 			array(
 				'mu_plugins_dir' => WPMU_PLUGIN_DIR,
 				'db'             => new Wpdb_Database( $wpdb ),
-				'loopback'       => new Wp_Loopback(),
+				'loopback'       => $network ? new Wp_Loopback() : null,
 				'baselines'      => $baselines,
 				'previous'       => $previous,
 				'constants'      => $constants,

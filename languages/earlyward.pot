@@ -9,17 +9,17 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-11-07T11:36:19+00:00\n"
+"POT-Creation-Date: 2026-11-07T12:37:09+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: earlyward\n"
 
 #. Plugin Name of the plugin
 #: earlyward.php
-#: src/admin/class-page.php:49
-#: src/admin/class-page.php:50
-#: src/admin/class-page.php:128
+#: src/admin/class-page.php:55
+#: src/admin/class-page.php:56
 #: src/admin/class-page.php:193
+#: src/admin/class-page.php:263
 #: src/admin/class-site-health.php:160
 #: src/admin/class-site-health.php:178
 #: src/admin/class-site-health.php:292
@@ -255,184 +255,236 @@ msgstr ""
 msgid "Showing %1$d of %2$d jobs, late and ownerless ones first."
 msgstr ""
 
-#: src/admin/class-page.php:82
+#: src/admin/class-page.php:88
 msgid "You do not have permission to do this."
 msgstr ""
 
-#: src/admin/class-page.php:123
+#: src/admin/class-page.php:188
 msgid "You do not have permission to view this page."
 msgstr ""
 
-#: src/admin/class-page.php:128
+#: src/admin/class-page.php:193
 msgid "The Earlyward screen could not be shown. The scans and the rest of the site are not affected."
 msgstr ""
 
-#: src/admin/class-page.php:144
+#: src/admin/class-page.php:209
 msgid "Scan finished. The results below are from this scan."
 msgstr ""
 
-#: src/admin/class-page.php:145
+#: src/admin/class-page.php:210
 msgid "Another scan is already running, or this one could not start. Try again in a minute."
 msgstr ""
 
-#: src/admin/class-page.php:146
+#: src/admin/class-page.php:211
 msgid "New baseline recorded from the homepage as it is now."
 msgstr ""
 
-#: src/admin/class-page.php:147
+#: src/admin/class-page.php:212
 msgid "The old baseline was cleared, but no new one was recorded because the homepage did not look healthy in this scan. Fix the problem, then try again."
 msgstr ""
 
-#: src/admin/class-page.php:148
+#: src/admin/class-page.php:213
 msgid "Nothing was changed. Tick the box to confirm that you changed the site on purpose."
 msgstr ""
 
-#: src/admin/class-page.php:172
+#: src/admin/class-page.php:214
+msgid "Done. The change is in the fix log at the bottom of this page. A new scan is queued, so the finding should disappear within a minute."
+msgstr ""
+
+#: src/admin/class-page.php:215
+msgid "Nothing was changed. This finding is no longer reported by a fresh scan, so the site has changed since the page was drawn."
+msgstr ""
+
+#: src/admin/class-page.php:216
+msgid "Nothing was changed. Tick the boxes to confirm."
+msgstr ""
+
+#: src/admin/class-page.php:217
+msgid "Nothing was changed. Earlyward could not do this safely (for example PHP does not own the file). Follow the steps listed with the finding instead."
+msgstr ""
+
+#: src/admin/class-page.php:218
+msgid "The change could not be made, and anything half-done was put back. The fix log at the bottom of this page has the detail."
+msgstr ""
+
+#: src/admin/class-page.php:242
 msgid "Earlyward sections"
 msgstr ""
 
-#: src/admin/class-page.php:173
+#: src/admin/class-page.php:243
 msgid "Overview"
 msgstr ""
 
 #. translators: %d: number of critical and warning findings.
-#: src/admin/class-page.php:174
+#: src/admin/class-page.php:244
 #, php-format
 msgid "Findings (%d)"
 msgstr ""
 
 #. translators: %d: number of critical and warning findings.
-#: src/admin/class-page.php:174
-#: src/admin/class-page.php:300
+#: src/admin/class-page.php:244
+#: src/admin/class-page.php:371
 #: src/admin/class-site-health.php:384
 msgid "Findings"
 msgstr ""
 
-#: src/admin/class-page.php:200
+#: src/admin/class-page.php:270
 msgid "Early preview. Earlyward reports signs of an attack and of broken hosting. A scan with no findings is not proof that the site is clean or safe."
 msgstr ""
 
-#: src/admin/class-page.php:224
+#: src/admin/class-page.php:295
 #: src/admin/class-site-health.php:380
 msgid "Last scan"
 msgstr ""
 
-#: src/admin/class-page.php:226
+#: src/admin/class-page.php:297
 msgid "No scan has been stored yet. Use \"Scan now\", or wait for the hourly WP-Cron scan."
 msgstr ""
 
 #. translators: 1: date and time, 2: how long ago, 3: where the scan ran from ("web" or "cli").
-#: src/admin/class-page.php:232
+#: src/admin/class-page.php:303
 #, php-format
 msgid "%1$s (%2$s ago), run from: %3$s."
 msgstr ""
 
-#: src/admin/class-page.php:239
+#: src/admin/class-page.php:310
 msgid "The last scan is more than 3 hours old, but scans should run every hour. WP-Cron may not be running on this site. Earlyward cannot warn you if its own scheduler has stopped."
 msgstr ""
 
 #. translators: 1: check ID, 2: error message.
-#: src/admin/class-page.php:246
+#: src/admin/class-page.php:317
 #, php-format
 msgid "Check %1$s could not run: %2$s"
 msgstr ""
 
-#: src/admin/class-page.php:254
+#: src/admin/class-page.php:325
 msgid "The hourly scan is not scheduled. It is re-added when an administrator opens a WordPress admin page."
 msgstr ""
 
 #. translators: %s: date and time of the next scheduled scan.
-#: src/admin/class-page.php:259
+#: src/admin/class-page.php:330
 #, php-format
 msgid "Next scheduled scan: %s."
 msgstr ""
 
-#: src/admin/class-page.php:277
+#: src/admin/class-page.php:348
 msgid "Scan now"
 msgstr ""
 
-#: src/admin/class-page.php:278
+#: src/admin/class-page.php:349
 msgid "Runs the same read-only checks as the hourly scan, stores the result, and emails the site admin only if the set of warnings changed."
 msgstr ""
 
-#: src/admin/class-page.php:284
+#: src/admin/class-page.php:355
 msgid "I changed the site on purpose (new theme, removed feature) and it works."
 msgstr ""
 
-#: src/admin/class-page.php:285
+#: src/admin/class-page.php:356
 msgid "Set baseline"
 msgstr ""
 
-#: src/admin/class-page.php:286
+#: src/admin/class-page.php:357
 msgid "Check A1 compares the homepage with a healthy copy it recorded earlier. This forgets that copy and records a new one from a scan right now, if the homepage looks healthy."
 msgstr ""
 
 #. translators: 1: number of critical findings, 2: warnings, 3: informational findings.
-#: src/admin/class-page.php:307
+#: src/admin/class-page.php:378
 #, php-format
 msgid "%1$d critical, %2$d warning, %3$d info."
 msgstr ""
 
 #. translators: 1: findings shown, 2: findings found.
-#: src/admin/class-page.php:318
+#: src/admin/class-page.php:389
 #, php-format
 msgid "Showing %1$d of %2$d findings. The rest were not stored."
 msgstr ""
 
-#: src/admin/class-page.php:325
+#: src/admin/class-page.php:396
 msgid "No findings from the checks that ran."
 msgstr ""
 
-#: src/admin/class-page.php:330
+#: src/admin/class-page.php:401
 msgid "Critical"
 msgstr ""
 
-#: src/admin/class-page.php:331
+#: src/admin/class-page.php:402
 msgid "Warning"
 msgstr ""
 
-#: src/admin/class-page.php:332
+#: src/admin/class-page.php:403
 msgid "Info"
 msgstr ""
 
 #. translators: 1: check ID such as C1, 2: confidence level (high, medium, low).
-#: src/admin/class-page.php:341
+#: src/admin/class-page.php:412
 #: src/admin/class-site-health.php:130
 #, php-format
 msgid "Check %1$s, %2$s confidence."
 msgstr ""
 
-#: src/admin/class-page.php:346
+#: src/admin/class-page.php:417
 msgid "Why it matters:"
 msgstr ""
 
-#: src/admin/class-page.php:349
+#: src/admin/class-page.php:420
 #: src/admin/class-site-health.php:138
 msgid "Evidence:"
 msgstr ""
 
-#: src/admin/class-page.php:365
+#: src/admin/class-page.php:436
 #: src/admin/class-site-health.php:149
 msgid "What to do:"
 msgstr ""
 
-#: src/admin/class-page.php:394
+#: src/admin/class-page.php:462
+msgid "Fix it here:"
+msgstr ""
+
+#: src/admin/class-page.php:464
+msgid "I have another copy of this file, or I do not need it."
+msgstr ""
+
+#: src/admin/class-page.php:466
+msgid "I understand what this changes."
+msgstr ""
+
+#: src/admin/class-page.php:479
+msgid "Fix log"
+msgstr ""
+
+#: src/admin/class-page.php:480
+msgid "When"
+msgstr ""
+
+#: src/admin/class-page.php:480
+msgid "What"
+msgstr ""
+
+#: src/admin/class-page.php:480
+msgid "Target"
+msgstr ""
+
+#: src/admin/class-page.php:480
+msgid "Result"
+msgstr ""
+
+#: src/admin/class-page.php:513
 msgid "Copy for host support"
 msgstr ""
 
-#: src/admin/class-page.php:395
+#: src/admin/class-page.php:514
 msgid "Paste this into a ticket with your hosting provider. It lists the findings and the versions in use. It contains no passwords or keys, but check it before you send it."
 msgstr ""
 
-#: src/admin/class-page.php:397
+#: src/admin/class-page.php:516
 msgid "Copy to clipboard"
 msgstr ""
 
-#: src/admin/class-page.php:405
+#: src/admin/class-page.php:524
 msgid "Copied."
 msgstr ""
 
-#: src/admin/class-page.php:405
+#: src/admin/class-page.php:524
 msgid "Press Ctrl+C to copy the selected text."
 msgstr ""
 
@@ -1317,6 +1369,30 @@ msgstr ""
 
 #: src/checks/runtime/class-outage-check.php:230
 msgid "If you changed the site on purpose, record the new healthy state: wp earlyward baseline --reset"
+msgstr ""
+
+#: src/fix/class-fixer.php:73
+msgid "Make wp-config.php owner-only (600)"
+msgstr ""
+
+#: src/fix/class-fixer.php:74
+msgid "Changes the permissions of wp-config.php to 600 and nothing else. If PHP can no longer read the file afterwards, the old permissions are put back at once."
+msgstr ""
+
+#: src/fix/class-fixer.php:81
+msgid "Delete this file from the website folder"
+msgstr ""
+
+#: src/fix/class-fixer.php:82
+msgid "Permanently deletes the file listed as evidence. It cannot be undone from here."
+msgstr ""
+
+#: src/fix/class-fixer.php:89
+msgid "Delete the leftover maintenance page"
+msgstr ""
+
+#: src/fix/class-fixer.php:90
+msgid "Permanently deletes wp-content/maintenance.php. WordPress shows its own maintenance message without it."
 msgstr ""
 
 #. translators: 1: site name, 2: number of new findings, 3: number of resolved findings, 4: number of critical findings still open.

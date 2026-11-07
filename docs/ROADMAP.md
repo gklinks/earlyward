@@ -27,6 +27,8 @@ shows they behave on real sites. Check IDs refer to the ranked list in [PHASE-0-
 - [x] B2 `open_basedir` unset
 - [x] B3 backups and dumps reachable in the docroot
 - [x] B4 wp-config.php readable or writable by other accounts
+- [x] Confirmed one-click fixes: owner-only wp-config.php (B4), delete exposed backup file (B3), delete leftover maintenance page (C3), with a fix log and a kill switch
+- [ ] More fixes, each with its own re-check, tests and undo information: quarantine a suspicious file, revoke an application password, demote an unknown administrator
 - [x] Admin bar status badge and dashboard widget (administrators only, read-only)
 - [x] WP-CLI command `wp earlyward scan`
 - [x] Hourly WP-Cron scan with a lock; `wp earlyward run` and `report`

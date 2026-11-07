@@ -1,6 +1,6 @@
 # Everything Earlyward can write
 
-The plugin is read-only by default. This is the complete list of writes. If code writes something
+Scans are read-only. Changes happen only when an administrator confirms a fix. This is the complete list of writes. If code writes something
 that is not on this list, that is a bug; please report it.
 
 ## Automatic (no confirmation needed)
@@ -8,6 +8,7 @@ that is not on this list, that is a bug; please report it.
 | What | Where | Why | Removed on uninstall |
 |---|---|---|---|
 | Last scan result, the set of open alerts (per environment: web, command line), the healthy homepage baseline (A1) and the last measurements (A1 signals, A3 log sizes) | option `earlyward_state`, not autoloaded, capped at 500 findings | Show findings; email only when the set changes; compare with a healthy state; measure log growth | Yes |
+| Fix log (only once a fix has been used) | option `earlyward_fix_log`, not autoloaded, last 50 entries | Show what was changed and let it be reversed by hand | Yes |
 | Scan lock | transient `earlyward_scan_lock` (10 minutes) | Stop two scans overlapping | Yes |
 | Scheduled scan | WP-Cron event `earlyward_scan`, hourly; re-added on admin pages if something removed it | Run scans off the front end | Yes (also removed on deactivation) |
 | Alert email | `wp_mail()` to the site's admin email address | Only when the set of warning/critical findings changes; info findings never email | n/a |
@@ -29,11 +30,21 @@ that is not on this list, that is a bug; please report it.
 
 Each scan makes two requests to the site's own address (`/` and `/wp-json/`, with a cache-busting query string) for check A1. Check B3 also sends a header-only request (HTTP HEAD, nothing is downloaded, redirects not followed) to the site's own address for each backup, dump or config copy it finds, at most 8 per scan, and none when there are no such files. Nothing else is contacted.
 
-## Only after you confirm (none implemented yet)
+## Only after you confirm (Findings tab, "Fix it here")
+
+Each fix is a button under the finding it belongs to. It needs the `manage_options` capability, a nonce and a ticked confirmation box (deleting a backup also asks whether another copy exists). The request names a finding, never a path: the file comes from a fresh scan run when you click, which makes no requests to the site, and the fix is refused if the scan no longer reports it. A fix never deletes PHP code other than `wp-content/maintenance.php` for the maintenance fix, never follows a link, and never leaves the site folder. Each change is recorded in the option `earlyward_fix_log` (last 50: time, user, action, file, sha256 and size, or the old and new permissions). Defining `EARLYWARD_NO_FIXES` as true removes every button and refuses every request. A refresh scan is queued after a successful fix.
+
+| What | Effect | How to undo |
+|---|---|---|
+| Make wp-config.php owner-only (check B4) | chmod 600 on wp-config.php, only when PHP owns the file. Put back at once if PHP can no longer read it. | The log keeps the old mode; `chmod` it back |
+| Delete an exposed backup, dump or config copy (check B3) | Deletes the one file the finding lists. Never `wp-config.php` or any `.php` file. | Not reversible from here. The hash is logged. |
+| Delete a leftover maintenance page (check C3, info only) | Deletes `wp-content/maintenance.php`, only when the check classed it as a harmless generated page. | Not reversible from here. The hash is logged. |
+
+## Planned (not implemented yet)
 
 | What | Effect | How to undo |
 |---|---|---|
 | Hardening toggles | Settings applied through WordPress filters (file editor off, XML-RPC off, user enumeration blocked, security headers) | Switch the toggle off |
 | Account actions (v1.0) | Demote a suspicious admin to subscriber; revoke their sessions and application passwords. The original role is saved first. | "Restore" button using the saved copy |
 
-Nothing in Earlyward deletes or edits theme, plugin, core or upload files.
+Apart from the three confirmed fixes above, nothing in Earlyward deletes or edits theme, plugin, core or upload files.
