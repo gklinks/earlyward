@@ -1,0 +1,10 @@
+[
+	{
+		"check": "A1",
+		"severity": "critical",
+		"confidence": "high",
+		"where": [
+			"home"
+		]
+	}
+]

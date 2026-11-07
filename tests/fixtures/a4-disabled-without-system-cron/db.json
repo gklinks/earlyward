@@ -1,0 +1,16 @@
+{
+	"options": {
+		"cron": {
+			"1793980800": {
+				"wp_scheduled_delete": {
+					"abc": {
+						"schedule": "hourly",
+						"args": [],
+						"interval": 3600
+					}
+				}
+			},
+			"version": 2
+		}
+	}
+}

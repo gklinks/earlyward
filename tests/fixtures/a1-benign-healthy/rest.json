@@ -1,0 +1,8 @@
+{
+	"namespaces": [
+		"contact-form-7/v1",
+		"site/v1",
+		"wp/v2",
+		"new/v1"
+	]
+}

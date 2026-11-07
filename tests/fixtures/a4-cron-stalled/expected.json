@@ -1,0 +1,10 @@
+[
+	{
+		"check": "A4",
+		"severity": "warning",
+		"confidence": "high",
+		"where": [
+			"option:cron"
+		]
+	}
+]

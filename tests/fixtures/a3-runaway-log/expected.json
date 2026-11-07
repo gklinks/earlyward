@@ -1,0 +1,18 @@
+[
+	{
+		"check": "A3",
+		"severity": "warning",
+		"confidence": "high",
+		"where": [
+			"error_log"
+		]
+	},
+	{
+		"check": "A3",
+		"severity": "warning",
+		"confidence": "high",
+		"where": [
+			"wp-content/debug.log"
+		]
+	}
+]

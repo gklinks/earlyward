@@ -9,7 +9,8 @@ shows they behave on real sites. Check IDs refer to the ranked list in [PHASE-0-
 - [x] Finding model with evidence, severity, confidence, fingerprint
 - [x] Env layer: filesystem
 - [x] Env layer: database, with fixture twin
-- [ ] Env layer: `/proc`, loopback
+- [x] Env layer: loopback, baselines, previous observations, clock
+- [ ] Env layer: `/proc`
 - [x] Fixtures suite (runs locally; CI workflow written, not yet run on GitHub)
 - [x] C1 `auto_prepend_file` per-line classification
 - [x] C2 hex-named archive seeds
@@ -18,10 +19,10 @@ shows they behave on real sites. Check IDs refer to the ranked list in [PHASE-0-
 - [x] C5 sessions and application passwords on admin accounts
 - [x] C6 `custom_css` hiding a user row
 - [x] C9 cloaked off-screen links
-- [ ] A1 silent outage (loopback vs baseline)
-- [ ] A2 fatal-error recovery and crash markers
-- [ ] A3 error log size and repeating lines
-- [ ] A4 WP-Cron health
+- [x] A1 silent outage (loopback vs baseline)
+- [x] A2 fatal-error recovery and crash markers
+- [x] A3 error log size and repeating lines
+- [x] A4 WP-Cron health
 - [x] B1 several sites sharing one Linux user
 - [x] B2 `open_basedir` unset
 - [x] B3 backups and dumps reachable in the docroot

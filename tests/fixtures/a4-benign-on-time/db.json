@@ -1,0 +1,25 @@
+{
+	"options": {
+		"cron": {
+			"1794008400": {
+				"wp_version_check": {
+					"abc": {
+						"schedule": "hourly",
+						"args": [],
+						"interval": 3600
+					}
+				}
+			},
+			"1794010200": {
+				"wallwarden_scan": {
+					"abc": {
+						"schedule": "hourly",
+						"args": [],
+						"interval": 3600
+					}
+				}
+			},
+			"version": 2
+		}
+	}
+}

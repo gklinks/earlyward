@@ -1,0 +1,18 @@
+[
+	{
+		"check": "A2",
+		"severity": "critical",
+		"confidence": "high",
+		"where": [
+			"wp-content/novamira-sandbox/.crashed"
+		]
+	},
+	{
+		"check": "A2",
+		"severity": "warning",
+		"confidence": "high",
+		"where": [
+			"option:recovery_mode_email_last_sent"
+		]
+	}
+]

@@ -24,8 +24,8 @@ final class Command {
 	 *
 	 * ## OPTIONS
 	 *
-	 * [--no-mail]
-	 * : Store the result but never send an email.
+	 * [--[no-]mail]
+	 * : Send an email if the findings changed (the default). --no-mail stores the result only.
 	 *
 	 * @param string[]                   $args       Positional args.
 	 * @param array<string, string|bool> $assoc_args Flags.
@@ -46,6 +46,38 @@ final class Command {
 				$out['mailed'] ? 'sent' : 'not sent'
 			)
 		);
+	}
+
+	/**
+	 * Show or reset the healthy homepage baseline used by check A1.
+	 *
+	 * The first healthy scan records it automatically. Reset it after you change the site on
+	 * purpose (new theme, removed feature); the next scan records the new state.
+	 *
+	 * ## OPTIONS
+	 *
+	 * [--reset]
+	 * : Forget the current baseline.
+	 *
+	 * @param string[]                   $args       Positional args.
+	 * @param array<string, string|bool> $assoc_args Flags.
+	 */
+	public function baseline( array $args, array $assoc_args ): void {
+		if ( ! empty( $assoc_args['reset'] ) ) {
+			\Wallwarden\Store\State::set_baseline( 'A1', null );
+			\WP_CLI::success( 'Baseline cleared. The next healthy scan records a new one (run "wp wallwarden run" to do it now).' );
+			return;
+		}
+		$baselines = \Wallwarden\Store\State::baselines();
+		if ( empty( $baselines['A1'] ) ) {
+			\WP_CLI::warning( 'No baseline yet. It is recorded by the first scan that loads a healthy homepage.' );
+			return;
+		}
+		$b = $baselines['A1'];
+		\WP_CLI::line( sprintf( 'Recorded: %s UTC', gmdate( 'Y-m-d H:i', (int) ( $b['at'] ?? 0 ) ) ) );
+		\WP_CLI::line( 'Styles: ' . implode( ', ', array_keys( (array) ( $b['styles'] ?? array() ) ) ) );
+		\WP_CLI::line( 'Menu present: ' . ( ! empty( $b['nav'] ) ? 'yes' : 'no' ) );
+		\WP_CLI::line( 'REST namespaces: ' . ( is_array( $b['namespaces'] ?? null ) ? implode( ', ', $b['namespaces'] ) : 'not available' ) );
 	}
 
 	/**

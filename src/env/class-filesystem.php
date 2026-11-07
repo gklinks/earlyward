@@ -198,6 +198,51 @@ final class Filesystem {
 	}
 
 	/**
+	 * Last-modified time, or 0.
+	 *
+	 * @param string $path Path.
+	 * @return int
+	 */
+	public function mtime( string $path ): int {
+		if ( ! $this->is_file( $path ) ) {
+			return 0;
+		}
+		$time = filemtime( $path );
+		return false === $time ? 0 : (int) $time;
+	}
+
+	/**
+	 * Read the last $bytes of a file (for logs that may be gigabytes).
+	 *
+	 * @param string $path  Path.
+	 * @param int    $bytes Bytes from the end.
+	 * @return string|null
+	 */
+	public function tail( string $path, int $bytes ): ?string {
+		$size = $this->size( $path );
+		if ( $size < 0 ) {
+			return null;
+		}
+		$handle = fopen( $path, 'rb' );
+		if ( false === $handle ) {
+			return null;
+		}
+		$offset = max( 0, $size - $bytes );
+		fseek( $handle, $offset );
+		$data = fread( $handle, max( 1, min( $bytes, $size ) ) );
+		fclose( $handle );
+		if ( false === $data ) {
+			return null;
+		}
+		// Drop the partial first line when we started mid-file.
+		if ( $offset > 0 ) {
+			$nl   = strpos( $data, "\n" );
+			$data = false === $nl ? '' : substr( $data, $nl + 1 );
+		}
+		return $data;
+	}
+
+	/**
 	 * SHA-256 of the whole file (streamed), or '' when unreadable.
 	 *
 	 * @param string $path Path.

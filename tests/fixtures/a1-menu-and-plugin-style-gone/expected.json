@@ -1,0 +1,11 @@
+[
+	{
+		"check": "A1",
+		"severity": "warning",
+		"confidence": "medium",
+		"where": [
+			"style:contact-form-7",
+			"home:navigation"
+		]
+	}
+]

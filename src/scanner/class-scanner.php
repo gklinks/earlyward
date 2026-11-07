@@ -42,6 +42,10 @@ final class Scanner {
 	public static function with_default_checks(): self {
 		return new self(
 			array(
+				new \Wallwarden\Checks\Runtime\Outage_Check(),
+				new \Wallwarden\Checks\Runtime\Crash_Check(),
+				new \Wallwarden\Checks\Runtime\Error_Log_Check(),
+				new \Wallwarden\Checks\Runtime\Cron_Check(),
 				new \Wallwarden\Checks\Integrity\Auto_Prepend_Check(),
 				new \Wallwarden\Checks\Integrity\Archive_Seed_Check(),
 				new \Wallwarden\Checks\Integrity\Unexpected_Php_Check(),
@@ -60,12 +64,13 @@ final class Scanner {
 	 * Run every check.
 	 *
 	 * @param Context $ctx Context.
-	 * @return array{findings: Finding[], errors: array<string, string>, timings: array<string, float>}
+	 * @return array{findings: Finding[], errors: array<string, string>, timings: array<string, float>, observations: array<string, array{data: array<string, mixed>, healthy: bool}>}
 	 */
 	public function run( Context $ctx ): array {
-		$findings = array();
-		$errors   = array();
-		$timings  = array();
+		$findings     = array();
+		$errors       = array();
+		$timings      = array();
+		$observations = array();
 		foreach ( $this->checks as $check ) {
 			$start = microtime( true );
 			try {
@@ -74,6 +79,12 @@ final class Scanner {
 						$findings[] = $finding;
 					}
 				}
+				if ( $check instanceof \Wallwarden\Checks\Observes && array() !== $check->observation() ) {
+					$observations[ $check->id() ] = array(
+						'data'    => $check->observation(),
+						'healthy' => $check->observation_is_healthy(),
+					);
+				}
 			} catch ( \Throwable $e ) {
 				// "Could not check" is reported, never silently treated as clean.
 				$errors[ $check->id() ] = get_class( $e ) . ': ' . $e->getMessage();
@@ -81,9 +92,10 @@ final class Scanner {
 			$timings[ $check->id() ] = round( microtime( true ) - $start, 4 );
 		}
 		return array(
-			'findings' => $findings,
-			'errors'   => $errors,
-			'timings'  => $timings,
+			'findings'     => $findings,
+			'errors'       => $errors,
+			'timings'      => $timings,
+			'observations' => $observations,
 		);
 	}
 }

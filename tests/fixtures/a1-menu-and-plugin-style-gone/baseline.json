@@ -1,0 +1,22 @@
+{
+	"A1": {
+		"styles": {
+			"astra-theme": "https://site.fixture/wp-content/themes/astra/assets/css/main.css",
+			"site-custom": "https://site.fixture/wp-content/uploads/site-assets/site.css",
+			"wp-block-library": "https://site.fixture/wp-includes/css/dist/block-library/style.min.css",
+			"contact-form-7": "https://site.fixture/wp-content/plugins/contact-form-7/includes/css/styles.css",
+			"global-styles(inline)": "inline"
+		},
+		"nav": true,
+		"namespaces": [
+			"contact-form-7/v1",
+			"site/v1",
+			"wp/v2"
+		],
+		"bytes": 3000,
+		"plugins": [
+			"akismet",
+			"contact-form-7"
+		]
+	}
+}

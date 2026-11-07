@@ -66,16 +66,17 @@ final class Plugin {
 	/**
 	 * Run a scan and return the raw result. Never throws, never writes.
 	 *
-	 * @return array{findings: \Wallwarden\Finding\Finding[], errors: array<string, string>, timings: array<string, float>}
+	 * @return array{findings: \Wallwarden\Finding\Finding[], errors: array<string, string>, timings: array<string, float>, observations: array<string, array{data: array<string, mixed>, healthy: bool}>}
 	 */
 	public static function scan(): array {
 		try {
-			return Scanner::with_default_checks()->run( Context::from_wordpress() );
+			return Scanner::with_default_checks()->run( Context::from_wordpress( State::baselines(), State::observations() ) );
 		} catch ( \Throwable $e ) {
 			return array(
-				'findings' => array(),
-				'errors'   => array( 'scanner' => get_class( $e ) . ': ' . $e->getMessage() ),
-				'timings'  => array(),
+				'findings'     => array(),
+				'errors'       => array( 'scanner' => get_class( $e ) . ': ' . $e->getMessage() ),
+				'timings'      => array(),
+				'observations' => array(),
 			);
 		}
 	}
@@ -127,7 +128,7 @@ final class Plugin {
 			$alerted = ( $send_mail && $diff['changed'] && ! $mailed && ! ( $first && empty( $diff['current'] ) ) )
 				? State::alerted( $env )
 				: $diff['current'];
-			State::save( $env, $all, $result['errors'], $result['timings'], $alerted, $mailed );
+			State::save( $env, $all, $result['errors'], $result['timings'], $alerted, $mailed, $result['observations'] );
 
 			$out = array(
 				'ran'      => true,

@@ -1,0 +1,11 @@
+[
+	{
+		"check": "A1",
+		"severity": "critical",
+		"confidence": "medium",
+		"where": [
+			"style:site-custom",
+			"rest:site/v1"
+		]
+	}
+]

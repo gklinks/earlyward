@@ -7,6 +7,9 @@
  *   ini.json        optional effective ini values
  *   expected.json   the findings the default scanner must return, no more, no less
  *   db.json         optional database contents (see Fixture_Database)
+ *   loopback.json   optional loopback answers (see Fixture_Loopback)
+ *   baseline.json / previous.json / constants.json   optional, by check ID / constant name
+ *   The clock is fixed at Fixture_Site::NOW.
  *   layout.json     optional {"root": "dir"}: tree/ holds several sites, tree/dir is scanned
  *
  * Conventions inside tree/:
@@ -25,6 +28,11 @@ use Wallwarden\Env\Context;
  * Fixture site.
  */
 final class Fixture_Site {
+
+	/**
+	 * Fixed clock for every fixture: 2026-11-07 00:00:00 UTC.
+	 */
+	const NOW = 1794009600;
 
 	/**
 	 * Temporary root.
@@ -85,6 +93,19 @@ final class Fixture_Site {
 		$extra = array();
 		if ( is_file( $this->case_dir . '/db.json' ) ) {
 			$extra['db'] = new Fixture_Database( (array) json_decode( (string) file_get_contents( $this->case_dir . '/db.json' ), true ) );
+		}
+		$extra['now'] = self::NOW;
+		foreach ( array(
+			'baselines' => 'baseline.json',
+			'previous'  => 'previous.json',
+			'constants' => 'constants.json',
+		) as $key => $file ) {
+			if ( is_file( $this->case_dir . '/' . $file ) ) {
+				$extra[ $key ] = (array) json_decode( (string) file_get_contents( $this->case_dir . '/' . $file ), true );
+			}
+		}
+		if ( is_file( $this->case_dir . '/loopback.json' ) ) {
+			$extra['loopback'] = new Fixture_Loopback( $this->case_dir, (array) json_decode( (string) file_get_contents( $this->case_dir . '/loopback.json' ), true ) );
 		}
 		return new Context( $this->root, $this->root . '/wp-content', $this->root . '/wp-content/uploads', $ini, $extra );
 	}

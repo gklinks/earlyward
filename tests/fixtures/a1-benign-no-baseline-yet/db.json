@@ -1,0 +1,10 @@
+{
+	"options": {
+		"active_plugins": [
+			"akismet/akismet.php",
+			"contact-form-7/wp-contact-form-7.php"
+		],
+		"stylesheet": "astra",
+		"template": "astra"
+	}
+}
