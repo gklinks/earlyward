@@ -29,6 +29,7 @@ final class Fixer {
 	const ID_CHMOD_CONFIG       = 'chmod_config';
 	const ID_DELETE_BACKUP      = 'delete_backup';
 	const ID_DELETE_MAINTENANCE = 'delete_maintenance';
+	const ID_DELETE_OLD_BACKUPS = 'delete_old_backups';
 
 	const LOG_OPTION = 'earlyward_fix_log';
 	const MAX_LOG    = 50;
@@ -39,7 +40,7 @@ final class Fixer {
 	 * @return string[]
 	 */
 	public static function ids(): array {
-		return array( self::ID_CHMOD_CONFIG, self::ID_DELETE_BACKUP, self::ID_DELETE_MAINTENANCE );
+		return array( self::ID_CHMOD_CONFIG, self::ID_DELETE_BACKUP, self::ID_DELETE_MAINTENANCE, self::ID_DELETE_OLD_BACKUPS );
 	}
 
 	/**
@@ -88,6 +89,15 @@ final class Fixer {
 				'id'         => self::ID_DELETE_MAINTENANCE,
 				'label'      => __( 'Delete the leftover maintenance page', 'earlyward' ),
 				'what'       => __( 'Permanently deletes wp-content/maintenance.php. WordPress shows its own maintenance message without it.', 'earlyward' ),
+				'needs_copy' => false,
+			);
+		}
+		$facts = isset( $evidence[0]['facts'] ) && is_array( $evidence[0]['facts'] ) ? $evidence[0]['facts'] : array();
+		if ( 'H1' === $check && '' !== $first && 0 === strpos( (string) ( $facts['remote_copy'] ?? '' ), 'yes' ) ) {
+			return array(
+				'id'         => self::ID_DELETE_OLD_BACKUPS,
+				'label'      => __( 'Delete the older local backup copies', 'earlyward' ),
+				'what'       => __( 'Permanently deletes the older backup files listed as evidence from this server. The newest local set stays, and UpdraftPlus lists the newest set as uploaded to remote storage. It cannot be undone from here.', 'earlyward' ),
 				'needs_copy' => false,
 			);
 		}
@@ -150,6 +160,10 @@ final class Fixer {
 		$log = array();
 		foreach ( $paths as $location ) {
 			$absolute = self::safe_path( $ctx, $location, self::php_names_allowed( $id ) );
+			// Only UpdraftPlus backup files, by name, whatever the scan reported.
+			if ( self::ID_DELETE_OLD_BACKUPS === $id && ( null === $absolute || null === \Earlyward\Checks\Housekeeping\Old_Backups_Check::parse( basename( $absolute ) ) ) ) {
+				return self::result( false, 'refused', $log );
+			}
 			if ( null === $absolute ) {
 				return self::result( false, 'refused', $log );
 			}

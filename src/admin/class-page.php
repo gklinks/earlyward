@@ -397,11 +397,35 @@ final class Page {
 			return;
 		}
 
-		$labels = array(
+		$labels       = array(
 			'critical' => __( 'Critical', 'earlyward' ),
 			'warning'  => __( 'Warning', 'earlyward' ),
 			'info'     => __( 'Info', 'earlyward' ),
 		);
+		$security     = array();
+		$housekeeping = array();
+		foreach ( $findings as $finding ) {
+			if ( 'H' === substr( (string) ( $finding['check'] ?? '' ), 0, 1 ) ) {
+				$housekeeping[] = $finding;
+			} else {
+				$security[] = $finding;
+			}
+		}
+		self::render_finding_cards( $security, $labels );
+		if ( ! empty( $housekeeping ) ) {
+			echo '<h2>' . esc_html__( 'Housekeeping', 'earlyward' ) . '</h2>';
+			echo '<p class="description">' . esc_html__( 'Tidy-up suggestions, not security problems. They never trigger an alert email.', 'earlyward' ) . '</p>';
+			self::render_finding_cards( $housekeeping, $labels );
+		}
+	}
+
+	/**
+	 * Draw a list of findings as cards.
+	 *
+	 * @param array<int, array<string, mixed>> $findings Findings.
+	 * @param array<string, string>            $labels   Severity labels.
+	 */
+	private static function render_finding_cards( array $findings, array $labels ): void {
 		foreach ( $findings as $finding ) {
 			$severity = isset( $labels[ (string) ( $finding['severity'] ?? '' ) ] ) ? (string) $finding['severity'] : 'info';
 			echo '<div class="earlyward-finding earlyward-' . esc_attr( $severity ) . '">';

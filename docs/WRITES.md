@@ -41,6 +41,7 @@ Each fix is a button under the finding it belongs to. It needs the `manage_optio
 | Make wp-config.php owner-only (check B4) | chmod 600 on wp-config.php, only when PHP owns the file. Put back at once if PHP can no longer read it. | The log keeps the old mode; `chmod` it back |
 | Delete an exposed backup, dump or config copy (check B3) | Deletes the one file the finding lists. Never `wp-config.php` or any `.php` file. | Not reversible from here. The hash is logged. |
 | Delete a leftover maintenance page (check C3, info only) | Deletes `wp-content/maintenance.php`, only when the check classed it as a harmless generated page. | Not reversible from here. The hash is logged. |
+| Delete older local backup copies (check H1, housekeeping, info only) | Deletes the UpdraftPlus backup files (`backup_*` in `wp-content/updraft`) of every set older than the newest local set. Offered only when UpdraftPlus's own history lists the newest set as uploaded to remote storage; otherwise the finding is shown without a button. Only files whose names match UpdraftPlus's naming are ever deleted. | Not reversible from here. The hashes are logged; the newest local set and the remote copy stay. |
 
 ## Planned (not implemented yet)
 
