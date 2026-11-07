@@ -324,13 +324,18 @@ final class Unexpected_Php_Check implements Check {
 	}
 
 	/**
-	 * Plugin Name header, if any.
+	 * Plugin Name header, if any. Like WordPress's own header reader, a comment close or a PHP
+	 * close tag on the same line ends the value ("/* Plugin Name: X *\/" gives "X").
 	 *
 	 * @param string $code Source.
 	 * @return string
 	 */
-	private static function plugin_name( string $code ): string {
-		return preg_match( '/^[ \t\/*#@]*Plugin Name:\s*(.+)$/mi', $code, $m ) ? trim( $m[1] ) : '';
+	public static function plugin_name( string $code ): string {
+		// Same line pattern as WordPress's get_file_data(), including an opening tag on the line.
+		if ( ! preg_match( '/^(?:[ \t]*<\?php)?[ \t\/*#@]*Plugin Name:\s*(.+)$/mi', $code, $m ) ) {
+			return '';
+		}
+		return trim( (string) preg_replace( '/\s*(?:\*\/|\?>).*/', '', $m[1] ) );
 	}
 
 	/**
