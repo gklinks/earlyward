@@ -200,5 +200,6 @@ final class OverviewDataTest extends TestCase {
 		$this->assertSame( array( 'Alpha', 'Beta' ), array_column( $rows, 'name' ) );
 		$this->assertSame( '1.5', $rows[0]['to'] );
 		$this->assertSame( '1.0', $rows[0]['from'] );
+		$this->assertSame( 'a/a.php', $rows[0]['key'], 'The key names the item for the update button.' );
 	}
 }

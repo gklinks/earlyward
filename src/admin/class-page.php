@@ -138,6 +138,8 @@ final class Page {
 		$fingerprint = isset( $_POST['earlyward_fingerprint'] ) ? sanitize_key( wp_unslash( $_POST['earlyward_fingerprint'] ) ) : '';
 		$confirmed   = ! empty( $_POST['earlyward_confirm'] );
 		$has_copy    = ! empty( $_POST['earlyward_copy'] );
+		$from_check  = isset( $_POST['earlyward_check'] ) ? sanitize_key( wp_unslash( $_POST['earlyward_check'] ) ) : '';
+		$return      = ( isset( $_POST['earlyward_return'] ) && 'overview' === $_POST['earlyward_return'] ) ? 'overview' : 'findings';
 		$selected    = array();
 		if ( isset( $_POST['earlyward_items'] ) && is_array( $_POST['earlyward_items'] ) ) {
 			foreach ( array_slice( wp_unslash( $_POST['earlyward_items'] ), 0, 100 ) as $item ) { // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Each item is sanitised below and only compared with locations from a fresh scan.
@@ -148,23 +150,29 @@ final class Page {
 		}
 		// phpcs:enable WordPress.Security.NonceVerification.Missing
 
-		if ( Fixer::disabled() || ! in_array( $id, Fixer::ids(), true ) || 1 !== preg_match( '/^[0-9a-f]{40}$/', $fingerprint ) ) {
-			wp_safe_redirect( self::url( 'fix_refused', 'findings' ) );
+		// The Overview tab's update table names the check (B8) instead of a stored finding, because WordPress's
+		// list of updates can be newer than the last stored scan. The fresh scan below still decides what may run.
+		$by_check = Fixer::ID_UPDATE === $id && 'b8' === $from_check;
+		if ( Fixer::disabled() || ! in_array( $id, Fixer::ids(), true ) || ( ! $by_check && 1 !== preg_match( '/^[0-9a-f]{40}$/', $fingerprint ) ) ) {
+			wp_safe_redirect( self::url( 'fix_refused', $return ) );
 			exit;
 		}
 		if ( ! $confirmed ) {
-			wp_safe_redirect( self::url( 'fix_unconfirmed', 'findings' ) );
+			wp_safe_redirect( self::url( 'fix_unconfirmed', $return ) );
 			exit;
 		}
 		if ( Fixer::ID_UPDATE === $id && ! Updater::available() ) {
-			wp_safe_redirect( self::url( 'fix_refused', 'findings' ) );
+			wp_safe_redirect( self::url( 'fix_refused', $return ) );
 			exit;
 		}
 
 		// What the page showed, looked up by fingerprint in the stored scan. Only a check ID and a file name
 		// are taken from it, and only to find the same finding in a fresh scan.
-		$shown = null;
-		$state = State::get();
+		$shown = $by_check ? array(
+			'check'    => 'B8',
+			'evidence' => array( array( 'location' => '' ) ),
+		) : null;
+		$state = $by_check ? array() : State::get();
 		$last  = isset( $state['last'] ) && is_array( $state['last'] ) ? $state['last'] : array();
 		foreach ( isset( $last['findings'] ) && is_array( $last['findings'] ) ? $last['findings'] : array() as $stored ) {
 			if ( (string) ( $stored['fingerprint'] ?? '' ) === $fingerprint ) {
@@ -173,7 +181,7 @@ final class Page {
 			}
 		}
 		if ( null === $shown || ! isset( $shown['evidence'][0]['location'] ) ) {
-			wp_safe_redirect( self::url( 'fix_gone', 'findings' ) );
+			wp_safe_redirect( self::url( 'fix_gone', $return ) );
 			exit;
 		}
 
@@ -218,7 +226,7 @@ final class Page {
 			'failed'      => 'fix_failed',
 			'unconfirmed' => 'fix_unconfirmed',
 		);
-		wp_safe_redirect( self::url( $codes[ $result['code'] ] ?? 'fix_failed', 'findings' ) );
+		wp_safe_redirect( self::url( $codes[ $result['code'] ] ?? 'fix_failed', $return ) );
 		exit;
 	}
 

@@ -152,7 +152,7 @@ final class Overview_Data {
 	 * @param array<string, object|array<mixed>> $response Update response by file or slug.
 	 * @param array<string, string>              $names    Display name by the same key.
 	 * @param array<string, string>              $current  Installed version by the same key.
-	 * @return array<int, array{name: string, from: string, to: string}>
+	 * @return array<int, array{key: string, name: string, from: string, to: string}>
 	 */
 	public static function update_rows( array $response, array $names, array $current ): array {
 		$rows = array();
@@ -164,6 +164,7 @@ final class Overview_Data {
 				continue;
 			}
 			$rows[] = array(
+				'key'  => (string) $key,
 				'name' => (string) ( $names[ $key ] ?? $key ),
 				'from' => $from,
 				'to'   => $to,

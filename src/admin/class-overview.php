@@ -8,6 +8,7 @@
 
 namespace Earlyward\Admin;
 
+use Earlyward\Fix\Fixer;
 use Earlyward\Store\State;
 
 defined( 'ABSPATH' ) || exit;
@@ -89,6 +90,7 @@ final class Overview {
 			if ( 'upgrade' === (string) ( $first['response'] ?? '' ) ) {
 				$groups[ __( 'WordPress', 'earlyward' ) ] = array(
 					array(
+						'key'  => 'core:WordPress',
 						'name' => 'WordPress',
 						'from' => (string) get_bloginfo( 'version' ),
 						'to'   => (string) ( $first['version'] ?? $first['current'] ?? '' ),
@@ -107,7 +109,7 @@ final class Overview {
 		}
 		$rows = Overview_Data::update_rows( is_object( $tr ) && ! empty( $tr->response ) ? (array) $tr->response : array(), $names, $current );
 		if ( ! empty( $rows ) ) {
-			$groups[ __( 'Plugins', 'earlyward' ) ] = $rows;
+			$groups[ __( 'Plugins', 'earlyward' ) ] = self::prefixed( $rows, 'plugin:' );
 		}
 
 		$themes  = wp_get_themes();
@@ -120,20 +122,43 @@ final class Overview {
 		}
 		$rows = Overview_Data::update_rows( is_object( $tt ) && ! empty( $tt->response ) ? (array) $tt->response : array(), $names, $current );
 		if ( ! empty( $rows ) ) {
-			$groups[ __( 'Themes', 'earlyward' ) ] = $rows;
+			$groups[ __( 'Themes', 'earlyward' ) ] = self::prefixed( $rows, 'theme:' );
 		}
 
 		$checked = is_object( $tr ) && isset( $tr->last_checked ) ? (int) $tr->last_checked : 0;
 		if ( empty( $groups ) ) {
 			echo '<p>' . esc_html__( 'WordPress knows of no waiting updates.', 'earlyward' ) . '</p>';
 		}
+		// The same confirmed B8 fix as on the Findings tab: Page::handle_fix re-checks every ticked item against a fresh scan.
+		$can = ! empty( $groups ) && ! Fixer::disabled() && ( current_user_can( 'update_plugins' ) || current_user_can( 'update_themes' ) || current_user_can( 'update_core' ) );
+		if ( $can ) {
+			echo '<form method="post" class="earlyward-fix earlyward-updates" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '">';
+			echo '<input type="hidden" name="action" value="' . esc_attr( Page::ACTION_FIX ) . '" />';
+			echo '<input type="hidden" name="earlyward_fix_id" value="' . esc_attr( Fixer::ID_UPDATE ) . '" />';
+			echo '<input type="hidden" name="earlyward_check" value="B8" />';
+			echo '<input type="hidden" name="earlyward_return" value="overview" />';
+			wp_nonce_field( Page::ACTION_FIX );
+		}
 		foreach ( $groups as $label => $items ) {
 			echo '<h3>' . esc_html( sprintf( /* translators: 1: Plugins, Themes or WordPress, 2: number of updates. */ __( '%1$s: %2$d waiting', 'earlyward' ), $label, count( $items ) ) ) . '</h3>';
-			echo '<table class="widefat striped earlyward-table"><thead><tr><th>' . esc_html__( 'Name', 'earlyward' ) . '</th><th>' . esc_html__( 'Installed', 'earlyward' ) . '</th><th>' . esc_html__( 'Available', 'earlyward' ) . '</th></tr></thead><tbody>';
+			echo '<table class="widefat striped earlyward-table"><thead><tr>' . ( $can ? '<th class="check-column"><span class="screen-reader-text">' . esc_html__( 'Update', 'earlyward' ) . '</span></th>' : '' ) . '<th>' . esc_html__( 'Name', 'earlyward' ) . '</th><th>' . esc_html__( 'Installed', 'earlyward' ) . '</th><th>' . esc_html__( 'Available', 'earlyward' ) . '</th></tr></thead><tbody>';
 			foreach ( $items as $item ) {
-				echo '<tr><td>' . esc_html( $item['name'] ) . '</td><td>' . esc_html( $item['from'] ) . '</td><td>' . esc_html( $item['to'] ) . '</td></tr>';
+				$box = '';
+				if ( $can && Fixer::pickable( Fixer::ID_UPDATE, $item['key'] ) ) {
+					$box = '<td><input type="checkbox" name="earlyward_items[]" value="' . esc_attr( $item['key'] ) . '" aria-label="' . esc_attr( sprintf( /* translators: %s: plugin, theme or WordPress name. */ __( 'Update %s', 'earlyward' ), $item['name'] ) ) . '" /></td>';
+				} elseif ( $can ) {
+					$box = '<td></td>';
+				}
+				echo '<tr>' . $box . '<td>' . esc_html( $item['name'] ) . '</td><td>' . esc_html( $item['from'] ) . '</td><td>' . esc_html( $item['to'] ) . '</td></tr>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $box is built from escaped parts above.
 			}
 			echo '</tbody></table>';
+		}
+		if ( $can ) {
+			echo '<p>' . esc_html__( 'Tick what to update. WordPress\'s own updater runs for each one, plugins and themes first, WordPress itself last. An update can break a site.', 'earlyward' ) . '</p>';
+			echo '<p><label><input type="checkbox" name="earlyward_copy" value="1" /> ' . esc_html__( 'I have a recent backup of the site.', 'earlyward' ) . '</label><br />';
+			echo '<label><input type="checkbox" name="earlyward_confirm" value="1" /> ' . esc_html__( 'I understand what this changes.', 'earlyward' ) . '</label></p>';
+			echo '<p><button type="submit" class="button button-primary">' . esc_html__( 'Update the ticked items now', 'earlyward' ) . '</button></p>';
+			echo '</form>';
 		}
 		echo '<p class="description">' . esc_html(
 			0 === $checked
@@ -144,6 +169,20 @@ final class Overview {
 					human_time_diff( $checked )
 				)
 		) . ' <a href="' . esc_url( admin_url( 'update-core.php' ) ) . '">' . esc_html__( 'Open the WordPress updates screen', 'earlyward' ) . '</a> ' . esc_html__( 'to update. Take a backup first.', 'earlyward' ) . '</p>';
+	}
+
+	/**
+	 * Give each row the item name the B8 fix uses ("plugin:folder/file.php", "theme:slug").
+	 *
+	 * @param array<int, array{key: string, name: string, from: string, to: string}> $rows   Rows.
+	 * @param string                                                                 $prefix Prefix.
+	 * @return array<int, array{key: string, name: string, from: string, to: string}>
+	 */
+	private static function prefixed( array $rows, string $prefix ): array {
+		foreach ( $rows as $i => $row ) {
+			$rows[ $i ]['key'] = $prefix . $row['key'];
+		}
+		return $rows;
 	}
 
 	/**
