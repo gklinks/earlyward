@@ -1,8 +1,8 @@
 <?php
 /**
- * Runs WordPress's own updater for one plugin or theme, the same code Dashboard -> Updates uses.
- * Called only by a confirmed B8 fix. It does not download anything WordPress would not download
- * from its Updates screen, and it never updates WordPress itself.
+ * Runs WordPress's own updater for one plugin, theme or WordPress itself, the same code
+ * Dashboard -> Updates uses. Called only by a confirmed B8 fix. It does not download anything
+ * WordPress would not download from its Updates screen.
  *
  * @package Earlyward
  */
@@ -32,17 +32,24 @@ final class Updater {
 	/**
 	 * Update one item.
 	 *
-	 * @param string $kind "plugin" or "theme".
-	 * @param string $key  Plugin file (folder/file.php) or theme folder name.
+	 * @param string $kind "plugin", "theme" or "core".
+	 * @param string $key  Plugin file (folder/file.php), theme folder name, or "WordPress".
 	 * @return array{ok: bool, result: string}
 	 */
 	public static function upgrade( string $kind, string $key ): array {
 		try {
-			$capability = 'plugin' === $kind ? 'update_plugins' : ( 'theme' === $kind ? 'update_themes' : '' );
-			if ( '' === $capability || ! current_user_can( $capability ) ) {
+			$capabilities = array(
+				'plugin' => 'update_plugins',
+				'theme'  => 'update_themes',
+				'core'   => 'update_core',
+			);
+			if ( ! isset( $capabilities[ $kind ] ) || ! current_user_can( $capabilities[ $kind ] ) ) {
 				return self::out( false, 'not allowed' );
 			}
 			require_once ABSPATH . 'wp-admin/includes/class-wp-upgrader.php';
+			if ( 'core' === $kind ) {
+				return self::upgrade_core();
+			}
 			$skin     = new \WP_Ajax_Upgrader_Skin();
 			$upgrader = 'plugin' === $kind ? new \Plugin_Upgrader( $skin ) : new \Theme_Upgrader( $skin );
 			$before   = self::version( $kind, $key );
@@ -66,6 +73,54 @@ final class Updater {
 		} catch ( \Throwable $e ) {
 			return self::out( false, 'failed: ' . self::short( $e->getMessage() ) );
 		}
+	}
+
+	/**
+	 * Update WordPress itself to the newest version WordPress's own last update check offered,
+	 * with Core_Upgrader (the code behind Dashboard -> Updates, "Update to version x").
+	 *
+	 * @return array{ok: bool, result: string}
+	 */
+	private static function upgrade_core(): array {
+		if ( ! function_exists( 'get_core_updates' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/update.php';
+		}
+		$offer = null;
+		foreach ( (array) get_core_updates() as $candidate ) {
+			if ( is_object( $candidate ) && isset( $candidate->response ) && 'upgrade' === $candidate->response ) {
+				$offer = $candidate;
+				break;
+			}
+		}
+		if ( null === $offer ) {
+			return self::out( false, 'no WordPress update is offered' );
+		}
+		$before   = self::core_version();
+		$upgrader = new \Core_Upgrader( new \WP_Ajax_Upgrader_Skin() );
+		$result   = $upgrader->upgrade( $offer );
+		if ( is_wp_error( $result ) ) {
+			return self::out( false, 'failed: ' . self::short( $result->get_error_message() ) );
+		}
+		$after = self::core_version();
+		if ( $after === $before ) {
+			return self::out( false, 'no change: still version ' . $after );
+		}
+		return self::out( true, 'updated WordPress ' . $before . ' to ' . $after );
+	}
+
+	/**
+	 * WordPress version, read fresh from wp-includes/version.php (the global keeps the old value
+	 * until the next request).
+	 *
+	 * @return string
+	 */
+	private static function core_version(): string {
+		$file = ABSPATH . 'wp-includes/version.php';
+		if ( function_exists( 'opcache_invalidate' ) ) {
+			@opcache_invalidate( $file, true ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged -- Best effort.
+		}
+		$text = is_readable( $file ) ? (string) file_get_contents( $file ) : ''; // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- Local core file.
+		return 1 === preg_match( '/\$wp_version\s*=\s*\'([^\']+)\'/', $text, $m ) ? $m[1] : '?';
 	}
 
 	/**

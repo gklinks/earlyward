@@ -2,14 +2,14 @@
 # This file is distributed under the GPL-2.0-or-later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Earlyward 0.6.0\n"
+"Project-Id-Version: Earlyward 0.7.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/earlyward\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-11-08T03:24:45+00:00\n"
+"POT-Creation-Date: 2026-11-08T03:54:14+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: earlyward\n"
@@ -495,109 +495,105 @@ msgstr ""
 msgid "Items to act on"
 msgstr ""
 
-#: src/admin/class-page.php:609
-msgid "(use Dashboard, Updates)"
-msgstr ""
-
-#: src/admin/class-page.php:617
+#: src/admin/class-page.php:615
 msgid "I understand what this changes."
 msgstr ""
 
-#: src/admin/class-page.php:627
+#: src/admin/class-page.php:625
 msgid "Quarantine"
 msgstr ""
 
-#: src/admin/class-page.php:628
+#: src/admin/class-page.php:626
 msgid "Files and folders that a fix moved here are locked away and renamed so that they cannot run. Nothing here is deleted unless you press \"Delete for good\". \"Put back\" moves an item to where it was, if nothing else is there now."
 msgstr ""
 
-#: src/admin/class-page.php:630
+#: src/admin/class-page.php:628
 msgid "The quarantine is empty."
 msgstr ""
 
 #. translators: %s: folder name inside wp-content.
-#: src/admin/class-page.php:636
+#: src/admin/class-page.php:634
 #, php-format
 msgid "Folder: wp-content/%s (a MANIFEST.txt inside lists every item, so they can also be put back by hand)."
 msgstr ""
 
-#: src/admin/class-page.php:642
+#: src/admin/class-page.php:640
 msgid "Moved"
 msgstr ""
 
-#: src/admin/class-page.php:642
+#: src/admin/class-page.php:640
 msgid "Original place"
 msgstr ""
 
-#: src/admin/class-page.php:642
+#: src/admin/class-page.php:640
 msgid "From check"
 msgstr ""
 
-#: src/admin/class-page.php:642
+#: src/admin/class-page.php:640
 msgid "Actions"
 msgstr ""
 
-#: src/admin/class-page.php:644
+#: src/admin/class-page.php:642
 msgid "folder"
 msgstr ""
 
-#: src/admin/class-page.php:648
+#: src/admin/class-page.php:646
 msgid "Put back"
 msgstr ""
 
-#: src/admin/class-page.php:648
+#: src/admin/class-page.php:646
 msgid "I want this back where it was."
 msgstr ""
 
-#: src/admin/class-page.php:649
+#: src/admin/class-page.php:647
 msgid "Delete for good"
 msgstr ""
 
-#: src/admin/class-page.php:649
+#: src/admin/class-page.php:647
 msgid "Delete it permanently."
 msgstr ""
 
-#: src/admin/class-page.php:670
+#: src/admin/class-page.php:668
 msgid "Fix log"
 msgstr ""
 
-#: src/admin/class-page.php:672
+#: src/admin/class-page.php:670
 msgid "Earlyward has not changed anything on this site yet."
 msgstr ""
 
-#: src/admin/class-page.php:675
+#: src/admin/class-page.php:673
 msgid "When"
 msgstr ""
 
-#: src/admin/class-page.php:675
+#: src/admin/class-page.php:673
 msgid "What"
 msgstr ""
 
-#: src/admin/class-page.php:675
+#: src/admin/class-page.php:673
 msgid "Target"
 msgstr ""
 
-#: src/admin/class-page.php:675
+#: src/admin/class-page.php:673
 msgid "Result"
 msgstr ""
 
-#: src/admin/class-page.php:708
+#: src/admin/class-page.php:706
 msgid "Copy for host support"
 msgstr ""
 
-#: src/admin/class-page.php:709
+#: src/admin/class-page.php:707
 msgid "Paste this into a ticket with your hosting provider. It lists the findings and the versions in use. It contains no passwords or keys, but check it before you send it."
 msgstr ""
 
-#: src/admin/class-page.php:711
+#: src/admin/class-page.php:709
 msgid "Copy to clipboard"
 msgstr ""
 
-#: src/admin/class-page.php:719
+#: src/admin/class-page.php:717
 msgid "Copied."
 msgstr ""
 
-#: src/admin/class-page.php:719
+#: src/admin/class-page.php:717
 msgid "Press Ctrl+C to copy the selected text."
 msgstr ""
 
@@ -1930,7 +1926,7 @@ msgid "Update the ticked items now"
 msgstr ""
 
 #: src/fix/class-fixer.php:134
-msgid "Runs the WordPress updater for each ticked plugin or theme, one after the other, exactly as Dashboard, Updates does. An update can break a site. WordPress itself is updated from Dashboard, Updates only."
+msgid "Runs the WordPress updater for each ticked item, one after the other, exactly as Dashboard, Updates does: plugins and themes first, WordPress itself last. An update can break a site, and a WordPress update puts the site in maintenance mode for a minute."
 msgstr ""
 
 #: src/fix/class-fixer.php:134

@@ -4,7 +4,7 @@ Tags: security, malware, diagnostics, monitoring, hardening
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 0.6.0
+Stable tag: 0.7.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -21,7 +21,7 @@ It was built from a real incident on a shared hosting account: a self-healing ma
 = What it does NOT do =
 
 * It does not make a site unhackable. Nothing installed inside WordPress can.
-* It does not change anything automatically, and it is not a malware cleaner. Scans never write. Most findings have a confirmed fix button: a reversible quarantine for unknown files in the web root, PHP in uploads, injected theme files, version files, renamed plugin copies and inactive plugins (put back or delete for good from the Quarantine and fix log tab); deleting an exposed backup or a leftover maintenance page; owner-only wp-config.php; WordPress's own updater for ticked plugins and themes. Each is logged, and the constant EARLYWARD_NO_FIXES switches them off.
+* It does not change anything automatically, and it is not a malware cleaner. Scans never write. Most findings have a confirmed fix button: a reversible quarantine for unknown files in the web root, PHP in uploads, injected theme files, version files, renamed plugin copies and inactive plugins (put back or delete for good from the Quarantine and fix log tab); deleting an exposed backup or a leftover maintenance page; owner-only wp-config.php; WordPress's own updater for ticked plugins, themes and WordPress itself. Each is logged, and the constant EARLYWARD_NO_FIXES switches them off.
 * It is not a firewall and does not block traffic.
 * It cannot see a total outage from inside: if PHP is down, so is the plugin.
 * It does not contact any outside server unless you switch that on. No telemetry.
@@ -41,6 +41,10 @@ Scans run in WP-Cron or WP-CLI, never while a visitor loads a page. Measured cos
 Privately, through the Security tab of the GitHub repository. Please do not open a public issue.
 
 == Changelog ==
+
+= 0.7.0 =
+* Still an early preview: not yet recommended for production sites.
+* Updates waiting (B8): the update button now also updates WordPress itself, with the same updater as Dashboard, Updates. Plugins and themes run first, WordPress last, after the "I have a recent backup" box.
 
 = 0.6.0 =
 * Still an early preview: not yet recommended for production sites.

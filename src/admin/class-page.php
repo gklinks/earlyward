@@ -605,8 +605,6 @@ final class Page {
 				$where = is_array( $item ) ? (string) ( $item['location'] ?? '' ) : '';
 				if ( Fixer::pickable( $offer['id'], $where ) ) {
 					echo '<label><input type="checkbox" name="earlyward_items[]" value="' . esc_attr( $where ) . '"' . ( $offer['checked'] ? ' checked="checked"' : '' ) . ' /> <code>' . esc_html( $where ) . '</code></label><br />';
-				} elseif ( '' !== $where ) {
-					echo '<span class="description"><code>' . esc_html( $where ) . '</code> ' . esc_html__( '(use Dashboard, Updates)', 'earlyward' ) . '</span><br />';
 				}
 			}
 			echo '</fieldset>';

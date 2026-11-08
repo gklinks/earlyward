@@ -418,7 +418,7 @@ final class QuarantineTest extends TestCase {
 	}
 
 	/**
-	 * Updates (B8): only ticked plugins and themes go to the updater, never WordPress itself; a failure is reported.
+	 * Updates (B8): only ticked items go to the updater, WordPress itself last; a failure is reported.
 	 */
 	public function test_updates(): void {
 		$ctx      = $this->context(
@@ -435,7 +435,9 @@ final class QuarantineTest extends TestCase {
 		$findings = $this->found( new Updates_Waiting_Check(), $ctx );
 		$offer    = Fixer::offer( $findings[0] );
 		$this->assertSame( Fixer::ID_UPDATE, $offer['id'] );
-		$this->assertFalse( Fixer::pickable( Fixer::ID_UPDATE, 'core:WordPress' ) );
+		$this->assertTrue( Fixer::pickable( Fixer::ID_UPDATE, 'core:WordPress' ) );
+		$this->assertFalse( Fixer::pickable( Fixer::ID_UPDATE, 'core:other' ) );
+		$this->assertFalse( Fixer::pickable( Fixer::ID_UPDATE, 'plugin:../x.php' ) );
 
 		$calls   = array();
 		$upgrade = function ( string $kind, string $key ) use ( &$calls ): array {
@@ -476,12 +478,12 @@ final class QuarantineTest extends TestCase {
 			self::NOW,
 			array(
 				'extra'    => true,
-				'selected' => array( 'plugin:akismet/akismet.php', 'core:WordPress' ),
+				'selected' => array( 'core:WordPress', 'plugin:akismet/akismet.php', 'plugin:not-listed/x.php' ),
 				'upgrade'  => $upgrade,
 			)
 		);
 		$this->assertTrue( $result['ok'] );
-		$this->assertSame( array( 'plugin:akismet/akismet.php' ), $calls, 'WordPress itself is never updated from here.' );
+		$this->assertSame( array( 'plugin:akismet/akismet.php', 'core:WordPress' ), $calls, 'Plugins first, WordPress itself last; unlisted items ignored.' );
 		$this->assertSame( 'updated 1 to 2', $result['log'][0]['result'] );
 
 		$failed = Fixer::apply(

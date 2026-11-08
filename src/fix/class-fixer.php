@@ -131,7 +131,7 @@ final class Fixer {
 				break;
 			case 'B8':
 				if ( '' !== $first ) {
-					return self::make( self::ID_UPDATE, __( 'Update the ticked items now', 'earlyward' ), __( 'Runs the WordPress updater for each ticked plugin or theme, one after the other, exactly as Dashboard, Updates does. An update can break a site. WordPress itself is updated from Dashboard, Updates only.', 'earlyward' ), __( 'I have a recent backup of the site.', 'earlyward' ), true, false );
+					return self::make( self::ID_UPDATE, __( 'Update the ticked items now', 'earlyward' ), __( 'Runs the WordPress updater for each ticked item, one after the other, exactly as Dashboard, Updates does: plugins and themes first, WordPress itself last. An update can break a site, and a WordPress update puts the site in maintenance mode for a minute.', 'earlyward' ), __( 'I have a recent backup of the site.', 'earlyward' ), true, false );
 				}
 				break;
 			case 'D2':
@@ -174,7 +174,7 @@ final class Fixer {
 	 */
 	public static function pickable( string $id, string $location ): bool {
 		if ( self::ID_UPDATE === $id ) {
-			return 1 === preg_match( '#^(plugin|theme):[A-Za-z0-9._/-]+$#', $location ) && false === strpos( $location, '..' );
+			return 'core:WordPress' === $location || ( 1 === preg_match( '#^(plugin|theme):[A-Za-z0-9._/-]+$#', $location ) && false === strpos( $location, '..' ) );
 		}
 		return '' !== $location;
 	}
@@ -285,7 +285,7 @@ final class Fixer {
 	}
 
 	/**
-	 * Run the WordPress updater for each picked plugin or theme.
+	 * Run the WordPress updater for each picked plugin, theme or WordPress itself.
 	 *
 	 * @param string[]             $paths   Evidence locations such as "plugin:akismet/akismet.php".
 	 * @param array<string, mixed> $options Options (upgrade callable).
@@ -298,6 +298,13 @@ final class Fixer {
 		if ( ! is_callable( $upgrade ) ) {
 			return self::result( false, 'refused', array() );
 		}
+		// WordPress itself last, so a plugin or theme update never runs against a half-finished core.
+		usort(
+			$paths,
+			static function ( string $a, string $b ): int {
+				return (int) ( 0 === strpos( $a, 'core:' ) ) - (int) ( 0 === strpos( $b, 'core:' ) );
+			}
+		);
 		$log = array();
 		$all = true;
 		foreach ( $paths as $where ) {
