@@ -43,8 +43,9 @@ shows they behave on real sites. Check IDs refer to the ranked list in [PHASE-0-
 ## v0.2 — dogfood
 
 - [x] B5 PHP end of life and memory limit, B6 disk space, C12 PHP in uploads, H2 backup freshness
-- [ ] Remaining runtime and hosting checks (A5-A8, B7-B9)
-- [ ] C7 opcache serving deleted files, C8 detached PHP processes, C10-C13
+- [x] B7 update checks stalled, C13 theme template injection
+- [ ] Remaining runtime and hosting checks (A5-A8, B8-B9)
+- [ ] C7 opcache serving deleted files, C8 detached PHP processes, C10, C11
 - [x] Site Health integration (reads the stored scan only; critical -> critical, warning -> recommended)
 - [x] "Copy this to your host's support" block (on the admin page)
 - [x] Overview tab: waiting updates, pending comments, administrators and newest users, cron jobs by owner, last change in findings (read-only; no login-IP log, no backup tools)

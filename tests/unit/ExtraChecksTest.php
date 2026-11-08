@@ -209,6 +209,17 @@ final class ExtraChecksTest extends TestCase {
 	}
 
 	/**
+	 * An empty PHP file is a note, not a warning (found on a real site: leftovers of a 2021 cleanup).
+	 */
+	public function test_uploads_empty_php_is_info(): void {
+		$this->put( 'wp-content/uploads/2026/11/qwzxcvbn.php', '' );
+		$f = $this->run_check( new Uploads_Php_Check(), $this->context() );
+		$this->assertCount( 1, $f );
+		$this->assertSame( 'info', $f[0]['severity'] );
+		$this->assertSame( 'low', $f[0]['confidence'] );
+	}
+
+	/**
 	 * A placeholder that carries code is not a placeholder.
 	 */
 	public function test_uploads_index_with_code_is_reported(): void {

@@ -4,7 +4,7 @@ Tags: security, malware, diagnostics, monitoring, hardening
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 0.3.0
+Stable tag: 0.4.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -41,6 +41,11 @@ Scans run in WP-Cron or WP-CLI, never while a visitor loads a page. Measured cos
 Privately, through the Security tab of the GitHub repository. Please do not open a public issue.
 
 == Changelog ==
+
+= 0.4.0 =
+* Still an early preview: not yet recommended for production sites.
+* New checks: WordPress has not checked for updates for days (B7), injected code in theme template files (C13, detection only).
+* An empty PHP file in uploads is now only a note (found on a real site: leftovers of a 2021 cleanup).
 
 = 0.3.0 =
 * Still an early preview: not yet recommended for production sites.

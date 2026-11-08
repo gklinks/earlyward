@@ -152,6 +152,19 @@ final class Uploads_Php_Check implements Check {
 				$steps
 			);
 		}
+		if ( 0 === $ctx->fs()->size( $path ) ) {
+			return new Finding(
+				self::ID,
+				Finding::SEVERITY_INFO,
+				Finding::CONFIDENCE_LOW,
+				__( 'An empty PHP file sits in the uploads folder', 'earlyward' ),
+				__( 'An empty file cannot run anything. It is often what is left after a malware scanner or a cleanup emptied a planted file, so it can point to an old break-in worth knowing about.', 'earlyward' ),
+				array( $evidence ),
+				array(
+					__( 'You can delete it. If the site was ever hacked, make sure the cleanup also covered the rest of the site, then change the passwords.', 'earlyward' ),
+				)
+			);
+		}
 		return new Finding(
 			self::ID,
 			Finding::SEVERITY_WARNING,

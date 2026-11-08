@@ -3,7 +3,7 @@
  * Plugin Name:       Earlyward
  * Plugin URI:        https://github.com/gklinks/earlyward
  * Description:       Detection, early warning, hardening checks and hosting diagnostics, in plain language. Read-only by default.
- * Version:           0.3.0
+ * Version:           0.4.0
  * Requires at least: 6.4
  * Requires PHP:      7.4
  * Author:            GKLINKS
@@ -28,7 +28,7 @@ if ( version_compare( PHP_VERSION, '7.4', '<' ) ) {
 	return;
 }
 
-define( 'EARLYWARD_VERSION', '0.3.0' );
+define( 'EARLYWARD_VERSION', '0.4.0' );
 define( 'EARLYWARD_FILE', __FILE__ );
 define( 'EARLYWARD_DIR', __DIR__ );
 
