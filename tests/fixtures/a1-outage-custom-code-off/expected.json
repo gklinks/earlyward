@@ -1,11 +1,19 @@
 [
-	{
-		"check": "A1",
-		"severity": "critical",
-		"confidence": "medium",
-		"where": [
-			"style:site-custom",
-			"rest:site/v1"
-		]
-	}
+  {
+    "check": "A1",
+    "severity": "critical",
+    "confidence": "medium",
+    "where": [
+      "style:site-custom",
+      "rest:site/v1"
+    ]
+  },
+  {
+    "check": "D2",
+    "severity": "info",
+    "confidence": "low",
+    "where": [
+      "active_plugins"
+    ]
+  }
 ]

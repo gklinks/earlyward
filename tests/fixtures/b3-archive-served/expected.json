@@ -1,4 +1,26 @@
 [
-	{ "check": "B3", "severity": "critical", "confidence": "high", "where": [ "backup.zip" ] },
-	{ "check": "B3", "severity": "critical", "confidence": "high", "where": [ "wp-content/old.zip" ] }
+  {
+    "check": "B3",
+    "severity": "critical",
+    "confidence": "high",
+    "where": [
+      "backup.zip"
+    ]
+  },
+  {
+    "check": "B3",
+    "severity": "critical",
+    "confidence": "high",
+    "where": [
+      "wp-content/old.zip"
+    ]
+  },
+  {
+    "check": "D2",
+    "severity": "info",
+    "confidence": "low",
+    "where": [
+      "active_plugins"
+    ]
+  }
 ]

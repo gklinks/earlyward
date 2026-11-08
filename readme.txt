@@ -4,7 +4,7 @@ Tags: security, malware, diagnostics, monitoring, hardening
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 0.4.1
+Stable tag: 0.5.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -41,6 +41,11 @@ Scans run in WP-Cron or WP-CLI, never while a visitor loads a page. Measured cos
 Privately, through the Security tab of the GitHub repository. Please do not open a public issue.
 
 == Changelog ==
+
+= 0.5.0 =
+* Still an early preview: not yet recommended for production sites.
+* Built from a real audit of a live site. New checks: unexpected PHP and leftover config files in the web root (C15), renamed plugin copies such as plugin.bak-20260809 (C16), updates waiting (B8), readme.html and license.txt publicly served (D1), no login-protection plugin found (D2), installed but inactive plugins (H3, under Housekeeping).
+* Detection only: none of these changes a file.
 
 = 0.4.1 =
 * Fix: the update-check health check (B7) raised PHP warnings on real sites, because WordPress's stored update data arrives as an incomplete object. It now reads the data safely. Found by running 0.4.0 on a live site.

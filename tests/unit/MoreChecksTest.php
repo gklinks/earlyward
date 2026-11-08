@@ -131,14 +131,18 @@ final class MoreChecksTest extends TestCase {
 	 */
 	public function test_update_checks_read_incomplete_class_objects(): void {
 		$stale  = Fixture_Site::NOW - 6 * 86400;
-		$object = unserialize( 'O:8:"stdClass":1:{s:12:"last_checked";i:' . $stale . ';}', array( 'allowed_classes' => false ) );
+		$object = unserialize( // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_unserialize -- a fixed string, objects disabled.
+			'O:8:"stdClass":1:{s:12:"last_checked";i:' . $stale . ';}',
+			array( 'allowed_classes' => false )
+		);
 		$this->assertInstanceOf( \__PHP_Incomplete_Class::class, $object );
 		$options = array(
 			'_site_transient_update_core'    => $object,
 			'_site_transient_update_plugins' => $object,
 			'_site_transient_update_themes'  => $object,
 		);
-		set_error_handler(
+		set_error_handler( // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_set_error_handler -- turns warnings into failures in this test.
+
 			static function ( int $no, string $message ): bool {
 				throw new \RuntimeException( $message ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- a test, not output.
 			}

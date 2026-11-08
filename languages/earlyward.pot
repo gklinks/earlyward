@@ -2,14 +2,14 @@
 # This file is distributed under the GPL-2.0-or-later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Earlyward 0.4.1\n"
+"Project-Id-Version: Earlyward 0.5.0\n"
 "Report-Msgid-Bugs-To: https://github.com/gklinks/earlyward/issues\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-11-08T02:11:31+00:00\n"
+"POT-Creation-Date: 2026-11-08T02:47:18+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: earlyward\n"
@@ -747,6 +747,22 @@ msgstr ""
 msgid "The file holds your database password and keys. Most hosts keep accounts apart, so this is often harmless, but owner-only access costs nothing and closes the gap on hosts that do not."
 msgstr ""
 
+#: src/checks/hosting/class-disclosure-files-check.php:69
+msgid "WordPress files that reveal the exact version are public"
+msgstr ""
+
+#: src/checks/hosting/class-disclosure-files-check.php:70
+msgid "readme.html and license.txt state the WordPress version, which helps an attacker choose an exploit. The risk is small, and keeping the site updated matters far more."
+msgstr ""
+
+#: src/checks/hosting/class-disclosure-files-check.php:73
+msgid "Block these two files in your web server or Cloudflare rules, or delete them. WordPress restores them on every core update, so a rule lasts longer than a deletion."
+msgstr ""
+
+#: src/checks/hosting/class-disclosure-files-check.php:74
+msgid "Keep WordPress updated: that is the real protection."
+msgstr ""
+
 #: src/checks/hosting/class-disk-space-check.php:69
 msgid "The disk is almost full"
 msgstr ""
@@ -829,6 +845,22 @@ msgstr ""
 
 #: src/checks/hosting/class-exposed-backup-check.php:211
 msgid "Site backups always include wp-config.php, which holds the database password. Archives in a web folder are a common, easily guessed target."
+msgstr ""
+
+#: src/checks/hosting/class-login-protection-check.php:88
+msgid "No login-protection plugin was found"
+msgstr ""
+
+#: src/checks/hosting/class-login-protection-check.php:89
+msgid "None of the well-known plugins that limit login attempts or add two-factor sign-in is active. Your host or Cloudflare may already protect the login page, which Earlyward cannot see."
+msgstr ""
+
+#: src/checks/hosting/class-login-protection-check.php:92
+msgid "Turn on two-factor sign-in for every administrator, and limit failed login attempts, with a plugin you trust or your host's tools."
+msgstr ""
+
+#: src/checks/hosting/class-login-protection-check.php:93
+msgid "If your host or Cloudflare already does this, you can ignore this note."
 msgstr ""
 
 #: src/checks/hosting/class-open-basedir-check.php:50
@@ -930,6 +962,26 @@ msgstr ""
 msgid "If scheduled tasks are not running (see the WP-Cron finding), fix that first: update checks depend on it."
 msgstr ""
 
+#. translators: %d: number of updates
+#: src/checks/hosting/class-updates-waiting-check.php:99
+#, php-format
+msgid "%d update is waiting"
+msgid_plural "%d updates are waiting"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/checks/hosting/class-updates-waiting-check.php:100
+msgid "Outdated plugins, themes and WordPress itself are the most common way sites are broken into. Updates that wait for a day or two are normal; ones that wait for weeks are a risk."
+msgstr ""
+
+#: src/checks/hosting/class-updates-waiting-check.php:103
+msgid "Make a backup, then open Dashboard, Updates, and update the items listed. Update one at a time if the site is business critical, and check the home page after each."
+msgstr ""
+
+#: src/checks/hosting/class-updates-waiting-check.php:104
+msgid "Turn on automatic updates for plugins you trust, from the Plugins screen."
+msgstr ""
+
 #. translators: %d: number of days
 #: src/checks/housekeeping/class-backup-freshness-check.php:75
 #, php-format
@@ -974,6 +1026,26 @@ msgstr ""
 
 #: src/checks/housekeeping/class-old-backups-check.php:161
 msgid "Each backup holds a full copy of the site, including wp-config.php with the database password. Old copies kept next to the site use disk space and add copies that could leak."
+msgstr ""
+
+#. translators: %d: number of plugins
+#: src/checks/housekeeping/class-unused-plugins-check.php:85
+#, php-format
+msgid "%d installed plugin is not active"
+msgid_plural "%d installed plugins are not active"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/checks/housekeeping/class-unused-plugins-check.php:86
+msgid "Plugins that are switched off still keep their files on the server, still need updates, and can still be a way in if they have a flaw. Remove the ones you do not plan to use."
+msgstr ""
+
+#: src/checks/housekeeping/class-unused-plugins-check.php:89
+msgid "Open Plugins, Installed Plugins, and delete the inactive plugins you no longer need. Their settings can be kept if you reinstall later."
+msgstr ""
+
+#: src/checks/housekeeping/class-unused-plugins-check.php:90
+msgid "Keep a backup first if the plugin stored data you might want."
 msgstr ""
 
 #. translators: 1: administrator login, 2: number of application passwords, 3: number never used
@@ -1146,6 +1218,26 @@ msgstr ""
 msgid "Remove the CSS rule (Appearance > Customize > Additional CSS), then treat the hidden account as in check C4."
 msgstr ""
 
+#. translators: %d: number of folders
+#: src/checks/integrity/class-plugin-copies-check.php:69
+#, php-format
+msgid "%d renamed plugin copy is still on the server"
+msgid_plural "%d renamed plugin copies are still on the server"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/checks/integrity/class-plugin-copies-check.php:70
+msgid "WordPress does not list a plugin folder that was renamed (for example to .bak), so nobody updates it, yet its PHP files can still be requested from the web. An old copy often has a known security flaw."
+msgstr ""
+
+#: src/checks/integrity/class-plugin-copies-check.php:73
+msgid "Check that you do not need the folder, then delete it with your host's file manager or FTP."
+msgstr ""
+
+#: src/checks/integrity/class-plugin-copies-check.php:74
+msgid "If you want a backup of the old version, keep it outside the website folder, not inside wp-content/plugins."
+msgstr ""
+
 #: src/checks/integrity/class-rogue-admin-check.php:114
 msgid "An administrator account looks machine-generated"
 msgstr ""
@@ -1194,6 +1286,54 @@ msgstr ""
 
 #: src/checks/integrity/class-rogue-admin-check.php:200
 msgid "Check every other site you run for accounts with the same pattern."
+msgstr ""
+
+#: src/checks/integrity/class-root-strays-check.php:133
+msgid "Open the file in a text editor (do not run it) and check what it does. WordPress never needs extra PHP files next to wp-config.php."
+msgstr ""
+
+#: src/checks/integrity/class-root-strays-check.php:134
+msgid "If you do not recognise it, download a copy for your records and then delete it. Also look for files with similar names or the same modification time."
+msgstr ""
+
+#: src/checks/integrity/class-root-strays-check.php:135
+msgid "If a security scanner or your host created it, it may be a harmless leftover that you can delete once you know what made it."
+msgstr ""
+
+#: src/checks/integrity/class-root-strays-check.php:142
+msgid "A PHP file with malware traits sits in the web root"
+msgstr ""
+
+#: src/checks/integrity/class-root-strays-check.php:143
+msgid "The file contains code patterns used to hide and run attacker code. Treat the site as possibly compromised."
+msgstr ""
+
+#: src/checks/integrity/class-root-strays-check.php:153
+msgid "An empty PHP file sits in the web root"
+msgstr ""
+
+#: src/checks/integrity/class-root-strays-check.php:154
+msgid "An empty file cannot run anything. It is often what a malware scanner or a cleanup leaves behind, so it can point to an old break-in worth knowing about."
+msgstr ""
+
+#: src/checks/integrity/class-root-strays-check.php:163
+msgid "An unexpected PHP file sits in the web root"
+msgstr ""
+
+#: src/checks/integrity/class-root-strays-check.php:164
+msgid "This file is not part of WordPress core. Web shells and upload helpers are often placed here, because every file in the root can be requested from the web."
+msgstr ""
+
+#: src/checks/integrity/class-root-strays-check.php:182
+msgid "A leftover configuration or maintenance file sits in the web root"
+msgstr ""
+
+#: src/checks/integrity/class-root-strays-check.php:183
+msgid "Files like these are usually left behind by a cleanup, a host tool or a maintenance plugin. They do no harm by themselves, but they can contain server rules or old settings you no longer remember."
+msgstr ""
+
+#: src/checks/integrity/class-root-strays-check.php:186
+msgid "Open the file and check whether you still need it. If not, download a copy and delete it."
 msgstr ""
 
 #: src/checks/integrity/class-theme-injection-check.php:84

@@ -1,1 +1,10 @@
-[]
+[
+  {
+    "check": "D2",
+    "severity": "info",
+    "confidence": "low",
+    "where": [
+      "active_plugins"
+    ]
+  }
+]

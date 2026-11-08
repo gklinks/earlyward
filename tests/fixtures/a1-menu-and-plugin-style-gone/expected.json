@@ -1,11 +1,19 @@
 [
-	{
-		"check": "A1",
-		"severity": "warning",
-		"confidence": "medium",
-		"where": [
-			"style:contact-form-7",
-			"home:navigation"
-		]
-	}
+  {
+    "check": "A1",
+    "severity": "warning",
+    "confidence": "medium",
+    "where": [
+      "style:contact-form-7",
+      "home:navigation"
+    ]
+  },
+  {
+    "check": "D2",
+    "severity": "info",
+    "confidence": "low",
+    "where": [
+      "active_plugins"
+    ]
+  }
 ]

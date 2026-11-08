@@ -1,3 +1,18 @@
 [
-	{ "check": "B3", "severity": "warning", "confidence": "medium", "where": [ "backup.zip" ] }
+  {
+    "check": "B3",
+    "severity": "warning",
+    "confidence": "medium",
+    "where": [
+      "backup.zip"
+    ]
+  },
+  {
+    "check": "D2",
+    "severity": "info",
+    "confidence": "low",
+    "where": [
+      "active_plugins"
+    ]
+  }
 ]
