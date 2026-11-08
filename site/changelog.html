@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Release history and version changelog for the Earlyward WordPress plugin.">
+  <title>Changelog — Earlyward</title>
+  <link rel="icon" href="favicon.svg">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="index.html" class="brand">
+        <img src="favicon.svg" alt="" width="28" height="28" class="brand-icon">
+        <span class="brand-name">Earlyward</span>
+      </a>
+      <nav class="site-nav" aria-label="Main Navigation">
+        <a href="index.html">Home</a>
+        <a href="docs.html">Docs</a>
+        <a href="changelog.html" aria-current="page">Changelog</a>
+        <a href="https://github.com/gklinks/earlyward" rel="noopener noreferrer">GitHub</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main-content">
+    <div class="container">
+      <div class="notice-box">
+        <span class="notice-title">Status: early preview, not yet recommended for production sites</span>
+        <p>Earlyward is developed in the open. Earlyward detects and warns; it does not promise protection.</p>
+      </div>
+
+      <h1>Changelog</h1>
+      <p>Release history for Earlyward, tracking all diagnostic checks, fix capabilities, and platform enhancements.</p>
+
+      <article class="version-entry">
+        <h2>0.9.0</h2>
+        <ul>
+          <li>Still an early preview: not yet recommended for production sites.</li>
+          <li>New check D3: the home page is sent without standard security headers (HSTS of at least six months, nosniff, clickjacking protection, referrer policy, a content security policy). One header-only request to the site's own home page; a note, never an alert.</li>
+          <li>New check C17: the uploads folder is not set to refuse PHP. A new confirmed fix creates one protective .htaccess in uploads, only when none exists and the server reads .htaccess (Apache, LiteSpeed). For nginx the finding shows the rule to add.</li>
+          <li>New housekeeping note H4: many subscriber or customer accounts look unused. It only counts them (no names or addresses) and never deletes anything.</li>
+        </ul>
+      </article>
+
+      <article class="version-entry">
+        <h2>0.8.0</h2>
+        <ul>
+          <li>Backup before updating: every update form now shows when the newest backup was made and whether it was also sent to remote storage (from UpdraftPlus's own history), with a "Back up now" button that starts UpdraftPlus's full backup in the background. Earlyward does not make backups itself; without UpdraftPlus it links to it.</li>
+        </ul>
+      </article>
+
+      <article class="version-entry">
+        <h2>0.7.2</h2>
+        <ul>
+          <li>Fix buttons no longer fail silently when a box is missed: the browser refuses to send the form until the confirmation boxes are ticked, a list form says "Tick at least one item" next to its button, and the message after a refused click names the missing box.</li>
+        </ul>
+      </article>
+
+      <article class="version-entry">
+        <h2>0.7.1</h2>
+        <ul>
+          <li>The Overview tab's "Updates waiting" table now has a tick box per plugin, theme and WordPress itself, and an "Update the ticked items now" button (the same confirmed fix as on the Findings tab). Before, the update button was only on the Findings tab, at the bottom.</li>
+        </ul>
+      </article>
+
+      <article class="version-entry">
+        <h2>0.7.0</h2>
+        <ul>
+          <li>Still an early preview: not yet recommended for production sites.</li>
+          <li>Updates waiting (B8): the update button now also updates WordPress itself, with the same updater as Dashboard, Updates. Plugins and themes run first, WordPress last, after the "I have a recent backup" box.</li>
+        </ul>
+      </article>
+
+      <article class="version-entry">
+        <h2>0.6.0</h2>
+        <ul>
+          <li>Still an early preview: not yet recommended for production sites.</li>
+          <li>Fix buttons for most findings, each needing a ticked confirmation and re-checked by a fresh scan at the click.</li>
+          <li>New reversible quarantine: unknown files in the web root (C15), PHP in uploads (C12), injected theme files (C13), readme.html and license.txt (D1), renamed plugin copies (C16) and inactive plugins (H3) move into one locked folder in wp-content, renamed so they cannot run. A new tab, Quarantine and fix log, puts items back or deletes them for good.</li>
+          <li>Updates waiting (B8): run WordPress's own updater for the plugins and themes you tick, after confirming you have a backup.</li>
+          <li>No login protection (D2): a link to search for a two-factor plugin. Earlyward installs nothing.</li>
+          <li>C13 now notes whether the theme is in use.</li>
+        </ul>
+      </article>
+
+      <article class="version-entry">
+        <h2>0.5.0</h2>
+        <ul>
+          <li>Still an early preview: not yet recommended for production sites.</li>
+          <li>Built from a real audit of a live site. New checks: unexpected PHP and leftover config files in the web root (C15), renamed plugin copies such as plugin.bak-20260809 (C16), updates waiting (B8), readme.html and license.txt publicly served (D1), no login-protection plugin found (D2), installed but inactive plugins (H3, under Housekeeping).</li>
+          <li>Detection only: none of these changes a file.</li>
+        </ul>
+      </article>
+
+      <article class="version-entry">
+        <h2>0.4.1</h2>
+        <ul>
+          <li>Fix: the update-check health check (B7) raised PHP warnings on real sites, because WordPress's stored update data arrives as an incomplete object. It now reads the data safely. Found by running 0.4.0 on a live site.</li>
+        </ul>
+      </article>
+
+      <article class="version-entry">
+        <h2>0.4.0</h2>
+        <ul>
+          <li>Still an early preview: not yet recommended for production sites.</li>
+          <li>New checks: WordPress has not checked for updates for days (B7), injected code in theme template files (C13, detection only).</li>
+          <li>An empty PHP file in uploads is now only a note (found on a real site: leftovers of a 2021 cleanup).</li>
+        </ul>
+      </article>
+
+      <article class="version-entry">
+        <h2>0.3.0</h2>
+        <ul>
+          <li>Still an early preview: not yet recommended for production sites.</li>
+          <li>New checks: PHP past end of life or with a very low memory limit (B5), disk nearly full (B6), PHP files inside the uploads folder (C12), newest backup older than 14 days (H2, shown under Housekeeping, never sends an alert email).</li>
+          <li>Each new check stays quiet when it cannot read the value it needs.</li>
+        </ul>
+      </article>
+
+      <article class="version-entry">
+        <h2>0.2.0</h2>
+        <ul>
+          <li>Still an early preview: not yet recommended for production sites.</li>
+          <li>New admin screen (Tools, Earlyward): Overview and Findings tabs, Scan now, Set baseline, a block to copy for your host's support.</li>
+          <li>Site Health integration, an admin bar status badge and a dashboard widget. They only show the last stored scan.</li>
+          <li>Confirmed one-click fixes: owner-only wp-config.php, delete an exposed backup file, delete a leftover maintenance page, delete older local backup copies (only when the newest backup is proven to be stored remotely). Each fix is logged; EARLYWARD_NO_FIXES switches them off.</li>
+          <li>New checks: wp-config.php permissions (B4); known vulnerabilities from the Wordfence Intelligence feed (E1, off unless you define EARLYWARD_WORDFENCE_KEY); older local backup copies (H1, shown under Housekeeping, never sends an alert email).</li>
+          <li>B3 now confirms through the site's own loopback that a backup or dump is actually served before raising it to critical.</li>
+          <li>Fewer false alarms: a generated maintenance page without malware patterns is info only.</li>
+          <li>Translatable text, and <code>wp earlyward cost</code> to measure what a scan costs on your site.</li>
+        </ul>
+      </article>
+
+      <article class="version-entry">
+        <h2>0.1.0</h2>
+        <ul>
+          <li>Early preview. Not yet recommended for production sites.</li>
+          <li>Runtime checks: silent outage against a known-good baseline (A1), code switched off after a crash and recovery mode (A2), runaway error logs (A3), WP-Cron not firing (A4).</li>
+          <li>Hosting checks: other sites readable by this site's PHP (B1), no open_basedir (B2), backups and dumps the web server can serve (B3), wp-config.php permissions (B4).</li>
+          <li>Malware indicators: auto_prepend_file loaders (C1), self-healing zip seeds (C2), unexpected PHP in wp-content (C3), automation-shaped administrators (C4), application passwords on administrators (C5), CSS hiding a user (C6), links hidden off-screen (C9).</li>
+          <li>Hourly scan in WP-Cron; email only when warning or critical findings change.</li>
+          <li>WP-CLI: <code>wp earlyward scan</code>, <code>run</code>, <code>report</code>, <code>baseline</code>. An admin screen (Tools, Earlyward) is in development and not part of 0.1.0.</li>
+        </ul>
+      </article>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <p>Earlyward is free software released under the <a href="https://github.com/gklinks/earlyward/blob/main/LICENSE" rel="noopener noreferrer">GPL-2.0-or-later license</a>.</p>
+      <p>Early preview — not yet recommended for production sites. Earlyward detects and warns; it does not promise protection.</p>
+    </div>
+  </footer>
+</body>
+</html>

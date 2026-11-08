@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Earlyward is a free, open-source WordPress plugin detecting indicators of attack, missing hardening, and hosting diagnostics.">
+  <title>Earlyward — WordPress attack indicators and hosting diagnostics</title>
+  <link rel="icon" href="favicon.svg">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="index.html" class="brand">
+        <img src="favicon.svg" alt="" width="28" height="28" class="brand-icon">
+        <span class="brand-name">Earlyward</span>
+      </a>
+      <nav class="site-nav" aria-label="Main Navigation">
+        <a href="index.html" aria-current="page">Home</a>
+        <a href="docs.html">Docs</a>
+        <a href="changelog.html">Changelog</a>
+        <a href="https://github.com/gklinks/earlyward" rel="noopener noreferrer">GitHub</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main-content">
+    <div class="container">
+      <div class="notice-box">
+        <span class="notice-title">Status: early preview, not yet recommended for production sites</span>
+        <p>The code is developed in the open and tested against project fixtures. Earlyward detects and warns; it does not promise protection.</p>
+      </div>
+
+      <h1>Earlyward</h1>
+
+      <p>Earlyward is a free, open-source WordPress plugin. It looks for signs of an attack, spots hardening that is missing or broken, and explains hosting and runtime problems in plain language: what is wrong, why it matters, how sure it is, and the exact steps to fix it. Every finding shows its evidence (file and line, user, option or URL) so you can judge it yourself.</p>
+
+      <div class="button-row">
+        <a href="https://github.com/gklinks/earlyward/releases" class="button" rel="noopener noreferrer">Download releases</a>
+        <a href="https://github.com/gklinks/earlyward" class="button button-secondary" rel="noopener noreferrer">Source repository</a>
+      </div>
+
+      <h2>Requirements and License</h2>
+      <ul>
+        <li><strong>WordPress:</strong> version 6.4 or newer</li>
+        <li><strong>PHP:</strong> version 7.4 or newer</li>
+        <li><strong>License:</strong> free and open source under GPL-2.0-or-later</li>
+      </ul>
+
+      <h2>What it checks</h2>
+      <p>Earlyward organizes findings into distinct diagnostic areas. Findings provide confidence ratings and concrete remediation guidance:</p>
+
+      <div class="card-grid">
+        <div class="card">
+          <h3>Runtime and outage</h3>
+          <p>Detects silent homepage outages against a known-good baseline, fatal error recovery states, ballooning error logs, and stalled background cron jobs.</p>
+        </div>
+        <div class="card">
+          <h3>Hosting</h3>
+          <p>Flags permissions on critical files, account isolation weaknesses across neighbor sites, pending updates, disk exhaustion, and outdated PHP versions.</p>
+        </div>
+        <div class="card">
+          <h3>Malware indicators</h3>
+          <p>Identifies unauthorized PHP in content and upload folders, hidden prepend or append loaders, automation-like administrator accounts, and cloaked content.</p>
+        </div>
+        <div class="card">
+          <h3>Known vulnerabilities (opt-in)</h3>
+          <p>Optional matching of installed plugins, themes, and WordPress versions against a public vulnerability feed on your own server.</p>
+        </div>
+      </div>
+
+      <p><a href="docs.html#checks">Read the full list of checks in the documentation &rarr;</a></p>
+
+      <h2>Scans never write; fixes need your confirmation</h2>
+      <p>Earlyward adheres to a strict principle of safety and user control:</p>
+      <ul>
+        <li><strong>Scans never write:</strong> Routine scans in WP-Cron or via WP-CLI are read-only. Scans do not alter your database content or modify files.</li>
+        <li><strong>Fixes need your confirmation:</strong> Any change requires an administrator to inspect the finding, tick a confirmation box, and click the fix action. Fixes re-verify the finding in real time before acting.</li>
+        <li><strong>Reversible quarantine:</strong> Suspicious files are moved into a restricted, locked folder rather than deleted outright, allowing them to be restored if needed.</li>
+        <li><strong>Complete override:</strong> Defining <code>EARLYWARD_NO_FIXES</code> in <code>wp-config.php</code> disables all fix actions and removes all fix buttons.</li>
+      </ul>
+      <p><a href="docs.html#writes">Read the full write operations summary in the documentation &rarr;</a></p>
+
+      <h2>Emergency off switch</h2>
+      <p>To deactivate Earlyward completely at any moment:</p>
+      <pre><code>define( 'EARLYWARD_DISABLE', true );</code></pre>
+      <p>Adding this line to <code>wp-config.php</code> or deleting the <code>wp-content/plugins/earlyward</code> folder immediately halts all plugin activity.</p>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <p>Earlyward is free software released under the <a href="https://github.com/gklinks/earlyward/blob/main/LICENSE" rel="noopener noreferrer">GPL-2.0-or-later license</a>.</p>
+      <p>Early preview — not yet recommended for production sites. Earlyward detects and warns; it does not promise protection.</p>
+    </div>
+  </footer>
+</body>
+</html>
