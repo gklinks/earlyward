@@ -1,3 +1,18 @@
 [
-	{ "check": "C2", "severity": "critical", "confidence": "medium", "where": [ "wp-content/abcdef12.zip" ] }
+  {
+    "check": "C2",
+    "severity": "critical",
+    "confidence": "medium",
+    "where": [
+      "wp-content/abcdef12.zip"
+    ]
+  },
+  {
+    "check": "C17",
+    "severity": "info",
+    "confidence": "medium",
+    "where": [
+      "wp-content/uploads/.htaccess"
+    ]
+  }
 ]

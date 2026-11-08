@@ -1,4 +1,19 @@
 [
-	{ "check": "C1", "severity": "warning", "confidence": "low",
-	  "where": [ ".htaccess:3", "wp-content/plugins/examplefw/firewall.php" ] }
+  {
+    "check": "C1",
+    "severity": "warning",
+    "confidence": "low",
+    "where": [
+      ".htaccess:3",
+      "wp-content/plugins/examplefw/firewall.php"
+    ]
+  },
+  {
+    "check": "C17",
+    "severity": "info",
+    "confidence": "medium",
+    "where": [
+      "wp-content/uploads/.htaccess"
+    ]
+  }
 ]

@@ -1,18 +1,26 @@
 [
-	{
-		"check": "A2",
-		"severity": "critical",
-		"confidence": "high",
-		"where": [
-			"wp-content/novamira-sandbox/.crashed"
-		]
-	},
-	{
-		"check": "A2",
-		"severity": "warning",
-		"confidence": "high",
-		"where": [
-			"option:recovery_mode_email_last_sent"
-		]
-	}
+  {
+    "check": "A2",
+    "severity": "critical",
+    "confidence": "high",
+    "where": [
+      "wp-content/novamira-sandbox/.crashed"
+    ]
+  },
+  {
+    "check": "A2",
+    "severity": "warning",
+    "confidence": "high",
+    "where": [
+      "option:recovery_mode_email_last_sent"
+    ]
+  },
+  {
+    "check": "C17",
+    "severity": "info",
+    "confidence": "medium",
+    "where": [
+      "wp-content/uploads/.htaccess"
+    ]
+  }
 ]

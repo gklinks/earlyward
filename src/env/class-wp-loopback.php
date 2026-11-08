@@ -55,6 +55,49 @@ final class Wp_Loopback implements Loopback {
 	}
 
 	/**
+	 * Response headers of a path, as an anonymous visitor gets them.
+	 *
+	 * @param string $path Path starting with "/".
+	 * @return array{status: int, https: bool, headers: array<string, string>, error: string}
+	 */
+	public function headers( string $path ): array {
+		$url   = add_query_arg( 'earlyward_probe', (string) time(), home_url( $path ) );
+		$https = 0 === strpos( $url, 'https://' );
+		$resp  = wp_remote_head(
+			$url,
+			array(
+				'timeout'     => 8,
+				'redirection' => 0,
+				'user-agent'  => 'Earlyward/' . ( defined( 'EARLYWARD_VERSION' ) ? EARLYWARD_VERSION : '0' ) . ' (security headers check, headers only)',
+				'headers'     => array( 'Cache-Control' => 'no-cache' ),
+				'cookies'     => array(),
+				/** This filter is documented in wp-includes/class-wp-http-streams.php */
+				'sslverify'   => apply_filters( 'https_local_ssl_verify', false ), // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- core filter.
+			)
+		);
+		if ( is_wp_error( $resp ) ) {
+			return array(
+				'status'  => 0,
+				'https'   => $https,
+				'headers' => array(),
+				'error'   => $resp->get_error_message(),
+			);
+		}
+		$raw     = wp_remote_retrieve_headers( $resp );
+		$raw     = is_object( $raw ) && method_exists( $raw, 'getAll' ) ? $raw->getAll() : (array) $raw;
+		$headers = array();
+		foreach ( $raw as $name => $value ) {
+			$headers[ strtolower( (string) $name ) ] = is_array( $value ) ? implode( ', ', array_map( 'strval', $value ) ) : (string) $value;
+		}
+		return array(
+			'status'  => (int) wp_remote_retrieve_response_code( $resp ),
+			'https'   => $https,
+			'headers' => $headers,
+			'error'   => '',
+		);
+	}
+
+	/**
 	 * Fetch.
 	 *
 	 * @param string $path Path starting with "/".

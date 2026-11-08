@@ -1,0 +1,52 @@
+{
+  "options": {
+    "active_plugins": [
+      "akismet/akismet.php",
+      "contact-form-7/wp-contact-form-7.php"
+    ],
+    "stylesheet": "astra",
+    "template": "astra"
+  },
+  "users": [
+    {
+      "id": 1,
+      "login": "anna",
+      "email": "anna@site.fixture",
+      "registered": "2024-01-15 09:00:00",
+      "roles": [
+        "administrator"
+      ],
+      "meta": {}
+    },
+    {
+      "id": 10,
+      "login": "u10",
+      "email": "u10@x.test",
+      "registered": "2021-03-01 10:00:00",
+      "roles": [
+        "subscriber"
+      ],
+      "meta": {}
+    },
+    {
+      "id": 11,
+      "login": "u11",
+      "email": "u11@x.test",
+      "registered": "2021-03-02 10:00:00",
+      "roles": [
+        "subscriber"
+      ],
+      "meta": {}
+    },
+    {
+      "id": 12,
+      "login": "u12",
+      "email": "u12@x.test",
+      "registered": "2021-03-03 10:00:00",
+      "roles": [
+        "subscriber"
+      ],
+      "meta": {}
+    }
+  ]
+}

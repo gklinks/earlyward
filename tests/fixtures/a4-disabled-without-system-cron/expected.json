@@ -1,10 +1,18 @@
 [
-	{
-		"check": "A4",
-		"severity": "warning",
-		"confidence": "medium",
-		"where": [
-			"option:cron"
-		]
-	}
+  {
+    "check": "A4",
+    "severity": "warning",
+    "confidence": "medium",
+    "where": [
+      "option:cron"
+    ]
+  },
+  {
+    "check": "C17",
+    "severity": "info",
+    "confidence": "medium",
+    "where": [
+      "wp-content/uploads/.htaccess"
+    ]
+  }
 ]

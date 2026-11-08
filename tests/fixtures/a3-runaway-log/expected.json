@@ -1,18 +1,26 @@
 [
-	{
-		"check": "A3",
-		"severity": "warning",
-		"confidence": "high",
-		"where": [
-			"error_log"
-		]
-	},
-	{
-		"check": "A3",
-		"severity": "warning",
-		"confidence": "high",
-		"where": [
-			"wp-content/debug.log"
-		]
-	}
+  {
+    "check": "A3",
+    "severity": "warning",
+    "confidence": "high",
+    "where": [
+      "error_log"
+    ]
+  },
+  {
+    "check": "A3",
+    "severity": "warning",
+    "confidence": "high",
+    "where": [
+      "wp-content/debug.log"
+    ]
+  },
+  {
+    "check": "C17",
+    "severity": "info",
+    "confidence": "medium",
+    "where": [
+      "wp-content/uploads/.htaccess"
+    ]
+  }
 ]

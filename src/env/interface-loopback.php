@@ -30,4 +30,12 @@ interface Loopback {
 	 * @return array{status: int, type: string, length: int, error: string} status 0 means the request failed; length is -1 when the server sent none.
 	 */
 	public function head( string $path ): array;
+
+	/**
+	 * Ask this site for the response headers of a path (HTTP HEAD, redirects not followed), as a visitor would see them.
+	 *
+	 * @param string $path Path starting with "/".
+	 * @return array{status: int, https: bool, headers: array<string, string>, error: string} Header names in lower case; status 0 means the request failed.
+	 */
+	public function headers( string $path ): array;
 }

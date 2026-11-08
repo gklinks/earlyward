@@ -1,4 +1,26 @@
 [
-	{ "check": "C3", "severity": "critical", "confidence": "high", "where": [ "wp-content/mu-plugins/wp-1a2b3c4d5e6f.php" ] },
-	{ "check": "C3", "severity": "info", "confidence": "low", "where": [ "wp-content/mu-plugins/example-host-cache.php" ] }
+  {
+    "check": "C3",
+    "severity": "critical",
+    "confidence": "high",
+    "where": [
+      "wp-content/mu-plugins/wp-1a2b3c4d5e6f.php"
+    ]
+  },
+  {
+    "check": "C3",
+    "severity": "info",
+    "confidence": "low",
+    "where": [
+      "wp-content/mu-plugins/example-host-cache.php"
+    ]
+  },
+  {
+    "check": "C17",
+    "severity": "info",
+    "confidence": "medium",
+    "where": [
+      "wp-content/uploads/.htaccess"
+    ]
+  }
 ]

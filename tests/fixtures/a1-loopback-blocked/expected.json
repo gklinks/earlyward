@@ -1,10 +1,18 @@
 [
-	{
-		"check": "A1",
-		"severity": "warning",
-		"confidence": "low",
-		"where": [
-			"home"
-		]
-	}
+  {
+    "check": "A1",
+    "severity": "warning",
+    "confidence": "low",
+    "where": [
+      "home"
+    ]
+  },
+  {
+    "check": "C17",
+    "severity": "info",
+    "confidence": "medium",
+    "where": [
+      "wp-content/uploads/.htaccess"
+    ]
+  }
 ]

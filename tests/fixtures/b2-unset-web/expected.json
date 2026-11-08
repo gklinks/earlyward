@@ -1,3 +1,18 @@
 [
-	{ "check": "B2", "severity": "warning", "confidence": "medium", "where": [ "php:open_basedir" ] }
+  {
+    "check": "B2",
+    "severity": "warning",
+    "confidence": "medium",
+    "where": [
+      "php:open_basedir"
+    ]
+  },
+  {
+    "check": "C17",
+    "severity": "info",
+    "confidence": "medium",
+    "where": [
+      "wp-content/uploads/.htaccess"
+    ]
+  }
 ]

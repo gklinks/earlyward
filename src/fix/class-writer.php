@@ -75,6 +75,26 @@ class Writer {
 	}
 
 	/**
+	 * Create a new file, refusing if anything (even a link) is already there.
+	 *
+	 * @param string $path     Absolute path.
+	 * @param string $contents Contents.
+	 * @return bool
+	 */
+	public function create_file( string $path, string $contents ): bool {
+		if ( file_exists( $path ) || is_link( $path ) ) {
+			return false;
+		}
+		$handle = @fopen( $path, 'x' );
+		if ( false === $handle ) {
+			return false;
+		}
+		$ok = strlen( $contents ) === fwrite( $handle, $contents );
+		fclose( $handle );
+		return $ok;
+	}
+
+	/**
 	 * Delete a folder and everything in it. Links are removed, never followed.
 	 *
 	 * @param string $path Absolute path.

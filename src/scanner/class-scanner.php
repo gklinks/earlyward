@@ -61,15 +61,18 @@ final class Scanner {
 				new \Earlyward\Checks\Hosting\Disk_Space_Check(),
 				new \Earlyward\Checks\Hosting\Update_Check_Health_Check(),
 				new \Earlyward\Checks\Integrity\Uploads_Php_Check(),
+				new \Earlyward\Checks\Integrity\Uploads_Exec_Check(),
 				new \Earlyward\Checks\Integrity\Theme_Injection_Check(),
 				new \Earlyward\Checks\Integrity\Root_Strays_Check(),
 				new \Earlyward\Checks\Integrity\Plugin_Copies_Check(),
 				new \Earlyward\Checks\Hosting\Updates_Waiting_Check(),
 				new \Earlyward\Checks\Hosting\Disclosure_Files_Check(),
 				new \Earlyward\Checks\Hosting\Login_Protection_Check(),
+				new \Earlyward\Checks\Hosting\Security_Headers_Check(),
 				new \Earlyward\Checks\Housekeeping\Unused_Plugins_Check(),
 				new \Earlyward\Checks\Housekeeping\Old_Backups_Check(),
 				new \Earlyward\Checks\Housekeeping\Backup_Freshness_Check(),
+				new \Earlyward\Checks\Housekeeping\Stale_Users_Check(),
 				new \Earlyward\Checks\Vulnerabilities\Known_Vulnerability_Check(),
 			)
 		);

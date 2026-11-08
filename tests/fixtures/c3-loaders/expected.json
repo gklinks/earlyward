@@ -1,7 +1,50 @@
 [
-	{ "check": "C3", "severity": "critical", "confidence": "high", "where": [ "wp-content/a1b2c3d4.php" ] },
-	{ "check": "C3", "severity": "critical", "confidence": "high", "where": [ "wp-content/.a1b2c3d4.php" ] },
-	{ "check": "C3", "severity": "critical", "confidence": "high", "where": [ "wp-includes/.g_ebc7e243.php" ] },
-	{ "check": "C3", "severity": "warning", "confidence": "medium", "where": [ "wp-content/cache/0badf00d.php" ] },
-	{ "check": "C3", "severity": "info", "confidence": "low", "where": [ "wp-content/wp-cache-config.php" ] }
+  {
+    "check": "C3",
+    "severity": "critical",
+    "confidence": "high",
+    "where": [
+      "wp-content/a1b2c3d4.php"
+    ]
+  },
+  {
+    "check": "C3",
+    "severity": "critical",
+    "confidence": "high",
+    "where": [
+      "wp-content/.a1b2c3d4.php"
+    ]
+  },
+  {
+    "check": "C3",
+    "severity": "critical",
+    "confidence": "high",
+    "where": [
+      "wp-includes/.g_ebc7e243.php"
+    ]
+  },
+  {
+    "check": "C3",
+    "severity": "warning",
+    "confidence": "medium",
+    "where": [
+      "wp-content/cache/0badf00d.php"
+    ]
+  },
+  {
+    "check": "C3",
+    "severity": "info",
+    "confidence": "low",
+    "where": [
+      "wp-content/wp-cache-config.php"
+    ]
+  },
+  {
+    "check": "C17",
+    "severity": "info",
+    "confidence": "medium",
+    "where": [
+      "wp-content/uploads/.htaccess"
+    ]
+  }
 ]

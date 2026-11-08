@@ -1,3 +1,20 @@
 [
-	{ "check": "C5", "severity": "info", "confidence": "low", "where": [ "user:3:app-password:d1", "user:3:app-password:d2", "user:3:app-password:d3" ] }
+  {
+    "check": "C5",
+    "severity": "info",
+    "confidence": "low",
+    "where": [
+      "user:3:app-password:d1",
+      "user:3:app-password:d2",
+      "user:3:app-password:d3"
+    ]
+  },
+  {
+    "check": "C17",
+    "severity": "info",
+    "confidence": "medium",
+    "where": [
+      "wp-content/uploads/.htaccess"
+    ]
+  }
 ]

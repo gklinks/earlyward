@@ -120,4 +120,37 @@ final class Fixture_Database implements Database {
 	public function option( string $name ) {
 		return $this->data['options'][ $name ] ?? null;
 	}
+
+	/**
+	 * Counts of accounts that look unused: same rules as Wpdb_Database, answered from db.json users
+	 * ("registered" as "Y-m-d H:i:s", meta session_tokens, meta wc_last_active as a Unix time).
+	 *
+	 * @param int      $cutoff Unix time.
+	 * @param string[] $roles  Roles.
+	 * @return array{total: int, candidates: int, by_role: array<string, int>}
+	 */
+	public function stale_accounts( int $cutoff, array $roles ): array {
+		$by    = array_fill_keys( $roles, 0 );
+		$count = 0;
+		foreach ( (array) $this->data['users'] as $user ) {
+			$registered = strtotime( (string) ( $user['registered'] ?? '' ) . ' UTC' );
+			$tokens     = $user['meta']['session_tokens'] ?? null;
+			$active     = (int) ( $user['meta']['wc_last_active'] ?? 0 );
+			if ( false === $registered || $registered >= $cutoff || ! empty( $tokens ) || $active >= $cutoff ) {
+				continue;
+			}
+			foreach ( $roles as $role ) {
+				if ( in_array( $role, (array) ( $user['roles'] ?? array() ), true ) ) {
+					++$by[ $role ];
+					++$count;
+					break;
+				}
+			}
+		}
+		return array(
+			'total'      => count( (array) $this->data['users'] ),
+			'candidates' => $count,
+			'by_role'    => $by,
+		);
+	}
 }

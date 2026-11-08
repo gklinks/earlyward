@@ -18,6 +18,7 @@
 
 namespace Earlyward\Fix;
 
+use Earlyward\Checks\Integrity\Uploads_Exec_Check;
 use Earlyward\Env\Context;
 
 defined( 'ABSPATH' ) || exit;
@@ -34,6 +35,7 @@ final class Fixer {
 	const ID_QUARANTINE_FILE    = 'quarantine_file';
 	const ID_QUARANTINE_FOLDER  = 'quarantine_folder';
 	const ID_UPDATE             = 'update';
+	const ID_BLOCK_UPLOADS_PHP  = 'block_uploads_php';
 	const ID_LINK               = 'link';
 
 	const LOG_OPTION = 'earlyward_fix_log';
@@ -45,7 +47,7 @@ final class Fixer {
 	 * @return string[]
 	 */
 	public static function ids(): array {
-		return array( self::ID_CHMOD_CONFIG, self::ID_DELETE_BACKUP, self::ID_DELETE_MAINTENANCE, self::ID_DELETE_OLD_BACKUPS, self::ID_QUARANTINE_FILE, self::ID_QUARANTINE_FOLDER, self::ID_UPDATE );
+		return array( self::ID_CHMOD_CONFIG, self::ID_DELETE_BACKUP, self::ID_DELETE_MAINTENANCE, self::ID_DELETE_OLD_BACKUPS, self::ID_QUARANTINE_FILE, self::ID_QUARANTINE_FOLDER, self::ID_UPDATE, self::ID_BLOCK_UPLOADS_PHP );
 	}
 
 	/**
@@ -132,6 +134,11 @@ final class Fixer {
 			case 'B8':
 				if ( '' !== $first ) {
 					return self::make( self::ID_UPDATE, __( 'Update the ticked items now', 'earlyward' ), __( 'Runs the WordPress updater for each ticked item, one after the other, exactly as Dashboard, Updates does: plugins and themes first, WordPress itself last. An update can break a site, and a WordPress update puts the site in maintenance mode for a minute.', 'earlyward' ), __( 'I have a recent backup of the site.', 'earlyward' ), true, false );
+				}
+				break;
+			case 'C17':
+				if ( '' !== $first && 'no' === (string) ( $facts['exists'] ?? '' ) && 'yes' === (string) ( $facts['reads_htaccess'] ?? '' ) ) {
+					return self::make( self::ID_BLOCK_UPLOADS_PHP, __( 'Create the protective .htaccess in uploads', 'earlyward' ), __( 'Creates one new file, wp-content/uploads/.htaccess, that tells Apache and LiteSpeed never to run PHP from the uploads folder. Images and documents are not affected. Nothing existing is changed; delete the file to undo.', 'earlyward' ) );
 				}
 				break;
 			case 'D2':
@@ -251,6 +258,9 @@ final class Fixer {
 			return $none;
 		}
 
+		if ( self::ID_BLOCK_UPLOADS_PHP === $id ) {
+			return self::block_uploads( $ctx, $writer, $user_id, $now );
+		}
 		if ( self::ID_UPDATE === $id ) {
 			return self::update( $paths, $options, $user_id, $now );
 		}
@@ -285,6 +295,44 @@ final class Fixer {
 			}
 		}
 		return self::result( true, 'fixed', $log );
+	}
+
+	/**
+	 * Create wp-content/uploads/.htaccess that refuses PHP, only when nothing is there yet.
+	 *
+	 * @param Context $ctx     Context.
+	 * @param Writer  $writer  Writer.
+	 * @param int     $user_id Who confirmed.
+	 * @param int     $now     Time.
+	 * @return array{ok: bool, code: string, log: array<int, array<string, mixed>>, quarantine: array<string, mixed>|null}
+	 */
+	private static function block_uploads( Context $ctx, Writer $writer, int $user_id, int $now ): array {
+		$dir    = $ctx->uploads_dir();
+		$target = $dir . '/.htaccess';
+		$entry  = array(
+			'at'     => $now,
+			'user'   => $user_id,
+			'action' => self::ID_BLOCK_UPLOADS_PHP,
+			'target' => $ctx->relative( $target ),
+		);
+		// The folder must be a real folder inside the site, the server must read .htaccess, and nothing may be there yet.
+		if ( is_link( $dir ) || ! $ctx->fs()->is_dir( $dir ) || ! Uploads_Exec_Check::server_reads_htaccess( $ctx ) || file_exists( $target ) || is_link( $target ) ) {
+			return self::result( false, 'refused', array( $entry + array( 'result' => 'refused' ) ) );
+		}
+		$rules = Uploads_Exec_Check::RULES;
+		if ( ! $writer->create_file( $target, $rules ) ) {
+			return self::result( false, 'failed', array( $entry + array( 'result' => 'could not create the file' ) ) );
+		}
+		$entry += array(
+			'sha256' => hash( 'sha256', $rules ),
+			'bytes'  => strlen( $rules ),
+		);
+		// Read it back: the file must really hold the rules.
+		if ( ! Uploads_Exec_Check::blocks_php( (string) @file_get_contents( $target ) ) ) { // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents,WordPress.PHP.NoSilencedErrors.Discouraged -- Verifying our own write.
+			$writer->delete_file( $target );
+			return self::result( false, 'failed', array( $entry + array( 'result' => 'reverted: the file did not hold the rules' ) ) );
+		}
+		return self::result( true, 'fixed', array( $entry + array( 'result' => 'created' ) ) );
 	}
 
 	/**

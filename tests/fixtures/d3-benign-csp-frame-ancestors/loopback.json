@@ -1,0 +1,17 @@
+{
+    "/": {
+        "status": 200,
+        "file": "home.html",
+        "headers": {
+            "Strict-Transport-Security": "max-age=63072000; includeSubDomains; preload",
+            "Content-Security-Policy": "frame-ancestors 'self'",
+            "X-Content-Type-Options": "nosniff",
+            "Referrer-Policy": "same-origin"
+        },
+        "https": true
+    },
+    "/wp-json/": {
+        "status": 200,
+        "file": "rest.json"
+    }
+}

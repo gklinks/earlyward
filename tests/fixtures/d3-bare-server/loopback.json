@@ -1,0 +1,12 @@
+{
+    "/": {
+        "status": 200,
+        "file": "home.html",
+        "headers": {},
+        "https": true
+    },
+    "/wp-json/": {
+        "status": 200,
+        "file": "rest.json"
+    }
+}

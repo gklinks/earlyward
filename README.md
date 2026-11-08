@@ -36,10 +36,12 @@ evidence (file and line, user, option or URL) so you can judge it yourself.
 - **B4** `wp-config.php` that other accounts on the server can read (a note) or change (a warning). It does not help against sites that share one system user; B1 covers that.
 - **B8** Plugin, theme or core updates are waiting (a note that names them).
 - **D1** `readme.html` and `license.txt` that state the exact WordPress version are publicly served (a low-confidence note).
+- **D3** The home page is sent without standard security headers (HSTS of at least six months, `nosniff`, clickjacking protection, referrer policy, a content security policy). One header-only request to the site's own home page, as a visitor gets it, so headers added by Cloudflare count. A note; it never sends an alert.
 - **D2** None of the well-known login-protection or two-factor plugins is active (a low-confidence note; it cannot see host or Cloudflare protection).
 - **B7** WordPress has not managed to check for updates for days (reads the timestamps WordPress already stored; makes no request).
 - **B5** PHP past end of life (or within 90 days of it), and a PHP memory limit under 64 MB.
 - **B6** A disk that is nearly full (free space as a percentage and in absolute terms).
+- **H4** (housekeeping, info only) five or more subscriber or customer accounts registered over two years ago with no sign-in session and no recent shop activity. It reports counts only, never names or addresses, and Earlyward never deletes accounts.
 - **H3** (housekeeping, info only) installed plugins that are not active.
 - **H2** (housekeeping, info only) the newest backup in UpdraftPlus's own history is more than 14 days old.
 - **H1** (housekeeping, info only) older local UpdraftPlus backup copies that use space on the server. It offers to delete them only when UpdraftPlus's own history shows the newest backup was uploaded to remote storage. It is shown in its own "Housekeeping" section and never sends an alert.
@@ -47,6 +49,7 @@ evidence (file and line, user, option or URL) so you can judge it yourself.
 
 **Malware indicators**
 
+- **C17** The uploads folder is not set to refuse PHP (reads `wp-content/uploads/.htaccess`, sends no test file). One confirmed fix creates the protective file when none exists on Apache or LiteSpeed; nginx gets the rule to add by hand.
 - **C1** Hidden `auto_prepend_file` / `auto_append_file` loaders in `.user.ini`, `php.ini` or `.htaccess`.
 - **C2** Hex-named zip archives that malware uses to rebuild itself.
 - **C3** Unexpected PHP: must-use plugins, drop-ins, hidden dot-files and loose PHP in `wp-content`.

@@ -176,4 +176,66 @@ final class Wpdb_Database implements Database {
 		);
 		return null === $value ? null : self::decode( $value );
 	}
+
+	/**
+	 * Counts of accounts that look unused (see the interface).
+	 *
+	 * @param int      $cutoff Unix time.
+	 * @param string[] $roles  Roles.
+	 * @return array{total: int, candidates: int, by_role: array<string, int>}
+	 */
+	public function stale_accounts( int $cutoff, array $roles ): array {
+		$wpdb  = $this->wpdb;
+		$roles = array_values(
+			array_filter(
+				array_map( 'strval', $roles ),
+				static function ( string $role ): bool {
+					return '' !== $role;
+				}
+			)
+		);
+		$total = (int) $wpdb->get_var( $wpdb->prepare( 'SELECT COUNT(*) FROM %i', $wpdb->users ) );
+		$by    = array_fill_keys( $roles, 0 );
+		$seen  = array();
+		// One fixed query per role (like posts_containing): a user with two listed roles is counted once.
+		foreach ( $roles as $role ) {
+			$rows = $wpdb->get_results(
+				$wpdb->prepare(
+					"SELECT u.ID, c.meta_value FROM %i u
+					INNER JOIN %i c ON c.user_id = u.ID AND c.meta_key = %s
+					LEFT JOIN %i s ON s.user_id = u.ID AND s.meta_key = 'session_tokens'
+					LEFT JOIN %i w ON w.user_id = u.ID AND w.meta_key = 'wc_last_active'
+					WHERE u.user_registered < %s
+					AND ( s.umeta_id IS NULL OR s.meta_value = '' OR s.meta_value = 'a:0:{}' )
+					AND ( w.umeta_id IS NULL OR CAST( w.meta_value AS UNSIGNED ) < %d )
+					AND c.meta_value LIKE %s
+					LIMIT 20000",
+					$wpdb->users,
+					$wpdb->usermeta,
+					$wpdb->get_blog_prefix() . 'capabilities',
+					$wpdb->usermeta,
+					$wpdb->usermeta,
+					gmdate( 'Y-m-d H:i:s', $cutoff ),
+					$cutoff,
+					'%' . $wpdb->esc_like( '"' . $role . '"' ) . '%'
+				),
+				ARRAY_A
+			);
+			foreach ( (array) $rows as $row ) {
+				$id   = (int) $row['ID'];
+				$caps = self::decode( $row['meta_value'] );
+				// The LIKE is only a pre-filter; confirm the role really is set.
+				if ( isset( $seen[ $id ] ) || ! is_array( $caps ) || empty( $caps[ $role ] ) ) {
+					continue;
+				}
+				$seen[ $id ] = true;
+				++$by[ $role ];
+			}
+		}
+		return array(
+			'total'      => $total,
+			'candidates' => count( $seen ),
+			'by_role'    => $by,
+		);
+	}
 }

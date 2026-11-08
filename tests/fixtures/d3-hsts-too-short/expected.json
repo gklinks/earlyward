@@ -1,0 +1,26 @@
+[
+  {
+    "check": "D2",
+    "severity": "info",
+    "confidence": "low",
+    "where": [
+      "active_plugins"
+    ]
+  },
+  {
+    "check": "D3",
+    "severity": "info",
+    "confidence": "medium",
+    "where": [
+      "strict-transport-security"
+    ]
+  },
+  {
+    "check": "C17",
+    "severity": "info",
+    "confidence": "medium",
+    "where": [
+      "wp-content/uploads/.htaccess"
+    ]
+  }
+]

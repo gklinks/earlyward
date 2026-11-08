@@ -1,1 +1,18 @@
-[ { "check": "C3", "severity": "critical", "confidence": "high", "where": [ "wp-content/maintenance.php" ] } ]
+[
+  {
+    "check": "C3",
+    "severity": "critical",
+    "confidence": "high",
+    "where": [
+      "wp-content/maintenance.php"
+    ]
+  },
+  {
+    "check": "C17",
+    "severity": "info",
+    "confidence": "medium",
+    "where": [
+      "wp-content/uploads/.htaccess"
+    ]
+  }
+]

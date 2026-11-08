@@ -49,4 +49,16 @@ interface Database {
 	 * @return mixed Null when absent.
 	 */
 	public function option( string $name );
+
+	/**
+	 * Counts of ordinary accounts that look unused. Counts only: no names, addresses or IDs leave this layer.
+	 * An account counts when it has one of the roles, was registered before the cutoff, has no sign-in session
+	 * on record, and (when WooCommerce records it) was not active since the cutoff. WordPress itself keeps no
+	 * last-login time, so this is a hint, never proof.
+	 *
+	 * @param int      $cutoff Unix time: registered and last active before this.
+	 * @param string[] $roles  Role names to look at, for example subscriber and customer.
+	 * @return array{total: int, candidates: int, by_role: array<string, int>}
+	 */
+	public function stale_accounts( int $cutoff, array $roles ): array;
 }

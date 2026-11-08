@@ -173,6 +173,7 @@ final class Context {
 		}
 		$ini['earlyward.sapi']        = PHP_SAPI;
 		$ini['earlyward.php_version'] = PHP_VERSION;
+		$ini['earlyward.server']      = isset( $_SERVER['SERVER_SOFTWARE'] ) ? sanitize_text_field( wp_unslash( (string) $_SERVER['SERVER_SOFTWARE'] ) ) : '';
 		// A disabled or restricted function is a normal case on shared hosting, so the errors are not shown.
 		$free  = function_exists( 'disk_free_space' ) ? @disk_free_space( ABSPATH ) : false; // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
 		$total = function_exists( 'disk_total_space' ) ? @disk_total_space( ABSPATH ) : false; // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged

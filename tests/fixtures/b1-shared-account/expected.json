@@ -1,3 +1,20 @@
 [
-	{ "check": "B1", "severity": "warning", "confidence": "high", "where": [ "../site-b", "../site-c/public_html", "staging" ] }
+  {
+    "check": "B1",
+    "severity": "warning",
+    "confidence": "high",
+    "where": [
+      "../site-b",
+      "../site-c/public_html",
+      "staging"
+    ]
+  },
+  {
+    "check": "C17",
+    "severity": "info",
+    "confidence": "medium",
+    "where": [
+      "wp-content/uploads/.htaccess"
+    ]
+  }
 ]

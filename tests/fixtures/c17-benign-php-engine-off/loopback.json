@@ -1,0 +1,20 @@
+{
+    "/backup.zip": {
+        "status": 200,
+        "type": "application/zip",
+        "length": 36
+    },
+    "/wp-content/old.zip": {
+        "status": 200,
+        "type": "application/zip",
+        "length": 40
+    },
+    "/": {
+        "status": 200,
+        "file": "home.html"
+    },
+    "/wp-json/": {
+        "status": 200,
+        "file": "rest.json"
+    }
+}

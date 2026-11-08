@@ -1,3 +1,18 @@
 [
-	{ "check": "B4", "severity": "info", "confidence": "low", "where": [ "wp-config.php" ] }
+  {
+    "check": "B4",
+    "severity": "info",
+    "confidence": "low",
+    "where": [
+      "wp-config.php"
+    ]
+  },
+  {
+    "check": "C17",
+    "severity": "info",
+    "confidence": "medium",
+    "where": [
+      "wp-content/uploads/.htaccess"
+    ]
+  }
 ]

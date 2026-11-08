@@ -233,4 +233,66 @@ final class FixerTest extends TestCase {
 		$this->assertSame( '0644', $result['log'][0]['mode_before'] );
 		$this->assertSame( '0600', $result['log'][0]['mode_after'] );
 	}
+
+	/**
+	 * C17 offers a button only when no .htaccess exists and the server reads .htaccess.
+	 */
+	public function test_uploads_protection_offer(): void {
+		$finding                         = self::crafted( 'C17', 'info', 'wp-content/uploads/.htaccess' );
+		$finding['evidence'][0]['facts'] = array(
+			'exists'         => 'no',
+			'reads_htaccess' => 'yes',
+		);
+		$this->assertSame( Fixer::ID_BLOCK_UPLOADS_PHP, Fixer::offer( $finding )['id'] );
+		$finding['evidence'][0]['facts']['exists'] = 'yes';
+		$this->assertNull( Fixer::offer( $finding ), 'An existing .htaccess is never edited.' );
+		$finding['evidence'][0]['facts'] = array(
+			'exists'         => 'no',
+			'reads_htaccess' => 'no',
+		);
+		$this->assertNull( Fixer::offer( $finding ), 'nginx ignores .htaccess, so a file would give false comfort.' );
+	}
+
+	/**
+	 * The fix creates the protective file, the next scan no longer reports C17, a second run is refused,
+	 * and nothing else in uploads changes.
+	 */
+	public function test_block_uploads_php_creates_the_file_once(): void {
+		list( $site, $ctx, $findings ) = $this->scanned( 'c2-benign-uploads' );
+		$target                        = $site->root . '/wp-content/uploads/.htaccess';
+		$this->assertFileDoesNotExist( $target );
+		$index_before = (string) file_get_contents( $site->root . '/wp-content/uploads/index.php' );
+
+		$result = Fixer::apply( Fixer::ID_BLOCK_UPLOADS_PHP, 'C17', 'wp-content/uploads/.htaccess', $findings, $ctx, new Writer(), 3, self::NOW );
+
+		$this->assertTrue( $result['ok'] );
+		$this->assertSame( 'created', $result['log'][0]['result'] );
+		$this->assertSame( hash( 'sha256', (string) file_get_contents( $target ) ), $result['log'][0]['sha256'] );
+		$this->assertSame( $index_before, file_get_contents( $site->root . '/wp-content/uploads/index.php' ) );
+		$checks = array();
+		foreach ( Scanner::with_default_checks()->run( $site->context() )['findings'] as $finding ) {
+			$checks[] = $finding->to_array()['check'];
+		}
+		$this->assertNotContains( 'C17', $checks, 'The protected folder is no longer reported.' );
+
+		$again = Fixer::apply( Fixer::ID_BLOCK_UPLOADS_PHP, 'C17', 'wp-content/uploads/.htaccess', $findings, $ctx, new Writer(), 3, self::NOW );
+		$this->assertFalse( $again['ok'] );
+		$this->assertSame( 'refused', $again['code'] );
+	}
+
+	/**
+	 * With an existing .htaccess or an nginx server nothing is written.
+	 */
+	public function test_block_uploads_php_refuses_when_unsafe(): void {
+		list( $site, $ctx, $findings ) = $this->scanned( 'c17-htaccess-without-rule' );
+		$before                        = (string) file_get_contents( $site->root . '/wp-content/uploads/.htaccess' );
+		$result                        = Fixer::apply( Fixer::ID_BLOCK_UPLOADS_PHP, 'C17', 'wp-content/uploads/.htaccess', $findings, $ctx, new Writer(), 3, self::NOW );
+		$this->assertFalse( $result['ok'], 'No button is offered for an existing file, so the fix finds no matching finding.' );
+		$this->assertSame( $before, file_get_contents( $site->root . '/wp-content/uploads/.htaccess' ) );
+
+		list( $site2, $ctx2, $findings2 ) = $this->scanned( 'c17-nginx-server' );
+		$result2                          = Fixer::apply( Fixer::ID_BLOCK_UPLOADS_PHP, 'C17', 'wp-content/uploads/.htaccess', $findings2, $ctx2, new Writer(), 3, self::NOW );
+		$this->assertFalse( $result2['ok'] );
+		$this->assertFileDoesNotExist( $site2->root . '/wp-content/uploads/.htaccess' );
+	}
 }

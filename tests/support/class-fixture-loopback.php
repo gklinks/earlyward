@@ -58,6 +58,35 @@ final class Fixture_Loopback implements Loopback {
 	}
 
 	/**
+	 * Response headers for a path. A route may set "headers" (name => value) and "https" (default true).
+	 * Without "headers" a 200 answer carries a complete, healthy set, so fixtures that are not about
+	 * headers stay quiet; "headers": {} means a bare server.
+	 *
+	 * @param string $path Path.
+	 * @return array{status: int, https: bool, headers: array<string, string>, error: string}
+	 */
+	public function headers( string $path ): array {
+		$route   = $this->routes[ $path ] ?? array( 'status' => 404 );
+		$default = array(
+			'strict-transport-security' => 'max-age=31536000; includeSubDomains',
+			'content-security-policy'   => "default-src 'self'",
+			'x-frame-options'           => 'SAMEORIGIN',
+			'x-content-type-options'    => 'nosniff',
+			'referrer-policy'           => 'strict-origin-when-cross-origin',
+		);
+		$headers = array();
+		foreach ( (array) ( $route['headers'] ?? $default ) as $name => $value ) {
+			$headers[ strtolower( (string) $name ) ] = (string) $value;
+		}
+		return array(
+			'status'  => (int) $route['status'],
+			'https'   => (bool) ( $route['https'] ?? true ),
+			'headers' => $headers,
+			'error'   => (string) ( $route['error'] ?? '' ),
+		);
+	}
+
+	/**
 	 * Fetch.
 	 *
 	 * @param string $path Path.

@@ -29,7 +29,16 @@ final class AutoPrependPathSpellingTest extends TestCase {
 			$ctx      = new Context( $odd_root, $odd_root . '/wp-content', $odd_root . '/wp-content/uploads', array() );
 			$result   = Scanner::with_default_checks()->run( $ctx );
 			$this->assertSame( array(), $result['errors'] );
-			$this->assertCount( 0, $result['findings'] );
+
+			$findings = array_values(
+				array_filter(
+					$result['findings'],
+					static function ( $f ) {
+						return 'C17' !== $f->to_array()['check']; // Not about this test: the fixture has no uploads rules.
+					}
+				)
+			);
+			$this->assertCount( 0, $findings );
 		} finally {
 			$site->destroy();
 		}
@@ -44,9 +53,18 @@ final class AutoPrependPathSpellingTest extends TestCase {
 			$odd_root = $site->root . '/wp-content/..';
 			$ctx      = new Context( $odd_root, $odd_root . '/wp-content', $odd_root . '/wp-content/uploads', array() );
 			$result   = Scanner::with_default_checks()->run( $ctx );
-			$this->assertCount( 1, $result['findings'] );
+
+			$findings = array_values(
+				array_filter(
+					$result['findings'],
+					static function ( $f ) {
+						return 'C17' !== $f->to_array()['check']; // Not about this test: the fixture has no uploads rules.
+					}
+				)
+			);
+			$this->assertCount( 1, $findings );
 			$where = array();
-			foreach ( $result['findings'][0]->to_array()['evidence'] as $e ) {
+			foreach ( $findings[0]->to_array()['evidence'] as $e ) {
 				$where[] = $e['location'];
 			}
 			sort( $where );

@@ -4,7 +4,7 @@ Tags: security, malware, diagnostics, monitoring, hardening
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 0.8.0
+Stable tag: 0.9.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -41,6 +41,12 @@ Scans run in WP-Cron or WP-CLI, never while a visitor loads a page. Measured cos
 Privately, through the Security tab of the GitHub repository. Please do not open a public issue.
 
 == Changelog ==
+
+= 0.9.0 =
+* Still an early preview: not yet recommended for production sites.
+* New check D3: the home page is sent without standard security headers (HSTS of at least six months, nosniff, clickjacking protection, referrer policy, a content security policy). One header-only request to the site's own home page; a note, never an alert.
+* New check C17: the uploads folder is not set to refuse PHP. A new confirmed fix creates one protective .htaccess in uploads, only when none exists and the server reads .htaccess (Apache, LiteSpeed). For nginx the finding shows the rule to add.
+* New housekeeping note H4: many subscriber or customer accounts look unused. It only counts them (no names or addresses) and never deletes anything.
 
 = 0.8.0 =
 * Backup before updating: every update form now shows when the newest backup was made and whether it was also sent to remote storage (from UpdraftPlus's own history), with a "Back up now" button that starts UpdraftPlus's full backup in the background. Earlyward does not make backups itself; without UpdraftPlus it links to it.

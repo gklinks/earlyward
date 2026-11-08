@@ -1,0 +1,108 @@
+{
+  "options": {
+    "active_plugins": [
+      "akismet/akismet.php",
+      "contact-form-7/wp-contact-form-7.php"
+    ],
+    "stylesheet": "astra",
+    "template": "astra"
+  },
+  "users": [
+    {
+      "id": 1,
+      "login": "anna",
+      "email": "anna@site.fixture",
+      "registered": "2024-01-15 09:00:00",
+      "roles": [
+        "administrator"
+      ],
+      "meta": {}
+    },
+    {
+      "id": 10,
+      "login": "u10",
+      "email": "u10@x.test",
+      "registered": "2021-03-01 10:00:00",
+      "roles": [
+        "subscriber"
+      ],
+      "meta": {}
+    },
+    {
+      "id": 11,
+      "login": "u11",
+      "email": "u11@x.test",
+      "registered": "2021-03-02 10:00:00",
+      "roles": [
+        "subscriber"
+      ],
+      "meta": {}
+    },
+    {
+      "id": 12,
+      "login": "u12",
+      "email": "u12@x.test",
+      "registered": "2021-03-03 10:00:00",
+      "roles": [
+        "subscriber"
+      ],
+      "meta": {}
+    },
+    {
+      "id": 13,
+      "login": "u13",
+      "email": "u13@x.test",
+      "registered": "2021-03-04 10:00:00",
+      "roles": [
+        "subscriber"
+      ],
+      "meta": {}
+    },
+    {
+      "id": 20,
+      "login": "u20",
+      "email": "u20@x.test",
+      "registered": "2020-05-05 10:00:00",
+      "roles": [
+        "customer"
+      ],
+      "meta": {}
+    },
+    {
+      "id": 21,
+      "login": "u21",
+      "email": "u21@x.test",
+      "registered": "2020-05-06 10:00:00",
+      "roles": [
+        "customer"
+      ],
+      "meta": {
+        "wc_last_active": 1790000000
+      }
+    },
+    {
+      "id": 22,
+      "login": "u22",
+      "email": "u22@x.test",
+      "registered": "2021-01-01 00:00:00",
+      "roles": [
+        "subscriber"
+      ],
+      "meta": {
+        "session_tokens": {
+          "t": 1
+        }
+      }
+    },
+    {
+      "id": 23,
+      "login": "u23",
+      "email": "u23@x.test",
+      "registered": "2026-06-01 00:00:00",
+      "roles": [
+        "subscriber"
+      ],
+      "meta": {}
+    }
+  ]
+}

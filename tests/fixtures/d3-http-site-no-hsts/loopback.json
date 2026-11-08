@@ -1,0 +1,17 @@
+{
+    "/": {
+        "status": 200,
+        "file": "home.html",
+        "headers": {
+            "Content-Security-Policy-Report-Only": "default-src 'self'",
+            "Content-Security-Policy": "frame-ancestors 'self'",
+            "X-Content-Type-Options": "nosniff",
+            "Referrer-Policy": "no-referrer"
+        },
+        "https": false
+    },
+    "/wp-json/": {
+        "status": 200,
+        "file": "rest.json"
+    }
+}
