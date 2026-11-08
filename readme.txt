@@ -4,7 +4,7 @@ Tags: security, malware, diagnostics, monitoring, hardening
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 0.7.1
+Stable tag: 0.7.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -41,6 +41,9 @@ Scans run in WP-Cron or WP-CLI, never while a visitor loads a page. Measured cos
 Privately, through the Security tab of the GitHub repository. Please do not open a public issue.
 
 == Changelog ==
+
+= 0.7.2 =
+* Fix buttons no longer fail silently when a box is missed: the browser refuses to send the form until the confirmation boxes are ticked, a list form says "Tick at least one item" next to its button, and the message after a refused click names the missing box.
 
 = 0.7.1 =
 * The Overview tab's "Updates waiting" table now has a tick box per plugin, theme and WordPress itself, and an "Update the ticked items now" button (the same confirmed fix as on the Findings tab). Before, the update button was only on the Findings tab, at the bottom.

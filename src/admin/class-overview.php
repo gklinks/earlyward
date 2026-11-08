@@ -132,7 +132,7 @@ final class Overview {
 		// The same confirmed B8 fix as on the Findings tab: Page::handle_fix re-checks every ticked item against a fresh scan.
 		$can = ! empty( $groups ) && ! Fixer::disabled() && ( current_user_can( 'update_plugins' ) || current_user_can( 'update_themes' ) || current_user_can( 'update_core' ) );
 		if ( $can ) {
-			echo '<form method="post" class="earlyward-fix earlyward-updates" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '">';
+			echo '<form method="post" class="earlyward-fix earlyward-updates" data-earlyward-pick="1" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '">';
 			echo '<input type="hidden" name="action" value="' . esc_attr( Page::ACTION_FIX ) . '" />';
 			echo '<input type="hidden" name="earlyward_fix_id" value="' . esc_attr( Fixer::ID_UPDATE ) . '" />';
 			echo '<input type="hidden" name="earlyward_check" value="B8" />';
@@ -155,9 +155,10 @@ final class Overview {
 		}
 		if ( $can ) {
 			echo '<p>' . esc_html__( 'Tick what to update. WordPress\'s own updater runs for each one, plugins and themes first, WordPress itself last. An update can break a site.', 'earlyward' ) . '</p>';
-			echo '<p><label><input type="checkbox" name="earlyward_copy" value="1" /> ' . esc_html__( 'I have a recent backup of the site.', 'earlyward' ) . '</label><br />';
-			echo '<label><input type="checkbox" name="earlyward_confirm" value="1" /> ' . esc_html__( 'I understand what this changes.', 'earlyward' ) . '</label></p>';
-			echo '<p><button type="submit" class="button button-primary">' . esc_html__( 'Update the ticked items now', 'earlyward' ) . '</button></p>';
+			echo '<p><label><input type="checkbox" name="earlyward_copy" value="1" required="required" /> ' . esc_html__( 'I have a recent backup of the site.', 'earlyward' ) . '</label><br />';
+			echo '<label><input type="checkbox" name="earlyward_confirm" value="1" required="required" /> ' . esc_html__( 'I understand what this changes.', 'earlyward' ) . '</label></p>';
+			echo '<p><button type="submit" class="button button-primary">' . esc_html__( 'Update the ticked items now', 'earlyward' ) . '</button> <span class="earlyward-pick-msg" role="alert"></span></p>';
+			echo '<p class="description">' . esc_html__( 'Each update takes a few seconds; leave the page open until it reloads with the result at the top.', 'earlyward' ) . '</p>';
 			echo '</form>';
 		}
 		echo '<p class="description">' . esc_html(

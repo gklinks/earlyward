@@ -207,7 +207,7 @@ final class QuarantineTest extends TestCase {
 		$this->assertTrue( $offer['pick'] );
 
 		$none = Fixer::apply( Fixer::ID_QUARANTINE_FOLDER, 'C16', 'anything', $findings, $ctx, new Writer(), 1, self::NOW, array( 'random' => self::RANDOM ) );
-		$this->assertSame( 'unconfirmed', $none['code'], 'Nothing ticked, nothing moved.' );
+		$this->assertSame( 'none_ticked', $none['code'], 'Nothing ticked, nothing moved.' );
 
 		$forged = Fixer::apply(
 			Fixer::ID_QUARANTINE_FOLDER,
@@ -223,7 +223,7 @@ final class QuarantineTest extends TestCase {
 				'selected' => array( 'wp-content/themes' ),
 			)
 		);
-		$this->assertSame( 'unconfirmed', $forged['code'], 'A path the scan does not list is ignored.' );
+		$this->assertSame( 'none_ticked', $forged['code'], 'A path the scan does not list is ignored.' );
 
 		$moved = Fixer::apply(
 			Fixer::ID_QUARANTINE_FOLDER,
@@ -319,7 +319,7 @@ final class QuarantineTest extends TestCase {
 		$this->assertSame( '', Fixer::offer( $by_theme['spare'] )['extra'] );
 
 		$live = self::first( $by_theme['live'] );
-		$this->assertSame( 'unconfirmed', Fixer::apply( Fixer::ID_QUARANTINE_FILE, 'C13', $live, $findings, $ctx, new Writer(), 1, self::NOW, array( 'random' => self::RANDOM ) )['code'] );
+		$this->assertSame( 'need_extra', Fixer::apply( Fixer::ID_QUARANTINE_FILE, 'C13', $live, $findings, $ctx, new Writer(), 1, self::NOW, array( 'random' => self::RANDOM ) )['code'] );
 		$this->assertFileExists( $this->root . '/' . $live );
 		$this->assertTrue(
 			Fixer::apply(
@@ -448,7 +448,7 @@ final class QuarantineTest extends TestCase {
 			);
 		};
 		$this->assertSame(
-			'unconfirmed',
+			'need_extra',
 			Fixer::apply(
 				Fixer::ID_UPDATE,
 				'B8',

@@ -225,8 +225,11 @@ final class Fixer {
 			return $none; // Not reported any more: the site changed since the page was drawn.
 		}
 		$offer = self::offer( $target );
-		if ( null === $offer || ( '' !== $offer['extra'] && empty( $options['extra'] ) ) ) {
-			return self::result( false, 'unconfirmed', array() );
+		if ( null === $offer ) {
+			return $none;
+		}
+		if ( '' !== $offer['extra'] && empty( $options['extra'] ) ) {
+			return self::result( false, 'need_extra', array() );
 		}
 
 		$evidence = isset( $target['evidence'] ) && is_array( $target['evidence'] ) ? $target['evidence'] : array();
@@ -241,7 +244,7 @@ final class Fixer {
 			$selected = isset( $options['selected'] ) && is_array( $options['selected'] ) ? array_map( 'strval', $options['selected'] ) : array();
 			$paths    = array_values( array_intersect( $paths, $selected ) ); // Only items the fresh scan still lists.
 			if ( empty( $paths ) ) {
-				return self::result( false, 'unconfirmed', array() );
+				return self::result( false, 'none_ticked', array() );
 			}
 		}
 		if ( empty( $paths ) ) {

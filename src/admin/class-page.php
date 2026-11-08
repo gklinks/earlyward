@@ -38,7 +38,7 @@ final class Page {
 	 *
 	 * @var string[]
 	 */
-	const NOTICES = array( 'scanned', 'busy', 'baseline_set', 'baseline_missing', 'baseline_unconfirmed', 'fixed', 'fix_gone', 'fix_unconfirmed', 'fix_refused', 'fix_failed', 'quarantined', 'restored', 'purged', 'q_gone', 'q_refused', 'q_failed', 'q_unconfirmed' );
+	const NOTICES = array( 'scanned', 'busy', 'baseline_set', 'baseline_missing', 'baseline_unconfirmed', 'fixed', 'fix_gone', 'fix_unconfirmed', 'fix_refused', 'fix_failed', 'quarantined', 'restored', 'purged', 'q_gone', 'q_refused', 'q_failed', 'q_unconfirmed', 'fix_need_extra', 'fix_none_ticked' );
 
 	/**
 	 * Register hooks. Called on admin requests only.
@@ -225,6 +225,8 @@ final class Page {
 			'refused'     => 'fix_refused',
 			'failed'      => 'fix_failed',
 			'unconfirmed' => 'fix_unconfirmed',
+			'need_extra'  => 'fix_need_extra',
+			'none_ticked' => 'fix_none_ticked',
 		);
 		wp_safe_redirect( self::url( $codes[ $result['code'] ] ?? 'fix_failed', $return ) );
 		exit;
@@ -320,7 +322,9 @@ final class Page {
 			'baseline_unconfirmed' => array( 'notice-warning', __( 'Nothing was changed. Tick the box to confirm that you changed the site on purpose.', 'earlyward' ) ),
 			'fixed'                => array( 'notice-success', __( 'Done. The change is in the fix log on the Quarantine and fix log tab. A new scan is queued, so the finding should disappear within a minute.', 'earlyward' ) ),
 			'fix_gone'             => array( 'notice-warning', __( 'Nothing was changed. This finding is no longer reported by a fresh scan, so the site has changed since the page was drawn.', 'earlyward' ) ),
-			'fix_unconfirmed'      => array( 'notice-warning', __( 'Nothing was changed. Tick the boxes to confirm.', 'earlyward' ) ),
+			'fix_unconfirmed'      => array( 'notice-warning', __( 'Nothing was changed: the box "I understand what this changes" was not ticked.', 'earlyward' ) ),
+			'fix_need_extra'       => array( 'notice-warning', __( 'Nothing was changed: the second confirmation box (for updates: "I have a recent backup of the site") was not ticked.', 'earlyward' ) ),
+			'fix_none_ticked'      => array( 'notice-warning', __( 'Nothing was changed: no item was ticked, or the ticked items are no longer reported. Tick at least one item in the list.', 'earlyward' ) ),
 			'fix_refused'          => array( 'notice-warning', __( 'Nothing was changed. Earlyward could not do this safely (for example PHP does not own the file). Follow the steps listed with the finding instead.', 'earlyward' ) ),
 			'fix_failed'           => array( 'notice-error', __( 'The change could not be made, or only part of it. The Quarantine and fix log tab has the detail.', 'earlyward' ) ),
 			'quarantined'          => array( 'notice-success', __( 'Moved to quarantine. You can put it back from the Quarantine and fix log tab. A new scan is queued.', 'earlyward' ) ),
@@ -387,6 +391,7 @@ final class Page {
 
 		$tab = self::tab();
 		self::render_tabs( $tab, $counts );
+		self::form_script();
 
 		if ( 'overview' === $tab ) {
 			Overview::render();
@@ -600,7 +605,7 @@ final class Page {
 			echo '<div class="earlyward-fix"><p><strong>' . esc_html__( 'Next step:', 'earlyward' ) . '</strong> ' . esc_html( $offer['what'] ) . ' <a class="button" href="' . esc_url( admin_url( $offer['url'] ) ) . '">' . esc_html( $offer['label'] ) . '</a></p></div>';
 			return;
 		}
-		echo '<form method="post" class="earlyward-fix" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '">';
+		echo '<form method="post" class="earlyward-fix"' . ( $offer['pick'] ? ' data-earlyward-pick="1"' : '' ) . ' action="' . esc_url( admin_url( 'admin-post.php' ) ) . '">';
 		echo '<input type="hidden" name="action" value="' . esc_attr( self::ACTION_FIX ) . '" />';
 		echo '<input type="hidden" name="earlyward_fix_id" value="' . esc_attr( $offer['id'] ) . '" />';
 		echo '<input type="hidden" name="earlyward_fingerprint" value="' . esc_attr( (string) ( $finding['fingerprint'] ?? '' ) ) . '" />';
@@ -618,10 +623,10 @@ final class Page {
 			echo '</fieldset>';
 		}
 		if ( '' !== $offer['extra'] ) {
-			echo '<p><label><input type="checkbox" name="earlyward_copy" value="1" /> ' . esc_html( $offer['extra'] ) . '</label></p>';
+			echo '<p><label><input type="checkbox" name="earlyward_copy" value="1" required="required" /> ' . esc_html( $offer['extra'] ) . '</label></p>';
 		}
-		echo '<p><label><input type="checkbox" name="earlyward_confirm" value="1" /> ' . esc_html__( 'I understand what this changes.', 'earlyward' ) . '</label> ';
-		echo '<button type="submit" class="button">' . esc_html( $offer['label'] ) . '</button></p>';
+		echo '<p><label><input type="checkbox" name="earlyward_confirm" value="1" required="required" /> ' . esc_html__( 'I understand what this changes.', 'earlyward' ) . '</label> ';
+		echo '<button type="submit" class="button">' . esc_html( $offer['label'] ) . '</button> <span class="earlyward-pick-msg" role="alert"></span></p>';
 		echo '</form>';
 	}
 
@@ -727,6 +732,21 @@ final class Page {
 	}
 
 	/**
+	 * A form with tick-one-or-more items is not sent with nothing ticked; the reason shows next to its button.
+	 * The confirmation boxes use the browser's own "required" check. The server checks all of it again.
+	 */
+	private static function form_script(): void {
+		wp_register_script( 'earlyward-forms', false, array(), defined( 'EARLYWARD_VERSION' ) ? EARLYWARD_VERSION : false, true );
+		wp_enqueue_script( 'earlyward-forms' );
+		wp_add_inline_script(
+			'earlyward-forms',
+			'(function(){document.addEventListener("submit",function(e){var f=e.target;if(!f||!f.getAttribute||"1"!==f.getAttribute("data-earlyward-pick")){return;}'
+			. 'if(f.querySelector(\'input[name="earlyward_items[]"]:checked\')){return;}e.preventDefault();var m=f.querySelector(".earlyward-pick-msg");'
+			. 'if(m){m.textContent=' . wp_json_encode( __( 'Tick at least one item in the list first.', 'earlyward' ) ) . ';}},true);})();'
+		);
+	}
+
+	/**
 	 * Small stylesheet. Severity is always also written out, never colour alone.
 	 *
 	 * @return string
@@ -737,6 +757,6 @@ final class Page {
 			. '.earlyward-critical{border-left-color:#d63638}.earlyward-warning{border-left-color:#dba617}.earlyward-info{border-left-color:#72aee6}'
 			. '.earlyward-badge{display:inline-block;font-size:12px;font-weight:600;padding:1px 8px;border:1px solid currentColor;border-radius:3px;vertical-align:middle}'
 			. '.earlyward-evidence pre{white-space:pre-wrap;word-break:break-all;margin:4px 0 8px;padding:6px 8px;background:#f6f7f7;max-height:8em;overflow:auto}'
-			. '.earlyward-fix{border-top:1px solid #dcdcde;margin-top:8px;padding-top:4px}.earlyward-pick{margin:4px 0 8px}.earlyward-qform{margin:2px 0}#earlyward-support{max-width:960px}';
+			. '.earlyward-fix{border-top:1px solid #dcdcde;margin-top:8px;padding-top:4px}.earlyward-pick{margin:4px 0 8px}.earlyward-qform{margin:2px 0}.earlyward-pick-msg{color:#b32d2e;font-weight:600}#earlyward-support{max-width:960px}';
 	}
 }
