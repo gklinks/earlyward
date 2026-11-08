@@ -132,6 +132,7 @@ final class Overview {
 		// The same confirmed B8 fix as on the Findings tab: Page::handle_fix re-checks every ticked item against a fresh scan.
 		$can = ! empty( $groups ) && ! Fixer::disabled() && ( current_user_can( 'update_plugins' ) || current_user_can( 'update_themes' ) || current_user_can( 'update_core' ) );
 		if ( $can ) {
+			Page::render_backup_panel( 'overview' );
 			echo '<form method="post" class="earlyward-fix earlyward-updates" data-earlyward-pick="1" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '">';
 			echo '<input type="hidden" name="action" value="' . esc_attr( Page::ACTION_FIX ) . '" />';
 			echo '<input type="hidden" name="earlyward_fix_id" value="' . esc_attr( Fixer::ID_UPDATE ) . '" />';

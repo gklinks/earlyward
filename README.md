@@ -16,7 +16,7 @@ on one shared hosting account, a second paid-backlink campaign hiding inside the
 separate outage where the site kept answering HTTP 200 while it was broken, for 12 days, without
 anyone noticing.
 
-## What works in 0.7
+## What works in 0.8
 
 Every finding says what is wrong, how sure the check is, and the exact steps to fix it, and shows its
 evidence (file and line, user, option or URL) so you can judge it yourself.
@@ -86,7 +86,8 @@ probe script. See the [roadmap](docs/ROADMAP.md).
   - **Delete:** an exposed backup file (B3), a harmless leftover maintenance page (C3), older local backup
     copies once the newest is proven to be stored elsewhere (H1).
   - **Other:** make `wp-config.php` owner-only (B4); run WordPress's own updater for the plugins, themes and
-    WordPress itself that you tick (B8, after an "I have a backup" box; WordPress itself runs last);
+    WordPress itself that you tick (B8, after an "I have a backup" box; WordPress itself runs last), with the
+    newest backup's time shown above and a "Back up now" button that starts UpdraftPlus's own full backup;
     a link to find a two-factor plugin (D2, Earlyward installs nothing).
 
   Each fix re-checks the finding at the moment you click (the request names a finding, never a path), only

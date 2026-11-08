@@ -9,6 +9,7 @@
 namespace Earlyward\Admin;
 
 use Earlyward\Env\Context;
+use Earlyward\Fix\Backup;
 use Earlyward\Fix\Fixer;
 use Earlyward\Fix\Quarantine;
 use Earlyward\Fix\Updater;
@@ -32,13 +33,14 @@ final class Page {
 	const ACTION_FIX      = 'earlyward_fix';
 	const ACTION_RESTORE  = 'earlyward_restore';
 	const ACTION_PURGE    = 'earlyward_purge';
+	const ACTION_BACKUP   = 'earlyward_backup_now';
 
 	/**
 	 * Notice codes that may arrive in the query string. Anything else is ignored.
 	 *
 	 * @var string[]
 	 */
-	const NOTICES = array( 'scanned', 'busy', 'baseline_set', 'baseline_missing', 'baseline_unconfirmed', 'fixed', 'fix_gone', 'fix_unconfirmed', 'fix_refused', 'fix_failed', 'quarantined', 'restored', 'purged', 'q_gone', 'q_refused', 'q_failed', 'q_unconfirmed', 'fix_need_extra', 'fix_none_ticked' );
+	const NOTICES = array( 'scanned', 'busy', 'baseline_set', 'baseline_missing', 'baseline_unconfirmed', 'fixed', 'fix_gone', 'fix_unconfirmed', 'fix_refused', 'fix_failed', 'quarantined', 'restored', 'purged', 'q_gone', 'q_refused', 'q_failed', 'q_unconfirmed', 'fix_need_extra', 'fix_none_ticked', 'backup_started', 'backup_busy', 'backup_unavailable' );
 
 	/**
 	 * Register hooks. Called on admin requests only.
@@ -50,6 +52,7 @@ final class Page {
 		add_action( 'admin_post_' . self::ACTION_FIX, array( __CLASS__, 'handle_fix' ) );
 		add_action( 'admin_post_' . self::ACTION_RESTORE, array( __CLASS__, 'handle_restore' ) );
 		add_action( 'admin_post_' . self::ACTION_PURGE, array( __CLASS__, 'handle_purge' ) );
+		add_action( 'admin_post_' . self::ACTION_BACKUP, array( __CLASS__, 'handle_backup' ) );
 	}
 
 	/**
@@ -276,6 +279,79 @@ final class Page {
 	}
 
 	/**
+	 * "Back up now": ask the installed backup plugin to start its own full backup in the background.
+	 */
+	public static function handle_backup(): void {
+		self::authorise( self::ACTION_BACKUP );
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce and capability are checked by authorise() above.
+		$return = ( isset( $_POST['earlyward_return'] ) && 'overview' === $_POST['earlyward_return'] ) ? 'overview' : 'findings';
+		if ( Fixer::disabled() ) {
+			wp_safe_redirect( self::url( 'fix_refused', $return ) );
+			exit;
+		}
+		$code = Backup::start();
+		if ( 'started' === $code ) {
+			Fixer::record(
+				array(
+					array(
+						'at'     => time(),
+						'user'   => get_current_user_id(),
+						'action' => 'backup_start',
+						'target' => 'UpdraftPlus: files and database',
+						'result' => 'queued',
+					),
+				)
+			);
+		}
+		wp_safe_redirect( self::url( 'backup_' . $code, $return ) );
+		exit;
+	}
+
+	/**
+	 * When the newest backup was made, and a "Back up now" button. Shown above every update form.
+	 * It is its own form, so it must be drawn outside the update form.
+	 *
+	 * @param string $back_to Tab to come back to.
+	 */
+	public static function render_backup_panel( string $back_to ): void {
+		$newest = Backup::newest( get_option( 'updraft_backup_history' ) );
+		echo '<div class="earlyward-backup"><p><strong>' . esc_html__( 'Backup before updating:', 'earlyward' ) . '</strong> ';
+		if ( null === $newest ) {
+			echo esc_html__( 'Earlyward found no backup history.', 'earlyward' ) . ' ';
+		} else {
+			$remote = empty( $newest['remote'] ) ? __( 'kept on this server only', 'earlyward' ) : sprintf( /* translators: %s: remote storage names such as googledrive. */ __( 'also sent to %s', 'earlyward' ), implode( ', ', $newest['remote'] ) );
+			echo esc_html(
+				sprintf(
+					/* translators: 1: date and time, 2: how long ago, 3: where it is stored. */
+					__( 'the newest backup was made %1$s (%2$s ago), %3$s.', 'earlyward' ),
+					wp_date( 'Y-m-d H:i', $newest['at'] ),
+					human_time_diff( $newest['at'] ),
+					$remote
+				)
+			) . ' ';
+		}
+		echo '</p>';
+		if ( Fixer::disabled() ) {
+			echo '</div>';
+			return;
+		}
+		if ( ! Backup::available() ) {
+			echo '<p>' . esc_html__( 'Earlyward does not make backups itself. It can start one in UpdraftPlus (free), which is not active here. Install it, or use the backup from your host, before updating.', 'earlyward' ) . ' <a class="button" href="' . esc_url( admin_url( 'plugin-install.php?s=updraftplus&tab=search&type=term' ) ) . '">' . esc_html__( 'Find UpdraftPlus', 'earlyward' ) . '</a></p></div>';
+			return;
+		}
+		if ( Backup::running() ) {
+			echo '<p>' . esc_html__( 'A backup is running now. Wait for it to finish (UpdraftPlus shows its progress), then reload this page.', 'earlyward' ) . '</p></div>';
+			return;
+		}
+		echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '">';
+		echo '<input type="hidden" name="action" value="' . esc_attr( self::ACTION_BACKUP ) . '" />';
+		echo '<input type="hidden" name="earlyward_return" value="' . esc_attr( 'overview' === $back_to ? 'overview' : 'findings' ) . '" />';
+		wp_nonce_field( self::ACTION_BACKUP );
+		echo '<p><button type="submit" class="button">' . esc_html__( 'Back up now (UpdraftPlus: files and database)', 'earlyward' ) . '</button> <span class="description">' . esc_html__( 'Starts the full backup in UpdraftPlus with its own settings and remote storage. It runs in the background and usually takes a few minutes. Update once the time above has changed.', 'earlyward' ) . '</span></p>';
+		echo '</form></div>';
+	}
+
+	/**
 	 * Put a quarantined item back.
 	 */
 	public static function handle_restore(): void {
@@ -324,6 +400,9 @@ final class Page {
 			'fix_gone'             => array( 'notice-warning', __( 'Nothing was changed. This finding is no longer reported by a fresh scan, so the site has changed since the page was drawn.', 'earlyward' ) ),
 			'fix_unconfirmed'      => array( 'notice-warning', __( 'Nothing was changed: the box "I understand what this changes" was not ticked.', 'earlyward' ) ),
 			'fix_need_extra'       => array( 'notice-warning', __( 'Nothing was changed: the second confirmation box (for updates: "I have a recent backup of the site") was not ticked.', 'earlyward' ) ),
+			'backup_started'       => array( 'notice-success', __( 'Backup started in UpdraftPlus. It runs in the background and usually takes a few minutes. Reload this page: when "the newest backup was made" shows the new time, it is done.', 'earlyward' ) ),
+			'backup_busy'          => array( 'notice-warning', __( 'A backup is already running or queued. Wait for it to finish, then reload this page.', 'earlyward' ) ),
+			'backup_unavailable'   => array( 'notice-warning', __( 'No backup was started: UpdraftPlus is not active, or WordPress could not queue the job.', 'earlyward' ) ),
 			'fix_none_ticked'      => array( 'notice-warning', __( 'Nothing was changed: no item was ticked, or the ticked items are no longer reported. Tick at least one item in the list.', 'earlyward' ) ),
 			'fix_refused'          => array( 'notice-warning', __( 'Nothing was changed. Earlyward could not do this safely (for example PHP does not own the file). Follow the steps listed with the finding instead.', 'earlyward' ) ),
 			'fix_failed'           => array( 'notice-error', __( 'The change could not be made, or only part of it. The Quarantine and fix log tab has the detail.', 'earlyward' ) ),
@@ -605,6 +684,9 @@ final class Page {
 			echo '<div class="earlyward-fix"><p><strong>' . esc_html__( 'Next step:', 'earlyward' ) . '</strong> ' . esc_html( $offer['what'] ) . ' <a class="button" href="' . esc_url( admin_url( $offer['url'] ) ) . '">' . esc_html( $offer['label'] ) . '</a></p></div>';
 			return;
 		}
+		if ( Fixer::ID_UPDATE === $offer['id'] ) {
+			self::render_backup_panel( 'findings' );
+		}
 		echo '<form method="post" class="earlyward-fix"' . ( $offer['pick'] ? ' data-earlyward-pick="1"' : '' ) . ' action="' . esc_url( admin_url( 'admin-post.php' ) ) . '">';
 		echo '<input type="hidden" name="action" value="' . esc_attr( self::ACTION_FIX ) . '" />';
 		echo '<input type="hidden" name="earlyward_fix_id" value="' . esc_attr( $offer['id'] ) . '" />';
@@ -757,6 +839,6 @@ final class Page {
 			. '.earlyward-critical{border-left-color:#d63638}.earlyward-warning{border-left-color:#dba617}.earlyward-info{border-left-color:#72aee6}'
 			. '.earlyward-badge{display:inline-block;font-size:12px;font-weight:600;padding:1px 8px;border:1px solid currentColor;border-radius:3px;vertical-align:middle}'
 			. '.earlyward-evidence pre{white-space:pre-wrap;word-break:break-all;margin:4px 0 8px;padding:6px 8px;background:#f6f7f7;max-height:8em;overflow:auto}'
-			. '.earlyward-fix{border-top:1px solid #dcdcde;margin-top:8px;padding-top:4px}.earlyward-pick{margin:4px 0 8px}.earlyward-qform{margin:2px 0}.earlyward-pick-msg{color:#b32d2e;font-weight:600}#earlyward-support{max-width:960px}';
+			. '.earlyward-fix{border-top:1px solid #dcdcde;margin-top:8px;padding-top:4px}.earlyward-pick{margin:4px 0 8px}.earlyward-qform{margin:2px 0}.earlyward-pick-msg{color:#b32d2e;font-weight:600}.earlyward-backup{background:#f6f7f7;border-left:4px solid #72aee6;padding:2px 12px;margin:8px 0;max-width:960px}#earlyward-support{max-width:960px}';
 	}
 }

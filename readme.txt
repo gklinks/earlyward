@@ -4,7 +4,7 @@ Tags: security, malware, diagnostics, monitoring, hardening
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 0.7.2
+Stable tag: 0.8.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -41,6 +41,9 @@ Scans run in WP-Cron or WP-CLI, never while a visitor loads a page. Measured cos
 Privately, through the Security tab of the GitHub repository. Please do not open a public issue.
 
 == Changelog ==
+
+= 0.8.0 =
+* Backup before updating: every update form now shows when the newest backup was made and whether it was also sent to remote storage (from UpdraftPlus's own history), with a "Back up now" button that starts UpdraftPlus's full backup in the background. Earlyward does not make backups itself; without UpdraftPlus it links to it.
 
 = 0.7.2 =
 * Fix buttons no longer fail silently when a box is missed: the browser refuses to send the form until the confirmation boxes are ticked, a list form says "Tick at least one item" next to its button, and the message after a refused click names the missing box.
