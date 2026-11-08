@@ -127,6 +127,31 @@ final class MoreChecksTest extends TestCase {
 	}
 
 	/**
+	 * On a real site the option arrives as an incomplete class (unserialize without classes). It must be read without warnings.
+	 */
+	public function test_update_checks_read_incomplete_class_objects(): void {
+		$stale  = Fixture_Site::NOW - 6 * 86400;
+		$object = unserialize( 'O:8:"stdClass":1:{s:12:"last_checked";i:' . $stale . ';}', array( 'allowed_classes' => false ) );
+		$this->assertInstanceOf( \__PHP_Incomplete_Class::class, $object );
+		$options = array(
+			'_site_transient_update_core'    => $object,
+			'_site_transient_update_plugins' => $object,
+			'_site_transient_update_themes'  => $object,
+		);
+		set_error_handler(
+			static function ( int $no, string $message ): bool {
+				throw new \RuntimeException( $message ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- a test, not output.
+			}
+		);
+		try {
+			$f = $this->found( new Update_Check_Health_Check(), $this->context( $options ) );
+		} finally {
+			restore_error_handler();
+		}
+		$this->assertCount( 1, $f );
+	}
+
+	/**
 	 * Write a theme file.
 	 *
 	 * @param string $relative Path under themes.

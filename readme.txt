@@ -4,7 +4,7 @@ Tags: security, malware, diagnostics, monitoring, hardening
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 0.4.0
+Stable tag: 0.4.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -41,6 +41,9 @@ Scans run in WP-Cron or WP-CLI, never while a visitor loads a page. Measured cos
 Privately, through the Security tab of the GitHub repository. Please do not open a public issue.
 
 == Changelog ==
+
+= 0.4.1 =
+* Fix: the update-check health check (B7) raised PHP warnings on real sites, because WordPress's stored update data arrives as an incomplete object. It now reads the data safely. Found by running 0.4.0 on a live site.
 
 = 0.4.0 =
 * Still an early preview: not yet recommended for production sites.

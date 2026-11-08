@@ -62,7 +62,9 @@ final class Update_Check_Health_Check implements Check {
 		$seen     = 0;
 		foreach ( self::OPTIONS as $option => $label ) {
 			$value = $db->option( $option );
-			$when  = is_object( $value ) ? ( $value->last_checked ?? null ) : ( is_array( $value ) ? ( $value['last_checked'] ?? null ) : null );
+			// The database layer unserializes without allowing classes, so an object arrives as __PHP_Incomplete_Class: read it as an array, never as an object.
+			$fields = is_object( $value ) ? (array) $value : $value;
+			$when   = is_array( $fields ) ? ( $fields['last_checked'] ?? null ) : null;
 			if ( ! is_numeric( $when ) || (int) $when <= 0 ) {
 				continue;
 			}
