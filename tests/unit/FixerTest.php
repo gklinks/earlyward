@@ -108,7 +108,7 @@ final class FixerTest extends TestCase {
 		$this->assertSame( Fixer::ID_CHMOD_CONFIG, Fixer::offer( self::crafted( 'B4', 'info', 'wp-config.php' ) )['id'] );
 		$backup = Fixer::offer( self::crafted( 'B3', 'critical', 'db.sql' ) );
 		$this->assertSame( Fixer::ID_DELETE_BACKUP, $backup['id'] );
-		$this->assertTrue( $backup['needs_copy'], 'Deleting a backup asks whether another copy exists.' );
+		$this->assertNotSame( '', $backup['extra'], 'Deleting a backup asks whether another copy exists.' );
 		$this->assertSame( Fixer::ID_DELETE_MAINTENANCE, Fixer::offer( self::crafted( 'C3', 'info', 'wp-content/maintenance.php' ) )['id'] );
 
 		$this->assertNull( Fixer::offer( self::crafted( 'C3', 'warning', 'wp-content/maintenance.php' ) ), 'A maintenance page with a warning is not a harmless leftover.' );
@@ -123,7 +123,7 @@ final class FixerTest extends TestCase {
 		list( $site, $ctx, $findings ) = $this->scanned( 'b3-exposed-backups' );
 		$this->assertFileExists( $site->root . '/db-export.sql' );
 
-		$result = Fixer::apply( Fixer::ID_DELETE_BACKUP, 'B3', 'db-export.sql', $findings, $ctx, new Writer(), 7, self::NOW );
+		$result = Fixer::apply( Fixer::ID_DELETE_BACKUP, 'B3', 'db-export.sql', $findings, $ctx, new Writer(), 7, self::NOW, array( 'extra' => true ) );
 
 		$this->assertTrue( $result['ok'] );
 		$this->assertFileDoesNotExist( $site->root . '/db-export.sql' );
@@ -139,7 +139,7 @@ final class FixerTest extends TestCase {
 	 */
 	public function test_unknown_fingerprint_changes_nothing(): void {
 		list( $site, $ctx, $findings ) = $this->scanned( 'b3-exposed-backups' );
-		$result                        = Fixer::apply( Fixer::ID_DELETE_BACKUP, 'B3', 'nothing-here.zip', $findings, $ctx, new Writer(), 1, self::NOW );
+		$result                        = Fixer::apply( Fixer::ID_DELETE_BACKUP, 'B3', 'nothing-here.zip', $findings, $ctx, new Writer(), 1, self::NOW, array( 'extra' => true ) );
 		$this->assertFalse( $result['ok'] );
 		$this->assertSame( 'gone', $result['code'] );
 		$this->assertFileExists( $site->root . '/db-export.sql' );
@@ -164,7 +164,7 @@ final class FixerTest extends TestCase {
 
 		foreach ( array( 'wp-config.php', '../outside.txt', '/etc/hosts' ) as $location ) {
 			$finding = self::crafted( 'B3', 'critical', $location );
-			$result  = Fixer::apply( Fixer::ID_DELETE_BACKUP, 'B3', $location, array( $finding ), $ctx, new Writer(), 1, self::NOW );
+			$result  = Fixer::apply( Fixer::ID_DELETE_BACKUP, 'B3', $location, array( $finding ), $ctx, new Writer(), 1, self::NOW, array( 'extra' => true ) );
 			$this->assertFalse( $result['ok'], $location );
 			$this->assertSame( 'refused', $result['code'], $location );
 		}
@@ -203,7 +203,7 @@ final class FixerTest extends TestCase {
 				return false && '' !== $path;
 			}
 		};
-		$result                        = Fixer::apply( Fixer::ID_DELETE_BACKUP, 'B3', 'db-export.sql', $findings, $ctx, $stuck, 1, self::NOW );
+		$result                        = Fixer::apply( Fixer::ID_DELETE_BACKUP, 'B3', 'db-export.sql', $findings, $ctx, $stuck, 1, self::NOW, array( 'extra' => true ) );
 		$this->assertFalse( $result['ok'] );
 		$this->assertSame( 'failed', $result['code'] );
 		$this->assertSame( 'delete failed', $result['log'][0]['result'] );

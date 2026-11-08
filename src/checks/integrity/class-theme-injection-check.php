@@ -49,6 +49,7 @@ final class Theme_Injection_Check implements Check {
 		$fs       = $ctx->fs();
 		$themes   = $ctx->content_dir() . '/themes';
 		$findings = array();
+		$in_use   = $this->themes_in_use( $ctx );
 		foreach ( array_slice( $fs->list_dir( $themes ), 0, self::MAX_THEMES ) as $theme ) {
 			if ( ! $fs->is_dir( $themes . '/' . $theme ) || is_link( $themes . '/' . $theme ) ) {
 				continue;
@@ -60,11 +61,32 @@ final class Theme_Injection_Check implements Check {
 				}
 				$traits = Code_Traits::find( (string) $fs->read( $path, Code_Traits::READ_BYTES ) );
 				if ( ! empty( $traits ) ) {
-					$findings[] = $this->finding( $ctx, $path, $traits );
+					$findings[] = $this->finding( $ctx, $path, $traits, null === $in_use ? 'unknown' : ( isset( $in_use[ strtolower( $theme ) ] ) ? 'yes' : 'no' ) );
 				}
 			}
 		}
 		return $findings;
+	}
+
+	/**
+	 * Folder names of the active theme and its parent, or null when the database cannot tell.
+	 *
+	 * @param Context $ctx Context.
+	 * @return array<string, bool>|null
+	 */
+	private function themes_in_use( Context $ctx ): ?array {
+		$db = $ctx->db();
+		if ( null === $db ) {
+			return null;
+		}
+		$out = array();
+		foreach ( array( 'stylesheet', 'template' ) as $option ) {
+			$value = $db->option( $option );
+			if ( is_string( $value ) && '' !== $value ) {
+				$out[ strtolower( $value ) ] = true;
+			}
+		}
+		return empty( $out ) ? null : $out;
 	}
 
 	/**
@@ -73,9 +95,10 @@ final class Theme_Injection_Check implements Check {
 	 * @param Context               $ctx    Context.
 	 * @param string                $path   File.
 	 * @param array<string, string> $traits Traits found.
+	 * @param string                $in_use "yes", "no" or "unknown": whether the theme is active (or the parent of the active one).
 	 * @return Finding
 	 */
-	private function finding( Context $ctx, string $path, array $traits ): Finding {
+	private function finding( Context $ctx, string $path, array $traits, string $in_use ): Finding {
 		$strong = isset( $traits['eval_of_decoded'] ) || isset( $traits['request_to_executor'] );
 		return new Finding(
 			self::ID,
@@ -93,6 +116,7 @@ final class Theme_Injection_Check implements Check {
 						'bytes'  => $ctx->fs()->size( $path ),
 						'sha256' => $ctx->fs()->sha256( $path ),
 						'traits' => implode( ',', array_keys( $traits ) ),
+						'in_use' => $in_use,
 					)
 				),
 			),

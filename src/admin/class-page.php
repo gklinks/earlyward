@@ -10,6 +10,8 @@ namespace Earlyward\Admin;
 
 use Earlyward\Env\Context;
 use Earlyward\Fix\Fixer;
+use Earlyward\Fix\Quarantine;
+use Earlyward\Fix\Updater;
 use Earlyward\Fix\Writer;
 use Earlyward\Plugin;
 use Earlyward\Scanner\Scanner;
@@ -28,13 +30,15 @@ final class Page {
 	const ACTION_SCAN     = 'earlyward_scan_now';
 	const ACTION_BASELINE = 'earlyward_set_baseline';
 	const ACTION_FIX      = 'earlyward_fix';
+	const ACTION_RESTORE  = 'earlyward_restore';
+	const ACTION_PURGE    = 'earlyward_purge';
 
 	/**
 	 * Notice codes that may arrive in the query string. Anything else is ignored.
 	 *
 	 * @var string[]
 	 */
-	const NOTICES = array( 'scanned', 'busy', 'baseline_set', 'baseline_missing', 'baseline_unconfirmed', 'fixed', 'fix_gone', 'fix_unconfirmed', 'fix_refused', 'fix_failed' );
+	const NOTICES = array( 'scanned', 'busy', 'baseline_set', 'baseline_missing', 'baseline_unconfirmed', 'fixed', 'fix_gone', 'fix_unconfirmed', 'fix_refused', 'fix_failed', 'quarantined', 'restored', 'purged', 'q_gone', 'q_refused', 'q_failed', 'q_unconfirmed' );
 
 	/**
 	 * Register hooks. Called on admin requests only.
@@ -44,6 +48,8 @@ final class Page {
 		add_action( 'admin_post_' . self::ACTION_SCAN, array( __CLASS__, 'handle_scan' ) );
 		add_action( 'admin_post_' . self::ACTION_BASELINE, array( __CLASS__, 'handle_baseline' ) );
 		add_action( 'admin_post_' . self::ACTION_FIX, array( __CLASS__, 'handle_fix' ) );
+		add_action( 'admin_post_' . self::ACTION_RESTORE, array( __CLASS__, 'handle_restore' ) );
+		add_action( 'admin_post_' . self::ACTION_PURGE, array( __CLASS__, 'handle_purge' ) );
 	}
 
 	/**
@@ -67,7 +73,7 @@ final class Page {
 	 * URL of the screen, with an optional notice code and tab.
 	 *
 	 * @param string $notice Notice code or empty.
-	 * @param string $tab    "overview" (the default) or "findings".
+	 * @param string $tab    "overview" (the default), "findings" or "quarantine".
 	 * @return string
 	 */
 	public static function url( string $notice = '', string $tab = '' ): string {
@@ -132,14 +138,26 @@ final class Page {
 		$fingerprint = isset( $_POST['earlyward_fingerprint'] ) ? sanitize_key( wp_unslash( $_POST['earlyward_fingerprint'] ) ) : '';
 		$confirmed   = ! empty( $_POST['earlyward_confirm'] );
 		$has_copy    = ! empty( $_POST['earlyward_copy'] );
+		$selected    = array();
+		if ( isset( $_POST['earlyward_items'] ) && is_array( $_POST['earlyward_items'] ) ) {
+			foreach ( array_slice( wp_unslash( $_POST['earlyward_items'] ), 0, 100 ) as $item ) { // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Each item is sanitised below and only compared with locations from a fresh scan.
+				if ( is_string( $item ) ) {
+					$selected[] = sanitize_text_field( $item );
+				}
+			}
+		}
 		// phpcs:enable WordPress.Security.NonceVerification.Missing
 
 		if ( Fixer::disabled() || ! in_array( $id, Fixer::ids(), true ) || 1 !== preg_match( '/^[0-9a-f]{40}$/', $fingerprint ) ) {
 			wp_safe_redirect( self::url( 'fix_refused', 'findings' ) );
 			exit;
 		}
-		if ( ! $confirmed || ( Fixer::ID_DELETE_BACKUP === $id && ! $has_copy ) ) {
+		if ( ! $confirmed ) {
 			wp_safe_redirect( self::url( 'fix_unconfirmed', 'findings' ) );
+			exit;
+		}
+		if ( Fixer::ID_UPDATE === $id && ! Updater::available() ) {
+			wp_safe_redirect( self::url( 'fix_refused', 'findings' ) );
 			exit;
 		}
 
@@ -165,19 +183,100 @@ final class Page {
 		foreach ( $run['findings'] as $finding ) {
 			$findings[] = $finding->to_array();
 		}
-		$result = Fixer::apply( $id, (string) ( $shown['check'] ?? '' ), (string) $shown['evidence'][0]['location'], $findings, $ctx, new Writer(), get_current_user_id(), time() );
+		$result = Fixer::apply(
+			$id,
+			(string) ( $shown['check'] ?? '' ),
+			(string) $shown['evidence'][0]['location'],
+			$findings,
+			$ctx,
+			new Writer(),
+			get_current_user_id(),
+			time(),
+			array(
+				'extra'      => $has_copy,
+				'selected'   => $selected,
+				'quarantine' => Quarantine::load(),
+				'random'     => strtolower( wp_generate_password( 12, false, false ) ),
+				'upgrade'    => array( Updater::class, 'upgrade' ),
+				'self_dir'   => basename( dirname( __DIR__, 2 ) ),
+			)
+		);
 		Fixer::record( $result['log'] );
+		if ( null !== $result['quarantine'] ) {
+			Quarantine::save( Quarantine::normalise( $result['quarantine'] ) );
+		}
+		if ( ! empty( $result['log'] ) && function_exists( 'wp_clean_plugins_cache' ) ) {
+			wp_clean_plugins_cache( false ); // Plugin folders may have moved or been updated.
+		}
 		if ( $result['ok'] ) {
 			wp_schedule_single_event( time() + 5, Plugin::CRON_HOOK ); // Refresh the stored result soon, off this request.
 		}
 		$codes = array(
-			'fixed'   => 'fixed',
-			'gone'    => 'fix_gone',
-			'refused' => 'fix_refused',
-			'failed'  => 'fix_failed',
+			'fixed'       => in_array( $id, array( Fixer::ID_QUARANTINE_FILE, Fixer::ID_QUARANTINE_FOLDER ), true ) ? 'quarantined' : 'fixed',
+			'gone'        => 'fix_gone',
+			'refused'     => 'fix_refused',
+			'failed'      => 'fix_failed',
+			'unconfirmed' => 'fix_unconfirmed',
 		);
 		wp_safe_redirect( self::url( $codes[ $result['code'] ] ?? 'fix_failed', 'findings' ) );
 		exit;
+	}
+
+	/**
+	 * "Put back" and "Delete for good" on the Quarantine tab. The request names an item ID from the
+	 * stored quarantine record; the paths come from that record, never from the request.
+	 *
+	 * @param string $action ACTION_RESTORE or ACTION_PURGE.
+	 */
+	private static function handle_quarantine( string $action ): void {
+		self::authorise( $action );
+		// phpcs:disable WordPress.Security.NonceVerification.Missing -- Nonce and capability are checked by authorise() above.
+		$item      = isset( $_POST['earlyward_item'] ) ? sanitize_text_field( wp_unslash( $_POST['earlyward_item'] ) ) : '';
+		$confirmed = ! empty( $_POST['earlyward_confirm'] );
+		// phpcs:enable WordPress.Security.NonceVerification.Missing
+		if ( Fixer::disabled() || 1 !== preg_match( '/^\d{8}-\d{6}-[0-9a-f]{8}$/', $item ) ) {
+			wp_safe_redirect( self::url( 'q_refused', 'quarantine' ) );
+			exit;
+		}
+		if ( ! $confirmed ) {
+			wp_safe_redirect( self::url( 'q_unconfirmed', 'quarantine' ) );
+			exit;
+		}
+		$ctx    = Context::from_wordpress( array(), array(), false );
+		$record = Quarantine::load();
+		$done   = self::ACTION_RESTORE === $action
+			? Quarantine::restore( $ctx, new Writer(), $record, $item, get_current_user_id(), time() )
+			: Quarantine::purge( $ctx, new Writer(), $record, $item, get_current_user_id(), time() );
+		Quarantine::save( $done['record'] );
+		Fixer::record( array( $done['entry'] ) );
+		if ( $done['ok'] ) {
+			if ( function_exists( 'wp_clean_plugins_cache' ) ) {
+				wp_clean_plugins_cache( false );
+			}
+			wp_schedule_single_event( time() + 5, Plugin::CRON_HOOK );
+		}
+		$codes = array(
+			'restored' => 'restored',
+			'purged'   => 'purged',
+			'gone'     => 'q_gone',
+			'refused'  => 'q_refused',
+		);
+		wp_safe_redirect( self::url( $codes[ $done['code'] ] ?? 'q_failed', 'quarantine' ) );
+		exit;
+	}
+
+	/**
+	 * Put a quarantined item back.
+	 */
+	public static function handle_restore(): void {
+		self::handle_quarantine( self::ACTION_RESTORE );
+	}
+
+	/**
+	 * Delete a quarantined item for good.
+	 */
+	public static function handle_purge(): void {
+		self::handle_quarantine( self::ACTION_PURGE );
 	}
 
 	/**
@@ -211,11 +310,18 @@ final class Page {
 			'baseline_set'         => array( 'notice-success', __( 'New baseline recorded from the homepage as it is now.', 'earlyward' ) ),
 			'baseline_missing'     => array( 'notice-warning', __( 'The old baseline was cleared, but no new one was recorded because the homepage did not look healthy in this scan. Fix the problem, then try again.', 'earlyward' ) ),
 			'baseline_unconfirmed' => array( 'notice-warning', __( 'Nothing was changed. Tick the box to confirm that you changed the site on purpose.', 'earlyward' ) ),
-			'fixed'                => array( 'notice-success', __( 'Done. The change is in the fix log at the bottom of this page. A new scan is queued, so the finding should disappear within a minute.', 'earlyward' ) ),
+			'fixed'                => array( 'notice-success', __( 'Done. The change is in the fix log on the Quarantine and fix log tab. A new scan is queued, so the finding should disappear within a minute.', 'earlyward' ) ),
 			'fix_gone'             => array( 'notice-warning', __( 'Nothing was changed. This finding is no longer reported by a fresh scan, so the site has changed since the page was drawn.', 'earlyward' ) ),
 			'fix_unconfirmed'      => array( 'notice-warning', __( 'Nothing was changed. Tick the boxes to confirm.', 'earlyward' ) ),
 			'fix_refused'          => array( 'notice-warning', __( 'Nothing was changed. Earlyward could not do this safely (for example PHP does not own the file). Follow the steps listed with the finding instead.', 'earlyward' ) ),
-			'fix_failed'           => array( 'notice-error', __( 'The change could not be made, and anything half-done was put back. The fix log at the bottom of this page has the detail.', 'earlyward' ) ),
+			'fix_failed'           => array( 'notice-error', __( 'The change could not be made, or only part of it. The Quarantine and fix log tab has the detail.', 'earlyward' ) ),
+			'quarantined'          => array( 'notice-success', __( 'Moved to quarantine. You can put it back from the Quarantine and fix log tab. A new scan is queued.', 'earlyward' ) ),
+			'restored'             => array( 'notice-success', __( 'Put back where it was. A new scan is queued, so the finding may return.', 'earlyward' ) ),
+			'purged'               => array( 'notice-success', __( 'Deleted for good. The fix log keeps its hash.', 'earlyward' ) ),
+			'q_gone'               => array( 'notice-warning', __( 'Nothing was changed. That item is no longer in quarantine.', 'earlyward' ) ),
+			'q_refused'            => array( 'notice-warning', __( 'Nothing was changed. Something already exists at the original place, or the request was not valid.', 'earlyward' ) ),
+			'q_failed'             => array( 'notice-error', __( 'The change could not be made. The fix log has the detail.', 'earlyward' ) ),
+			'q_unconfirmed'        => array( 'notice-warning', __( 'Nothing was changed. Tick the box to confirm.', 'earlyward' ) ),
 		);
 		return $map[ $code ];
 	}
@@ -223,12 +329,12 @@ final class Page {
 	/**
 	 * The tab asked for. Anything unknown falls back to the overview.
 	 *
-	 * @return string "overview" or "findings".
+	 * @return string "overview", "findings" or "quarantine".
 	 */
 	private static function tab(): string {
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only choice of a tab from a whitelist.
 		$tab = isset( $_GET['tab'] ) ? sanitize_key( wp_unslash( $_GET['tab'] ) ) : '';
-		return 'findings' === $tab ? 'findings' : 'overview';
+		return in_array( $tab, array( 'findings', 'quarantine' ), true ) ? $tab : 'overview';
 	}
 
 	/**
@@ -242,6 +348,8 @@ final class Page {
 		echo '<nav class="nav-tab-wrapper" aria-label="' . esc_attr__( 'Earlyward sections', 'earlyward' ) . '">';
 		echo '<a class="nav-tab' . ( 'overview' === $tab ? ' nav-tab-active' : '' ) . '" href="' . esc_url( self::url( '', 'overview' ) ) . '">' . esc_html__( 'Overview', 'earlyward' ) . '</a>';
 		echo '<a class="nav-tab' . ( 'findings' === $tab ? ' nav-tab-active' : '' ) . '" href="' . esc_url( self::url( '', 'findings' ) ) . '">' . esc_html( $open > 0 ? sprintf( /* translators: %d: number of critical and warning findings. */ __( 'Findings (%d)', 'earlyward' ), $open ) : __( 'Findings', 'earlyward' ) ) . '</a>';
+		$held = count( Quarantine::load()['items'] );
+		echo '<a class="nav-tab' . ( 'quarantine' === $tab ? ' nav-tab-active' : '' ) . '" href="' . esc_url( self::url( '', 'quarantine' ) ) . '">' . esc_html( $held > 0 ? sprintf( /* translators: %d: number of items in quarantine. */ __( 'Quarantine and fix log (%d)', 'earlyward' ), $held ) : __( 'Quarantine and fix log', 'earlyward' ) ) . '</a>';
 		echo '</nav>';
 	}
 
@@ -274,12 +382,14 @@ final class Page {
 
 		if ( 'overview' === $tab ) {
 			Overview::render();
+		} elseif ( 'quarantine' === $tab ) {
+			self::render_quarantine();
+			self::render_fix_log();
 		} else {
 			self::render_status( $last, $next );
 			self::render_actions();
 			self::render_findings( $last, $findings, $counts );
 			self::render_support( $last );
-			self::render_fix_log();
 		}
 
 		echo '</div>';
@@ -478,14 +588,31 @@ final class Page {
 		if ( null === $offer ) {
 			return;
 		}
+		if ( Fixer::ID_LINK === $offer['id'] ) {
+			echo '<div class="earlyward-fix"><p><strong>' . esc_html__( 'Next step:', 'earlyward' ) . '</strong> ' . esc_html( $offer['what'] ) . ' <a class="button" href="' . esc_url( admin_url( $offer['url'] ) ) . '">' . esc_html( $offer['label'] ) . '</a></p></div>';
+			return;
+		}
 		echo '<form method="post" class="earlyward-fix" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '">';
 		echo '<input type="hidden" name="action" value="' . esc_attr( self::ACTION_FIX ) . '" />';
 		echo '<input type="hidden" name="earlyward_fix_id" value="' . esc_attr( $offer['id'] ) . '" />';
 		echo '<input type="hidden" name="earlyward_fingerprint" value="' . esc_attr( (string) ( $finding['fingerprint'] ?? '' ) ) . '" />';
 		wp_nonce_field( self::ACTION_FIX );
 		echo '<p><strong>' . esc_html__( 'Fix it here:', 'earlyward' ) . '</strong> ' . esc_html( $offer['what'] ) . '</p>';
-		if ( $offer['needs_copy'] ) {
-			echo '<p><label><input type="checkbox" name="earlyward_copy" value="1" /> ' . esc_html__( 'I have another copy of this file, or I do not need it.', 'earlyward' ) . '</label></p>';
+		if ( $offer['pick'] ) {
+			$evidence = isset( $finding['evidence'] ) && is_array( $finding['evidence'] ) ? $finding['evidence'] : array();
+			echo '<fieldset class="earlyward-pick"><legend class="screen-reader-text">' . esc_html__( 'Items to act on', 'earlyward' ) . '</legend>';
+			foreach ( $evidence as $item ) {
+				$where = is_array( $item ) ? (string) ( $item['location'] ?? '' ) : '';
+				if ( Fixer::pickable( $offer['id'], $where ) ) {
+					echo '<label><input type="checkbox" name="earlyward_items[]" value="' . esc_attr( $where ) . '"' . ( $offer['checked'] ? ' checked="checked"' : '' ) . ' /> <code>' . esc_html( $where ) . '</code></label><br />';
+				} elseif ( '' !== $where ) {
+					echo '<span class="description"><code>' . esc_html( $where ) . '</code> ' . esc_html__( '(use Dashboard, Updates)', 'earlyward' ) . '</span><br />';
+				}
+			}
+			echo '</fieldset>';
+		}
+		if ( '' !== $offer['extra'] ) {
+			echo '<p><label><input type="checkbox" name="earlyward_copy" value="1" /> ' . esc_html( $offer['extra'] ) . '</label></p>';
 		}
 		echo '<p><label><input type="checkbox" name="earlyward_confirm" value="1" /> ' . esc_html__( 'I understand what this changes.', 'earlyward' ) . '</label> ';
 		echo '<button type="submit" class="button">' . esc_html( $offer['label'] ) . '</button></p>';
@@ -493,16 +620,60 @@ final class Page {
 	}
 
 	/**
+	 * The Quarantine tab: what was moved, with "Put back" and "Delete for good".
+	 */
+	private static function render_quarantine(): void {
+		$record = Quarantine::load();
+		echo '<h2>' . esc_html__( 'Quarantine', 'earlyward' ) . '</h2>';
+		echo '<p>' . esc_html__( 'Files and folders that a fix moved here are locked away and renamed so that they cannot run. Nothing here is deleted unless you press "Delete for good". "Put back" moves an item to where it was, if nothing else is there now.', 'earlyward' ) . '</p>';
+		if ( empty( $record['items'] ) ) {
+			echo '<p>' . esc_html__( 'The quarantine is empty.', 'earlyward' ) . '</p>';
+			return;
+		}
+		echo '<p class="description">' . esc_html(
+			sprintf(
+				/* translators: %s: folder name inside wp-content. */
+				__( 'Folder: wp-content/%s (a MANIFEST.txt inside lists every item, so they can also be put back by hand).', 'earlyward' ),
+				$record['dir']
+			)
+		) . '</p>';
+		$post     = esc_url( admin_url( 'admin-post.php' ) );
+		$disabled = Fixer::disabled();
+		echo '<table class="widefat striped earlyward-table"><thead><tr><th>' . esc_html__( 'Moved', 'earlyward' ) . '</th><th>' . esc_html__( 'Original place', 'earlyward' ) . '</th><th>' . esc_html__( 'From check', 'earlyward' ) . '</th><th>' . esc_html__( 'Actions', 'earlyward' ) . '</th></tr></thead><tbody>';
+		foreach ( array_reverse( $record['items'], true ) as $id => $item ) {
+			$size = 'dir' === ( $item['kind'] ?? '' ) ? __( 'folder', 'earlyward' ) : size_format( (int) ( $item['bytes'] ?? 0 ) );
+			echo '<tr><td>' . esc_html( (string) wp_date( 'Y-m-d H:i', (int) ( $item['at'] ?? 0 ) ) ) . '</td><td><code>' . esc_html( (string) $item['original'] ) . '</code><br /><span class="description">' . esc_html( (string) $size ) . '</span></td><td>' . esc_html( (string) ( $item['check'] ?? '' ) ) . '</td><td>';
+			if ( ! $disabled ) {
+				foreach ( array(
+					self::ACTION_RESTORE => array( __( 'Put back', 'earlyward' ), __( 'I want this back where it was.', 'earlyward' ), 'button' ),
+					self::ACTION_PURGE   => array( __( 'Delete for good', 'earlyward' ), __( 'Delete it permanently.', 'earlyward' ), 'button button-link-delete' ),
+				) as $action => $text ) {
+					echo '<form method="post" class="earlyward-qform" action="' . $post . '">'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped with esc_url() above.
+					echo '<input type="hidden" name="action" value="' . esc_attr( $action ) . '" />';
+					echo '<input type="hidden" name="earlyward_item" value="' . esc_attr( (string) $id ) . '" />';
+					wp_nonce_field( $action );
+					echo '<label><input type="checkbox" name="earlyward_confirm" value="1" /> ' . esc_html( $text[1] ) . '</label> ';
+					echo '<button type="submit" class="' . esc_attr( $text[2] ) . '">' . esc_html( $text[0] ) . '</button>';
+					echo '</form>';
+				}
+			}
+			echo '</td></tr>';
+		}
+		echo '</tbody></table>';
+	}
+
+	/**
 	 * The last changes Earlyward made, newest first.
 	 */
 	private static function render_fix_log(): void {
 		$log = array_reverse( Fixer::log() );
+		echo '<h2>' . esc_html__( 'Fix log', 'earlyward' ) . '</h2>';
 		if ( empty( $log ) ) {
+			echo '<p>' . esc_html__( 'Earlyward has not changed anything on this site yet.', 'earlyward' ) . '</p>';
 			return;
 		}
-		echo '<h2>' . esc_html__( 'Fix log', 'earlyward' ) . '</h2>';
 		echo '<table class="widefat striped earlyward-table"><thead><tr><th>' . esc_html__( 'When', 'earlyward' ) . '</th><th>' . esc_html__( 'What', 'earlyward' ) . '</th><th>' . esc_html__( 'Target', 'earlyward' ) . '</th><th>' . esc_html__( 'Result', 'earlyward' ) . '</th></tr></thead><tbody>';
-		foreach ( array_slice( $log, 0, 10 ) as $entry ) {
+		foreach ( array_slice( $log, 0, Fixer::MAX_LOG ) as $entry ) {
 			$detail = (string) ( $entry['result'] ?? '' );
 			if ( isset( $entry['mode_before'] ) ) {
 				$detail .= ' (' . (string) $entry['mode_before'] . ' to ' . (string) ( $entry['mode_after'] ?? '?' ) . ')';
@@ -560,6 +731,6 @@ final class Page {
 			. '.earlyward-critical{border-left-color:#d63638}.earlyward-warning{border-left-color:#dba617}.earlyward-info{border-left-color:#72aee6}'
 			. '.earlyward-badge{display:inline-block;font-size:12px;font-weight:600;padding:1px 8px;border:1px solid currentColor;border-radius:3px;vertical-align:middle}'
 			. '.earlyward-evidence pre{white-space:pre-wrap;word-break:break-all;margin:4px 0 8px;padding:6px 8px;background:#f6f7f7;max-height:8em;overflow:auto}'
-			. '.earlyward-fix{border-top:1px solid #dcdcde;margin-top:8px;padding-top:4px}#earlyward-support{max-width:960px}';
+			. '.earlyward-fix{border-top:1px solid #dcdcde;margin-top:8px;padding-top:4px}.earlyward-pick{margin:4px 0 8px}.earlyward-qform{margin:2px 0}#earlyward-support{max-width:960px}';
 	}
 }

@@ -2,24 +2,24 @@
 # This file is distributed under the GPL-2.0-or-later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Earlyward 0.5.0\n"
-"Report-Msgid-Bugs-To: https://github.com/gklinks/earlyward/issues\n"
+"Project-Id-Version: Earlyward 0.6.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/earlyward\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-11-08T02:47:18+00:00\n"
+"POT-Creation-Date: 2026-11-08T03:24:45+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: earlyward\n"
 
 #. Plugin Name of the plugin
 #: earlyward.php
-#: src/admin/class-page.php:55
-#: src/admin/class-page.php:56
-#: src/admin/class-page.php:193
-#: src/admin/class-page.php:263
+#: src/admin/class-page.php:61
+#: src/admin/class-page.php:62
+#: src/admin/class-page.php:292
+#: src/admin/class-page.php:371
 #: src/admin/class-site-health.php:160
 #: src/admin/class-site-health.php:178
 #: src/admin/class-site-health.php:292
@@ -255,244 +255,349 @@ msgstr ""
 msgid "Showing %1$d of %2$d jobs, late and ownerless ones first."
 msgstr ""
 
-#: src/admin/class-page.php:88
+#: src/admin/class-page.php:94
 msgid "You do not have permission to do this."
 msgstr ""
 
-#: src/admin/class-page.php:188
+#: src/admin/class-page.php:287
 msgid "You do not have permission to view this page."
 msgstr ""
 
-#: src/admin/class-page.php:193
+#: src/admin/class-page.php:292
 msgid "The Earlyward screen could not be shown. The scans and the rest of the site are not affected."
 msgstr ""
 
-#: src/admin/class-page.php:209
+#: src/admin/class-page.php:308
 msgid "Scan finished. The results below are from this scan."
 msgstr ""
 
-#: src/admin/class-page.php:210
+#: src/admin/class-page.php:309
 msgid "Another scan is already running, or this one could not start. Try again in a minute."
 msgstr ""
 
-#: src/admin/class-page.php:211
+#: src/admin/class-page.php:310
 msgid "New baseline recorded from the homepage as it is now."
 msgstr ""
 
-#: src/admin/class-page.php:212
+#: src/admin/class-page.php:311
 msgid "The old baseline was cleared, but no new one was recorded because the homepage did not look healthy in this scan. Fix the problem, then try again."
 msgstr ""
 
-#: src/admin/class-page.php:213
+#: src/admin/class-page.php:312
 msgid "Nothing was changed. Tick the box to confirm that you changed the site on purpose."
 msgstr ""
 
-#: src/admin/class-page.php:214
-msgid "Done. The change is in the fix log at the bottom of this page. A new scan is queued, so the finding should disappear within a minute."
+#: src/admin/class-page.php:313
+msgid "Done. The change is in the fix log on the Quarantine and fix log tab. A new scan is queued, so the finding should disappear within a minute."
 msgstr ""
 
-#: src/admin/class-page.php:215
+#: src/admin/class-page.php:314
 msgid "Nothing was changed. This finding is no longer reported by a fresh scan, so the site has changed since the page was drawn."
 msgstr ""
 
-#: src/admin/class-page.php:216
+#: src/admin/class-page.php:315
 msgid "Nothing was changed. Tick the boxes to confirm."
 msgstr ""
 
-#: src/admin/class-page.php:217
+#: src/admin/class-page.php:316
 msgid "Nothing was changed. Earlyward could not do this safely (for example PHP does not own the file). Follow the steps listed with the finding instead."
 msgstr ""
 
-#: src/admin/class-page.php:218
-msgid "The change could not be made, and anything half-done was put back. The fix log at the bottom of this page has the detail."
+#: src/admin/class-page.php:317
+msgid "The change could not be made, or only part of it. The Quarantine and fix log tab has the detail."
 msgstr ""
 
-#: src/admin/class-page.php:242
+#: src/admin/class-page.php:318
+msgid "Moved to quarantine. You can put it back from the Quarantine and fix log tab. A new scan is queued."
+msgstr ""
+
+#: src/admin/class-page.php:319
+msgid "Put back where it was. A new scan is queued, so the finding may return."
+msgstr ""
+
+#: src/admin/class-page.php:320
+msgid "Deleted for good. The fix log keeps its hash."
+msgstr ""
+
+#: src/admin/class-page.php:321
+msgid "Nothing was changed. That item is no longer in quarantine."
+msgstr ""
+
+#: src/admin/class-page.php:322
+msgid "Nothing was changed. Something already exists at the original place, or the request was not valid."
+msgstr ""
+
+#: src/admin/class-page.php:323
+msgid "The change could not be made. The fix log has the detail."
+msgstr ""
+
+#: src/admin/class-page.php:324
+msgid "Nothing was changed. Tick the box to confirm."
+msgstr ""
+
+#: src/admin/class-page.php:348
 msgid "Earlyward sections"
 msgstr ""
 
-#: src/admin/class-page.php:243
+#: src/admin/class-page.php:349
 msgid "Overview"
 msgstr ""
 
 #. translators: %d: number of critical and warning findings.
-#: src/admin/class-page.php:244
+#: src/admin/class-page.php:350
 #, php-format
 msgid "Findings (%d)"
 msgstr ""
 
 #. translators: %d: number of critical and warning findings.
-#: src/admin/class-page.php:244
-#: src/admin/class-page.php:371
+#: src/admin/class-page.php:350
+#: src/admin/class-page.php:481
 #: src/admin/class-site-health.php:384
 msgid "Findings"
 msgstr ""
 
-#: src/admin/class-page.php:270
+#. translators: %d: number of items in quarantine.
+#: src/admin/class-page.php:352
+#, php-format
+msgid "Quarantine and fix log (%d)"
+msgstr ""
+
+#. translators: %d: number of items in quarantine.
+#: src/admin/class-page.php:352
+msgid "Quarantine and fix log"
+msgstr ""
+
+#: src/admin/class-page.php:378
 msgid "Early preview. Earlyward reports signs of an attack and of broken hosting. A scan with no findings is not proof that the site is clean or safe."
 msgstr ""
 
-#: src/admin/class-page.php:295
+#: src/admin/class-page.php:405
 #: src/admin/class-site-health.php:380
 msgid "Last scan"
 msgstr ""
 
-#: src/admin/class-page.php:297
+#: src/admin/class-page.php:407
 msgid "No scan has been stored yet. Use \"Scan now\", or wait for the hourly WP-Cron scan."
 msgstr ""
 
 #. translators: 1: date and time, 2: how long ago, 3: where the scan ran from ("web" or "cli").
-#: src/admin/class-page.php:303
+#: src/admin/class-page.php:413
 #, php-format
 msgid "%1$s (%2$s ago), run from: %3$s."
 msgstr ""
 
-#: src/admin/class-page.php:310
+#: src/admin/class-page.php:420
 msgid "The last scan is more than 3 hours old, but scans should run every hour. WP-Cron may not be running on this site. Earlyward cannot warn you if its own scheduler has stopped."
 msgstr ""
 
 #. translators: 1: check ID, 2: error message.
-#: src/admin/class-page.php:317
+#: src/admin/class-page.php:427
 #, php-format
 msgid "Check %1$s could not run: %2$s"
 msgstr ""
 
-#: src/admin/class-page.php:325
+#: src/admin/class-page.php:435
 msgid "The hourly scan is not scheduled. It is re-added when an administrator opens a WordPress admin page."
 msgstr ""
 
 #. translators: %s: date and time of the next scheduled scan.
-#: src/admin/class-page.php:330
+#: src/admin/class-page.php:440
 #, php-format
 msgid "Next scheduled scan: %s."
 msgstr ""
 
-#: src/admin/class-page.php:348
+#: src/admin/class-page.php:458
 msgid "Scan now"
 msgstr ""
 
-#: src/admin/class-page.php:349
+#: src/admin/class-page.php:459
 msgid "Runs the same read-only checks as the hourly scan, stores the result, and emails the site admin only if the set of warnings changed."
 msgstr ""
 
-#: src/admin/class-page.php:355
+#: src/admin/class-page.php:465
 msgid "I changed the site on purpose (new theme, removed feature) and it works."
 msgstr ""
 
-#: src/admin/class-page.php:356
+#: src/admin/class-page.php:466
 msgid "Set baseline"
 msgstr ""
 
-#: src/admin/class-page.php:357
+#: src/admin/class-page.php:467
 msgid "Check A1 compares the homepage with a healthy copy it recorded earlier. This forgets that copy and records a new one from a scan right now, if the homepage looks healthy."
 msgstr ""
 
 #. translators: 1: number of critical findings, 2: warnings, 3: informational findings.
-#: src/admin/class-page.php:378
+#: src/admin/class-page.php:488
 #, php-format
 msgid "%1$d critical, %2$d warning, %3$d info."
 msgstr ""
 
 #. translators: 1: findings shown, 2: findings found.
-#: src/admin/class-page.php:389
+#: src/admin/class-page.php:499
 #, php-format
 msgid "Showing %1$d of %2$d findings. The rest were not stored."
 msgstr ""
 
-#: src/admin/class-page.php:396
+#: src/admin/class-page.php:506
 msgid "No findings from the checks that ran."
 msgstr ""
 
-#: src/admin/class-page.php:401
+#: src/admin/class-page.php:511
 msgid "Critical"
 msgstr ""
 
-#: src/admin/class-page.php:402
+#: src/admin/class-page.php:512
 msgid "Warning"
 msgstr ""
 
-#: src/admin/class-page.php:403
+#: src/admin/class-page.php:513
 msgid "Info"
 msgstr ""
 
-#: src/admin/class-page.php:416
+#: src/admin/class-page.php:526
 msgid "Housekeeping"
 msgstr ""
 
-#: src/admin/class-page.php:417
+#: src/admin/class-page.php:527
 msgid "Tidy-up suggestions, not security problems. They never trigger an alert email."
 msgstr ""
 
 #. translators: 1: check ID such as C1, 2: confidence level (high, medium, low).
-#: src/admin/class-page.php:436
+#: src/admin/class-page.php:546
 #: src/admin/class-site-health.php:130
 #, php-format
 msgid "Check %1$s, %2$s confidence."
 msgstr ""
 
-#: src/admin/class-page.php:441
+#: src/admin/class-page.php:551
 msgid "Why it matters:"
 msgstr ""
 
-#: src/admin/class-page.php:444
+#: src/admin/class-page.php:554
 #: src/admin/class-site-health.php:138
 msgid "Evidence:"
 msgstr ""
 
-#: src/admin/class-page.php:460
+#: src/admin/class-page.php:570
 #: src/admin/class-site-health.php:149
 msgid "What to do:"
 msgstr ""
 
-#: src/admin/class-page.php:486
+#: src/admin/class-page.php:592
+msgid "Next step:"
+msgstr ""
+
+#: src/admin/class-page.php:600
 msgid "Fix it here:"
 msgstr ""
 
-#: src/admin/class-page.php:488
-msgid "I have another copy of this file, or I do not need it."
+#: src/admin/class-page.php:603
+msgid "Items to act on"
 msgstr ""
 
-#: src/admin/class-page.php:490
+#: src/admin/class-page.php:609
+msgid "(use Dashboard, Updates)"
+msgstr ""
+
+#: src/admin/class-page.php:617
 msgid "I understand what this changes."
 msgstr ""
 
-#: src/admin/class-page.php:503
+#: src/admin/class-page.php:627
+msgid "Quarantine"
+msgstr ""
+
+#: src/admin/class-page.php:628
+msgid "Files and folders that a fix moved here are locked away and renamed so that they cannot run. Nothing here is deleted unless you press \"Delete for good\". \"Put back\" moves an item to where it was, if nothing else is there now."
+msgstr ""
+
+#: src/admin/class-page.php:630
+msgid "The quarantine is empty."
+msgstr ""
+
+#. translators: %s: folder name inside wp-content.
+#: src/admin/class-page.php:636
+#, php-format
+msgid "Folder: wp-content/%s (a MANIFEST.txt inside lists every item, so they can also be put back by hand)."
+msgstr ""
+
+#: src/admin/class-page.php:642
+msgid "Moved"
+msgstr ""
+
+#: src/admin/class-page.php:642
+msgid "Original place"
+msgstr ""
+
+#: src/admin/class-page.php:642
+msgid "From check"
+msgstr ""
+
+#: src/admin/class-page.php:642
+msgid "Actions"
+msgstr ""
+
+#: src/admin/class-page.php:644
+msgid "folder"
+msgstr ""
+
+#: src/admin/class-page.php:648
+msgid "Put back"
+msgstr ""
+
+#: src/admin/class-page.php:648
+msgid "I want this back where it was."
+msgstr ""
+
+#: src/admin/class-page.php:649
+msgid "Delete for good"
+msgstr ""
+
+#: src/admin/class-page.php:649
+msgid "Delete it permanently."
+msgstr ""
+
+#: src/admin/class-page.php:670
 msgid "Fix log"
 msgstr ""
 
-#: src/admin/class-page.php:504
+#: src/admin/class-page.php:672
+msgid "Earlyward has not changed anything on this site yet."
+msgstr ""
+
+#: src/admin/class-page.php:675
 msgid "When"
 msgstr ""
 
-#: src/admin/class-page.php:504
+#: src/admin/class-page.php:675
 msgid "What"
 msgstr ""
 
-#: src/admin/class-page.php:504
+#: src/admin/class-page.php:675
 msgid "Target"
 msgstr ""
 
-#: src/admin/class-page.php:504
+#: src/admin/class-page.php:675
 msgid "Result"
 msgstr ""
 
-#: src/admin/class-page.php:537
+#: src/admin/class-page.php:708
 msgid "Copy for host support"
 msgstr ""
 
-#: src/admin/class-page.php:538
+#: src/admin/class-page.php:709
 msgid "Paste this into a ticket with your hosting provider. It lists the findings and the versions in use. It contains no passwords or keys, but check it before you send it."
 msgstr ""
 
-#: src/admin/class-page.php:540
+#: src/admin/class-page.php:711
 msgid "Copy to clipboard"
 msgstr ""
 
-#: src/admin/class-page.php:548
+#: src/admin/class-page.php:719
 msgid "Copied."
 msgstr ""
 
-#: src/admin/class-page.php:548
+#: src/admin/class-page.php:719
 msgid "Press Ctrl+C to copy the selected text."
 msgstr ""
 
@@ -1336,23 +1441,23 @@ msgstr ""
 msgid "Open the file and check whether you still need it. If not, download a copy and delete it."
 msgstr ""
 
-#: src/checks/integrity/class-theme-injection-check.php:84
+#: src/checks/integrity/class-theme-injection-check.php:107
 msgid "A theme template file contains code that hides or runs other code"
 msgstr ""
 
-#: src/checks/integrity/class-theme-injection-check.php:85
+#: src/checks/integrity/class-theme-injection-check.php:108
 msgid "Theme files such as functions.php run on every page. Attackers add a short line at the top or bottom to keep access after a cleanup. The patterns found here are not normal in a theme."
 msgstr ""
 
-#: src/checks/integrity/class-theme-injection-check.php:100
+#: src/checks/integrity/class-theme-injection-check.php:124
 msgid "Compare the file with a fresh copy of the same theme and version from its official download. Do not edit the file on the live site first: keep a copy for your records."
 msgstr ""
 
-#: src/checks/integrity/class-theme-injection-check.php:101
+#: src/checks/integrity/class-theme-injection-check.php:125
 msgid "If the theme is not in use, delete it. Reinstall the theme from its official source if it is."
 msgstr ""
 
-#: src/checks/integrity/class-theme-injection-check.php:102
+#: src/checks/integrity/class-theme-injection-check.php:126
 msgid "Treat the site as possibly compromised: change all administrator passwords and look for other changed files."
 msgstr ""
 
@@ -1731,36 +1836,113 @@ msgstr[1] ""
 msgid "This exact version is listed in the Wordfence Intelligence vulnerability database. A listing means a flaw is known, not that this site was attacked; some flaws need a logged-in user or a particular feature to be exploitable."
 msgstr ""
 
-#: src/fix/class-fixer.php:74
+#: src/fix/class-fixer.php:80
+msgid "You can put it back from the Quarantine tab."
+msgstr ""
+
+#: src/fix/class-fixer.php:85
 msgid "Make wp-config.php owner-only (600)"
 msgstr ""
 
-#: src/fix/class-fixer.php:75
+#: src/fix/class-fixer.php:85
 msgid "Changes the permissions of wp-config.php to 600 and nothing else. If PHP can no longer read the file afterwards, the old permissions are put back at once."
 msgstr ""
 
-#: src/fix/class-fixer.php:82
+#: src/fix/class-fixer.php:90
 msgid "Delete this file from the website folder"
 msgstr ""
 
-#: src/fix/class-fixer.php:83
+#: src/fix/class-fixer.php:90
 msgid "Permanently deletes the file listed as evidence. It cannot be undone from here."
 msgstr ""
 
 #: src/fix/class-fixer.php:90
+msgid "I have another copy of this file, or I do not need it."
+msgstr ""
+
+#: src/fix/class-fixer.php:95
 msgid "Delete the leftover maintenance page"
 msgstr ""
 
-#: src/fix/class-fixer.php:91
+#: src/fix/class-fixer.php:95
 msgid "Permanently deletes wp-content/maintenance.php. WordPress shows its own maintenance message without it."
 msgstr ""
 
-#: src/fix/class-fixer.php:99
+#: src/fix/class-fixer.php:100
 msgid "Delete the older local backup copies"
 msgstr ""
 
 #: src/fix/class-fixer.php:100
 msgid "Permanently deletes the older backup files listed as evidence from this server. The newest local set stays, and UpdraftPlus lists the newest set as uploaded to remote storage. It cannot be undone from here."
+msgstr ""
+
+#: src/fix/class-fixer.php:106
+msgid "Move this file to quarantine"
+msgstr ""
+
+#: src/fix/class-fixer.php:106
+msgid "Moves the file into the locked Earlyward quarantine folder and renames it so that it cannot run. Nothing is deleted."
+msgstr ""
+
+#: src/fix/class-fixer.php:114
+#: src/fix/class-fixer.php:116
+msgid "Move this theme file to quarantine"
+msgstr ""
+
+#: src/fix/class-fixer.php:114
+msgid "This theme is not in use. Moves the file into the locked Earlyward quarantine folder and renames it so that it cannot run."
+msgstr ""
+
+#: src/fix/class-fixer.php:116
+msgid "Moves the file into the locked Earlyward quarantine folder and renames it so that it cannot run. This theme is in use (or Earlyward could not tell), so the site may show errors or lose theme features until you reinstall a clean copy of the theme."
+msgstr ""
+
+#: src/fix/class-fixer.php:116
+msgid "I have a clean copy of this theme ready to reinstall, and I accept that the site may show errors until then."
+msgstr ""
+
+#: src/fix/class-fixer.php:119
+msgid "Move these files to quarantine"
+msgstr ""
+
+#: src/fix/class-fixer.php:119
+msgid "Moves the files listed into the locked Earlyward quarantine folder. WordPress does not need them to run, but puts them back when WordPress itself updates; then use this button again."
+msgstr ""
+
+#: src/fix/class-fixer.php:124
+msgid "Move the ticked folders to quarantine"
+msgstr ""
+
+#: src/fix/class-fixer.php:124
+msgid "Moves each ticked folder out of the plugins folder into the locked Earlyward quarantine folder. WordPress never loads these copies, so nothing on the site changes."
+msgstr ""
+
+#: src/fix/class-fixer.php:129
+msgid "Move the ticked plugins to quarantine"
+msgstr ""
+
+#: src/fix/class-fixer.php:129
+msgid "Moves each ticked inactive plugin folder into the locked Earlyward quarantine folder. The plugin uninstall code does not run, so its settings stay in the database. To remove a plugin for good, delete it from the Quarantine tab later."
+msgstr ""
+
+#: src/fix/class-fixer.php:134
+msgid "Update the ticked items now"
+msgstr ""
+
+#: src/fix/class-fixer.php:134
+msgid "Runs the WordPress updater for each ticked plugin or theme, one after the other, exactly as Dashboard, Updates does. An update can break a site. WordPress itself is updated from Dashboard, Updates only."
+msgstr ""
+
+#: src/fix/class-fixer.php:134
+msgid "I have a recent backup of the site."
+msgstr ""
+
+#: src/fix/class-fixer.php:138
+msgid "Find a two-factor plugin"
+msgstr ""
+
+#: src/fix/class-fixer.php:138
+msgid "Opens Plugins, Add New with a search for two-factor login plugins. Earlyward does not install anything itself."
 msgstr ""
 
 #. translators: 1: site name, 2: number of new findings, 3: number of resolved findings, 4: number of critical findings still open.

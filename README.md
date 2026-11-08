@@ -16,7 +16,7 @@ on one shared hosting account, a second paid-backlink campaign hiding inside the
 separate outage where the site kept answering HTTP 200 while it was broken, for 12 days, without
 anyone noticing.
 
-## What works in 0.5
+## What works in 0.6
 
 Every finding says what is wrong, how sure the check is, and the exact steps to fix it, and shows its
 evidence (file and line, user, option or URL) so you can judge it yourself.
@@ -77,12 +77,22 @@ probe script. See the [roadmap](docs/ROADMAP.md).
 ## What it does NOT do
 
 - It does **not** make a site unhackable. Nothing installed inside WordPress can.
-- It does **not** remove malware or change anything automatically. Scans never write. A few fixes exist as
-  buttons on the Findings tab (make `wp-config.php` owner-only, delete an exposed backup file, delete a
-  harmless leftover maintenance page, delete older local backup copies once the newest is proven to be stored
-  elsewhere). Each one needs a confirmation, re-checks the finding at the moment
-  you click, never touches PHP code other than those two named files (wp-config.php and maintenance.php), and is recorded in a fix log. Set
-  `EARLYWARD_NO_FIXES` to switch them all off. Every write is listed in [docs/WRITES.md](docs/WRITES.md).
+- It does **not** change anything automatically. Scans never write. Most findings have a fix button on the
+  Findings tab, and nothing happens until an administrator ticks the confirmation and clicks:
+  - **Quarantine (reversible):** unknown files in the web root (C15), PHP in uploads (C12), injected theme
+    files (C13, with an extra warning when the theme is in use), `readme.html`/`license.txt` (D1), renamed
+    plugin copies (C16) and inactive plugins you tick (H3) are moved into one locked folder in `wp-content`
+    and renamed so they cannot run. The **Quarantine and fix log** tab puts each one back, or deletes it for good.
+  - **Delete:** an exposed backup file (B3), a harmless leftover maintenance page (C3), older local backup
+    copies once the newest is proven to be stored elsewhere (H1).
+  - **Other:** make `wp-config.php` owner-only (B4); run WordPress's own updater for the plugins and themes
+    you tick (B8, after a "I have a backup" box; WordPress itself is updated from Dashboard → Updates);
+    a link to find a two-factor plugin (D2, Earlyward installs nothing).
+
+  Each fix re-checks the finding at the moment you click (the request names a finding, never a path), only
+  acts on what that fresh scan reports, and is recorded in a fix log. Set `EARLYWARD_NO_FIXES` to switch them
+  all off. Every write is listed in [docs/WRITES.md](docs/WRITES.md). Earlyward is not a malware cleaner:
+  quarantining what it found does not prove the site is clean.
 - It is **not** a firewall and does not block traffic.
 - It **cannot** see a total outage from inside: if PHP is down, so is the plugin. Use the external
   probe script (planned) or any uptime monitor for that.

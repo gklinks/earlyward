@@ -45,6 +45,7 @@ shows they behave on real sites. Check IDs refer to the ranked list in [PHASE-0-
 - [x] B5 PHP end of life and memory limit, B6 disk space, C12 PHP in uploads, H2 backup freshness
 - [x] B7 update checks stalled, C13 theme template injection
 - [x] From the gklinks.com audit (0.5.0): C15 root strays, C16 plugin copies, B8 updates waiting, D1 version-disclosure files, D2 login protection, H3 inactive plugins
+- [x] Fix buttons for most findings (0.6.0): reversible quarantine (C12, C13, C15, C16, D1, H3) with put back / delete for good, WordPress updater for ticked items (B8), two-factor link (D2)
 - [ ] From the audit, still to build: quarantine (reversible move) for stray files, block PHP execution in uploads (documented write), security headers check (needs response headers from the loopback), stale user report (needs a user query), error log rotation, scan of nested uploads folders
 - [ ] Remaining runtime and hosting checks (A5-A8, B8-B9)
 - [ ] C7 opcache serving deleted files, C8 detached PHP processes, C10, C11

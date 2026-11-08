@@ -6,7 +6,8 @@
  *  - the request names a finding (by fingerprint), never a path; the path comes from a scan
  *    that is run again at the moment of the click, so a stale page or a forged request cannot
  *    point an action at anything the checks do not currently report;
- *  - the target must resolve inside the site root and must not be a PHP file;
+ *  - the target must resolve inside the site root and in the place the check looks at; deleting never
+ *    touches PHP (except the leftover maintenance page), moving PHP is only ever into the reversible quarantine;
  *  - every change is recorded (who, what, when, hash, previous mode);
  *  - nothing here runs on its own: no scan and no schedule ever calls apply().
  *
@@ -30,6 +31,10 @@ final class Fixer {
 	const ID_DELETE_BACKUP      = 'delete_backup';
 	const ID_DELETE_MAINTENANCE = 'delete_maintenance';
 	const ID_DELETE_OLD_BACKUPS = 'delete_old_backups';
+	const ID_QUARANTINE_FILE    = 'quarantine_file';
+	const ID_QUARANTINE_FOLDER  = 'quarantine_folder';
+	const ID_UPDATE             = 'update';
+	const ID_LINK               = 'link';
 
 	const LOG_OPTION = 'earlyward_fix_log';
 	const MAX_LOG    = 50;
@@ -40,7 +45,7 @@ final class Fixer {
 	 * @return string[]
 	 */
 	public static function ids(): array {
-		return array( self::ID_CHMOD_CONFIG, self::ID_DELETE_BACKUP, self::ID_DELETE_MAINTENANCE, self::ID_DELETE_OLD_BACKUPS );
+		return array( self::ID_CHMOD_CONFIG, self::ID_DELETE_BACKUP, self::ID_DELETE_MAINTENANCE, self::ID_DELETE_OLD_BACKUPS, self::ID_QUARANTINE_FILE, self::ID_QUARANTINE_FOLDER, self::ID_UPDATE );
 	}
 
 	/**
@@ -55,9 +60,13 @@ final class Fixer {
 	/**
 	 * The fix a finding offers, or null.
 	 *
+	 * Keys: id; label (button); what (one-sentence effect); extra (a second confirmation box text, or '');
+	 * pick (true when the person ticks which evidence items to act on); checked (pick boxes start ticked);
+	 * url (only for ID_LINK: a WordPress admin screen to open instead of a form).
+	 *
 	 * @param array<string, mixed> $finding  Finding in to_array form.
 	 * @param bool                 $disabled Whether fixes are switched off.
-	 * @return array{id: string, label: string, what: string, needs_copy: bool}|null
+	 * @return array{id: string, label: string, what: string, extra: string, pick: bool, checked: bool, url: string}|null
 	 */
 	public static function offer( array $finding, bool $disabled = false ): ?array {
 		if ( $disabled ) {
@@ -67,75 +76,146 @@ final class Fixer {
 		$severity = (string) ( $finding['severity'] ?? '' );
 		$evidence = isset( $finding['evidence'] ) && is_array( $finding['evidence'] ) ? $finding['evidence'] : array();
 		$first    = isset( $evidence[0] ) && is_array( $evidence[0] ) ? (string) ( $evidence[0]['location'] ?? '' ) : '';
+		$facts    = isset( $evidence[0]['facts'] ) && is_array( $evidence[0]['facts'] ) ? $evidence[0]['facts'] : array();
+		$restore  = __( 'You can put it back from the Quarantine tab.', 'earlyward' );
 
-		if ( 'B4' === $check && 'wp-config.php' === $first ) {
-			return array(
-				'id'         => self::ID_CHMOD_CONFIG,
-				'label'      => __( 'Make wp-config.php owner-only (600)', 'earlyward' ),
-				'what'       => __( 'Changes the permissions of wp-config.php to 600 and nothing else. If PHP can no longer read the file afterwards, the old permissions are put back at once.', 'earlyward' ),
-				'needs_copy' => false,
-			);
-		}
-		if ( 'B3' === $check && '' !== $first ) {
-			return array(
-				'id'         => self::ID_DELETE_BACKUP,
-				'label'      => __( 'Delete this file from the website folder', 'earlyward' ),
-				'what'       => __( 'Permanently deletes the file listed as evidence. It cannot be undone from here.', 'earlyward' ),
-				'needs_copy' => true,
-			);
-		}
-		if ( 'C3' === $check && 'info' === $severity && 'wp-content/maintenance.php' === $first ) {
-			return array(
-				'id'         => self::ID_DELETE_MAINTENANCE,
-				'label'      => __( 'Delete the leftover maintenance page', 'earlyward' ),
-				'what'       => __( 'Permanently deletes wp-content/maintenance.php. WordPress shows its own maintenance message without it.', 'earlyward' ),
-				'needs_copy' => false,
-			);
-		}
-		$facts = isset( $evidence[0]['facts'] ) && is_array( $evidence[0]['facts'] ) ? $evidence[0]['facts'] : array();
-		if ( 'H1' === $check && '' !== $first && 0 === strpos( (string) ( $facts['remote_copy'] ?? '' ), 'yes' ) ) {
-			return array(
-				'id'         => self::ID_DELETE_OLD_BACKUPS,
-				'label'      => __( 'Delete the older local backup copies', 'earlyward' ),
-				'what'       => __( 'Permanently deletes the older backup files listed as evidence from this server. The newest local set stays, and UpdraftPlus lists the newest set as uploaded to remote storage. It cannot be undone from here.', 'earlyward' ),
-				'needs_copy' => false,
-			);
+		switch ( $check ) {
+			case 'B4':
+				if ( 'wp-config.php' === $first ) {
+					return self::make( self::ID_CHMOD_CONFIG, __( 'Make wp-config.php owner-only (600)', 'earlyward' ), __( 'Changes the permissions of wp-config.php to 600 and nothing else. If PHP can no longer read the file afterwards, the old permissions are put back at once.', 'earlyward' ) );
+				}
+				break;
+			case 'B3':
+				if ( '' !== $first ) {
+					return self::make( self::ID_DELETE_BACKUP, __( 'Delete this file from the website folder', 'earlyward' ), __( 'Permanently deletes the file listed as evidence. It cannot be undone from here.', 'earlyward' ), __( 'I have another copy of this file, or I do not need it.', 'earlyward' ) );
+				}
+				break;
+			case 'C3':
+				if ( 'info' === $severity && 'wp-content/maintenance.php' === $first ) {
+					return self::make( self::ID_DELETE_MAINTENANCE, __( 'Delete the leftover maintenance page', 'earlyward' ), __( 'Permanently deletes wp-content/maintenance.php. WordPress shows its own maintenance message without it.', 'earlyward' ) );
+				}
+				break;
+			case 'H1':
+				if ( '' !== $first && 0 === strpos( (string) ( $facts['remote_copy'] ?? '' ), 'yes' ) ) {
+					return self::make( self::ID_DELETE_OLD_BACKUPS, __( 'Delete the older local backup copies', 'earlyward' ), __( 'Permanently deletes the older backup files listed as evidence from this server. The newest local set stays, and UpdraftPlus lists the newest set as uploaded to remote storage. It cannot be undone from here.', 'earlyward' ) );
+				}
+				break;
+			case 'C12':
+			case 'C15':
+				if ( '' !== $first ) {
+					return self::make( self::ID_QUARANTINE_FILE, __( 'Move this file to quarantine', 'earlyward' ), __( 'Moves the file into the locked Earlyward quarantine folder and renames it so that it cannot run. Nothing is deleted.', 'earlyward' ) . ' ' . $restore );
+				}
+				break;
+			case 'C13':
+				if ( '' === $first ) {
+					break;
+				}
+				if ( 'no' === (string) ( $facts['in_use'] ?? '' ) ) {
+					return self::make( self::ID_QUARANTINE_FILE, __( 'Move this theme file to quarantine', 'earlyward' ), __( 'This theme is not in use. Moves the file into the locked Earlyward quarantine folder and renames it so that it cannot run.', 'earlyward' ) . ' ' . $restore );
+				}
+				return self::make( self::ID_QUARANTINE_FILE, __( 'Move this theme file to quarantine', 'earlyward' ), __( 'Moves the file into the locked Earlyward quarantine folder and renames it so that it cannot run. This theme is in use (or Earlyward could not tell), so the site may show errors or lose theme features until you reinstall a clean copy of the theme.', 'earlyward' ) . ' ' . $restore, __( 'I have a clean copy of this theme ready to reinstall, and I accept that the site may show errors until then.', 'earlyward' ) );
+			case 'D1':
+				if ( '' !== $first ) {
+					return self::make( self::ID_QUARANTINE_FILE, __( 'Move these files to quarantine', 'earlyward' ), __( 'Moves the files listed into the locked Earlyward quarantine folder. WordPress does not need them to run, but puts them back when WordPress itself updates; then use this button again.', 'earlyward' ) . ' ' . $restore );
+				}
+				break;
+			case 'C16':
+				if ( '' !== $first ) {
+					return self::make( self::ID_QUARANTINE_FOLDER, __( 'Move the ticked folders to quarantine', 'earlyward' ), __( 'Moves each ticked folder out of the plugins folder into the locked Earlyward quarantine folder. WordPress never loads these copies, so nothing on the site changes.', 'earlyward' ) . ' ' . $restore, '', true, true );
+				}
+				break;
+			case 'H3':
+				if ( '' !== $first ) {
+					return self::make( self::ID_QUARANTINE_FOLDER, __( 'Move the ticked plugins to quarantine', 'earlyward' ), __( 'Moves each ticked inactive plugin folder into the locked Earlyward quarantine folder. The plugin uninstall code does not run, so its settings stay in the database. To remove a plugin for good, delete it from the Quarantine tab later.', 'earlyward' ) . ' ' . $restore, '', true, false );
+				}
+				break;
+			case 'B8':
+				if ( '' !== $first ) {
+					return self::make( self::ID_UPDATE, __( 'Update the ticked items now', 'earlyward' ), __( 'Runs the WordPress updater for each ticked plugin or theme, one after the other, exactly as Dashboard, Updates does. An update can break a site. WordPress itself is updated from Dashboard, Updates only.', 'earlyward' ), __( 'I have a recent backup of the site.', 'earlyward' ), true, false );
+				}
+				break;
+			case 'D2':
+				$offer        = self::make( self::ID_LINK, __( 'Find a two-factor plugin', 'earlyward' ), __( 'Opens Plugins, Add New with a search for two-factor login plugins. Earlyward does not install anything itself.', 'earlyward' ) );
+				$offer['url'] = 'plugin-install.php?s=two-factor&tab=search&type=term';
+				return $offer;
 		}
 		return null;
 	}
 
 	/**
+	 * Build an offer.
+	 *
+	 * @param string $id      Action ID.
+	 * @param string $label   Button label.
+	 * @param string $what    Effect.
+	 * @param string $extra   Second confirmation text, or ''.
+	 * @param bool   $pick    Whether evidence items are ticked one by one.
+	 * @param bool   $checked Whether the boxes start ticked.
+	 * @return array{id: string, label: string, what: string, extra: string, pick: bool, checked: bool, url: string}
+	 */
+	private static function make( string $id, string $label, string $what, string $extra = '', bool $pick = false, bool $checked = false ): array {
+		return array(
+			'id'      => $id,
+			'label'   => $label,
+			'what'    => $what,
+			'extra'   => $extra,
+			'pick'    => $pick,
+			'checked' => $checked,
+			'url'     => '',
+		);
+	}
+
+	/**
+	 * Whether an evidence item can be ticked for an action (B8 lists WordPress itself, which is updated elsewhere).
+	 *
+	 * @param string $id       Action ID.
+	 * @param string $location Evidence location.
+	 * @return bool
+	 */
+	public static function pickable( string $id, string $location ): bool {
+		if ( self::ID_UPDATE === $id ) {
+			return 1 === preg_match( '#^(plugin|theme):[A-Za-z0-9._/-]+$#', $location ) && false === strpos( $location, '..' );
+		}
+		return '' !== $location;
+	}
+
+	/**
 	 * Carry out a fix.
 	 *
-	 * @param string                           $id          Action ID.
-	 * @param string                           $check       Check ID of the finding the person clicked on.
-	 * @param string                           $location    First evidence location of that finding.
-	 * @param array<int, array<string, mixed>> $findings    Findings from a scan run just now, in to_array form.
-	 * @param Context                          $ctx         Scan context.
-	 * @param Writer                           $writer      Writer.
-	 * @param int                              $user_id     Who confirmed.
-	 * @param int                              $now         Current time.
-	 * @return array{ok: bool, code: string, log: array<int, array<string, mixed>>}
+	 * @param string                           $id       Action ID.
+	 * @param string                           $check    Check ID of the finding the person clicked on.
+	 * @param string                           $location First evidence location of that finding.
+	 * @param array<int, array<string, mixed>> $findings Findings from a scan run just now, in to_array form.
+	 * @param Context                          $ctx      Scan context.
+	 * @param Writer                           $writer   Writer.
+	 * @param int                              $user_id  Who confirmed.
+	 * @param int                              $now      Current time.
+	 * @param array<string, mixed>             $options  extra (bool: second box ticked), selected (string[]: ticked
+	 *                                                   evidence locations), quarantine (record), random (12 characters
+	 *                                                   for a new quarantine folder name), upgrade (callable( string $kind,
+	 *                                                   string $key ): array{ok: bool, result: string}), self_dir (this
+	 *                                                   plugin's folder name, never moved).
+	 * @return array{ok: bool, code: string, log: array<int, array<string, mixed>>, quarantine: array<string, mixed>|null}
 	 */
-	public static function apply( string $id, string $check, string $location, array $findings, Context $ctx, Writer $writer, int $user_id, int $now ): array {
-		$none = array(
-			'ok'   => false,
-			'code' => 'gone',
-			'log'  => array(),
-		);
+	public static function apply( string $id, string $check, string $location, array $findings, Context $ctx, Writer $writer, int $user_id, int $now, array $options = array() ): array {
+		$none = self::result( false, 'gone', array() );
 		if ( ! in_array( $id, self::ids(), true ) ) {
 			return $none;
 		}
 		$target = null;
 		// Match on what the page showed (check and file), not on the fingerprint: a severity that wobbles
 		// between two scans (a loopback request that failed once) must not block a fix. What may be done is
-		// decided again from the fresh finding below.
+		// decided again from the fresh finding below. Lists (C16, H3, B8) are one finding per check, matched
+		// on the check alone, because the first item changes as items are handled.
 		foreach ( $findings as $finding ) {
+			$offer    = self::offer( $finding );
 			$evidence = isset( $finding['evidence'] ) && is_array( $finding['evidence'] ) ? $finding['evidence'] : array();
 			$first    = isset( $evidence[0] ) && is_array( $evidence[0] ) ? (string) ( $evidence[0]['location'] ?? '' ) : '';
-			if ( (string) ( $finding['check'] ?? '' ) === $check && $first === $location ) {
-				$offer = self::offer( $finding );
-				if ( null !== $offer && $offer['id'] === $id ) {
+			if ( (string) ( $finding['check'] ?? '' ) !== $check || null === $offer ) {
+				continue;
+			}
+			if ( $offer['pick'] || $first === $location ) {
+				if ( $offer['id'] === $id ) {
 					$target = $finding;
 				}
 				break;
@@ -144,22 +224,40 @@ final class Fixer {
 		if ( null === $target ) {
 			return $none; // Not reported any more: the site changed since the page was drawn.
 		}
+		$offer = self::offer( $target );
+		if ( null === $offer || ( '' !== $offer['extra'] && empty( $options['extra'] ) ) ) {
+			return self::result( false, 'unconfirmed', array() );
+		}
 
 		$evidence = isset( $target['evidence'] ) && is_array( $target['evidence'] ) ? $target['evidence'] : array();
 		$paths    = array();
 		foreach ( $evidence as $item ) {
-			$location = is_array( $item ) ? (string) ( $item['location'] ?? '' ) : '';
-			if ( '' !== $location ) {
-				$paths[] = $location;
+			$where = is_array( $item ) ? (string) ( $item['location'] ?? '' ) : '';
+			if ( '' !== $where && self::pickable( $id, $where ) ) {
+				$paths[] = $where;
+			}
+		}
+		if ( $offer['pick'] ) {
+			$selected = isset( $options['selected'] ) && is_array( $options['selected'] ) ? array_map( 'strval', $options['selected'] ) : array();
+			$paths    = array_values( array_intersect( $paths, $selected ) ); // Only items the fresh scan still lists.
+			if ( empty( $paths ) ) {
+				return self::result( false, 'unconfirmed', array() );
 			}
 		}
 		if ( empty( $paths ) ) {
 			return $none;
 		}
 
+		if ( self::ID_UPDATE === $id ) {
+			return self::update( $paths, $options, $user_id, $now );
+		}
+		if ( self::ID_QUARANTINE_FILE === $id || self::ID_QUARANTINE_FOLDER === $id ) {
+			return self::quarantine( $id, $check, $paths, $ctx, $writer, $user_id, $now, $options );
+		}
+
 		$log = array();
-		foreach ( $paths as $location ) {
-			$absolute = self::safe_path( $ctx, $location, self::php_names_allowed( $id ) );
+		foreach ( $paths as $where ) {
+			$absolute = self::safe_path( $ctx, $where, self::php_names_allowed( $id ) );
 			// Only UpdraftPlus backup files, by name, whatever the scan reported.
 			if ( self::ID_DELETE_OLD_BACKUPS === $id && ( null === $absolute || null === \Earlyward\Checks\Housekeeping\Old_Backups_Check::parse( basename( $absolute ) ) ) ) {
 				return self::result( false, 'refused', $log );
@@ -171,7 +269,7 @@ final class Fixer {
 				'at'     => $now,
 				'user'   => $user_id,
 				'action' => $id,
-				'target' => $location,
+				'target' => $where,
 			);
 			if ( self::ID_CHMOD_CONFIG === $id ) {
 				$done = self::chmod_config( $absolute, $writer, $entry );
@@ -187,18 +285,164 @@ final class Fixer {
 	}
 
 	/**
+	 * Run the WordPress updater for each picked plugin or theme.
+	 *
+	 * @param string[]             $paths   Evidence locations such as "plugin:akismet/akismet.php".
+	 * @param array<string, mixed> $options Options (upgrade callable).
+	 * @param int                  $user_id Who confirmed.
+	 * @param int                  $now     Time.
+	 * @return array{ok: bool, code: string, log: array<int, array<string, mixed>>, quarantine: array<string, mixed>|null}
+	 */
+	private static function update( array $paths, array $options, int $user_id, int $now ): array {
+		$upgrade = $options['upgrade'] ?? null;
+		if ( ! is_callable( $upgrade ) ) {
+			return self::result( false, 'refused', array() );
+		}
+		$log = array();
+		$all = true;
+		foreach ( $paths as $where ) {
+			list( $kind, $key ) = explode( ':', $where, 2 );
+			$done               = call_user_func( $upgrade, $kind, $key );
+			$ok                 = is_array( $done ) && ! empty( $done['ok'] );
+			$all                = $all && $ok;
+			$log[]              = array(
+				'at'     => $now,
+				'user'   => $user_id,
+				'action' => self::ID_UPDATE,
+				'target' => $where,
+				'result' => is_array( $done ) ? (string) ( $done['result'] ?? ( $ok ? 'updated' : 'failed' ) ) : 'failed',
+			);
+		}
+		return self::result( $all, $all ? 'fixed' : 'failed', $log );
+	}
+
+	/**
+	 * Move picked files or folders into quarantine.
+	 *
+	 * @param string               $id      Action ID.
+	 * @param string               $check   Check ID.
+	 * @param string[]             $paths   Locations.
+	 * @param Context              $ctx     Context.
+	 * @param Writer               $writer  Writer.
+	 * @param int                  $user_id Who confirmed.
+	 * @param int                  $now     Time.
+	 * @param array<string, mixed> $options Options (quarantine record, random, self_dir).
+	 * @return array{ok: bool, code: string, log: array<int, array<string, mixed>>, quarantine: array<string, mixed>|null}
+	 */
+	private static function quarantine( string $id, string $check, array $paths, Context $ctx, Writer $writer, int $user_id, int $now, array $options ): array {
+		$record = Quarantine::normalise( $options['quarantine'] ?? array() );
+		$log    = array();
+		foreach ( $paths as $where ) {
+			$where    = ltrim( $where, '/' ); // D1 reports URLs such as "/readme.html".
+			$absolute = self::ID_QUARANTINE_FOLDER === $id
+				? self::safe_plugin_dir( $ctx, $where, (string) ( $options['self_dir'] ?? 'earlyward' ) )
+				: self::safe_quarantine_file( $ctx, $check, $where );
+			if ( null === $absolute ) {
+				return self::result( false, 'refused', $log, $record );
+			}
+			$done   = Quarantine::put(
+				$ctx,
+				$writer,
+				$record,
+				$absolute,
+				$where,
+				array(
+					'action' => $id,
+					'check'  => $check,
+					'user'   => $user_id,
+					'at'     => $now,
+					'random' => (string) ( $options['random'] ?? '' ),
+				)
+			);
+			$record = $done['record'];
+			$log[]  = $done['entry'];
+			if ( ! $done['ok'] ) {
+				return self::result( false, $done['code'], $log, $record );
+			}
+		}
+		return self::result( true, 'fixed', $log, $record );
+	}
+
+	/**
+	 * Absolute path of a file a check reported, if it is in the place that check looks at.
+	 *
+	 * @param Context $ctx      Context.
+	 * @param string  $check    Check ID.
+	 * @param string  $location Relative path.
+	 * @return string|null
+	 */
+	private static function safe_quarantine_file( Context $ctx, string $check, string $location ): ?string {
+		$lower = strtolower( $location );
+		if ( in_array( $lower, array( 'wp-config.php', 'index.php', '.htaccess', 'wp-load.php', 'wp-settings.php' ), true ) ) {
+			return null;
+		}
+		$content = $ctx->relative( $ctx->content_dir() );
+		$uploads = $ctx->relative( $ctx->uploads_dir() );
+		switch ( $check ) {
+			case 'C15':
+				$ok = false === strpos( $location, '/' );
+				break;
+			case 'C12':
+				$ok = 0 === strpos( $location, $uploads . '/' );
+				break;
+			case 'C13':
+				$ok = 1 === preg_match( '#^' . preg_quote( $content, '#' ) . '/themes/[^/]+/[^/]+$#', $location );
+				break;
+			case 'D1':
+				$ok = in_array( $lower, array( 'readme.html', 'license.txt' ), true );
+				break;
+			default:
+				$ok = false;
+		}
+		if ( ! $ok ) {
+			return null;
+		}
+		$names = array( strtolower( basename( $location ) ) ); // Quarantine is reversible, so PHP may move.
+		return self::safe_path( $ctx, $location, $names );
+	}
+
+	/**
+	 * Absolute path of a plugin folder directly inside wp-content/plugins, never a link and never Earlyward itself.
+	 *
+	 * @param Context $ctx      Context.
+	 * @param string  $location Relative path.
+	 * @param string  $self_dir This plugin's folder name.
+	 * @return string|null
+	 */
+	private static function safe_plugin_dir( Context $ctx, string $location, string $self_dir ): ?string {
+		$content = $ctx->relative( $ctx->content_dir() );
+		if ( false !== strpos( $location, '..' ) || 1 !== preg_match( '#^' . preg_quote( $content, '#' ) . '/plugins/([^/]+)$#', $location, $m ) || strtolower( $m[1] ) === strtolower( $self_dir ) ) {
+			return null;
+		}
+		$absolute = $ctx->root() . '/' . $location;
+		if ( is_link( $absolute ) || ! $ctx->fs()->is_dir( $absolute ) ) {
+			return null;
+		}
+		$real    = realpath( $absolute );
+		$plugins = realpath( $ctx->content_dir() . '/plugins' );
+		if ( false === $real || false === $plugins ) {
+			return null;
+		}
+		$real    = str_replace( '\\', '/', $real );
+		$plugins = rtrim( str_replace( '\\', '/', $plugins ), '/' );
+		return dirname( $real ) === $plugins ? $real : null;
+	}
+
+	/**
 	 * Build a result.
 	 *
-	 * @param bool                             $ok   Success.
-	 * @param string                           $code Notice code.
-	 * @param array<int, array<string, mixed>> $log  Log entries.
-	 * @return array{ok: bool, code: string, log: array<int, array<string, mixed>>}
+	 * @param bool                             $ok         Success.
+	 * @param string                           $code       Notice code.
+	 * @param array<int, array<string, mixed>> $log        Log entries.
+	 * @param array<string, mixed>|null        $quarantine The quarantine record to save, when it changed.
+	 * @return array{ok: bool, code: string, log: array<int, array<string, mixed>>, quarantine: array<string, mixed>|null}
 	 */
-	private static function result( bool $ok, string $code, array $log ): array {
+	private static function result( bool $ok, string $code, array $log, ?array $quarantine = null ): array {
 		return array(
-			'ok'   => $ok,
-			'code' => $code,
-			'log'  => $log,
+			'ok'         => $ok,
+			'code'       => $code,
+			'log'        => $log,
+			'quarantine' => $quarantine,
 		);
 	}
 
