@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Complete documentation of Earlyward checks, write operations, network requests, and privacy policy for WordPress.">
+  <title>Documentation — Earlyward</title>
+  <link rel="icon" href="favicon.svg">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="index.html" class="brand">
+        <img src="favicon.svg" alt="" width="28" height="28" class="brand-icon">
+        <span class="brand-name">Earlyward</span>
+      </a>
+      <nav class="site-nav" aria-label="Main Navigation">
+        <a href="index.html">Home</a>
+        <a href="docs.html" aria-current="page">Docs</a>
+        <a href="changelog.html">Changelog</a>
+        <a href="https://github.com/gklinks/earlyward" rel="noopener noreferrer">GitHub</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main-content">
+    <div class="container">
+      <div class="notice-box">
+        <span class="notice-title">Status: early preview, not yet recommended for production sites</span>
+        <p>Earlyward is developed in the open. Earlyward detects and warns; it does not promise protection.</p>
+      </div>
+
+      <h1>Documentation</h1>
+
+      <p>This reference covers all diagnostic checks, filesystem and database write behaviours, network requests, and the privacy architecture of Earlyward.</p>
+
+      <h2 id="checks">Check List</h2>
+      <p>Every check finding indicates what is wrong, the level of diagnostic confidence, the exact evidence discovered (such as file paths, line numbers, accounts, or response headers), and actionable remediation steps.</p>
+
+      <h3>Runtime and outage</h3>
+      <ul class="check-list">
+        <li class="check-item">
+          <div class="check-header">
+            <span class="check-id">A1</span>
+            <span class="check-name">The site answers but is broken</span>
+          </div>
+          <p class="check-desc">Compared with a known-good baseline of the homepage, its own stylesheets, menu or REST routes have gone missing, or the homepage returns an error or an empty page.</p>
+        </li>
+        <li class="check-item">
+          <div class="check-header">
+            <span class="check-id">A2</span>
+            <span class="check-name">Code switched off after a crash, and fatal errors WordPress caught (recovery mode)</span>
+          </div>
+          <p class="check-desc">Monitors whether WordPress entered recovery mode or paused extensions due to fatal PHP exceptions.</p>
+        </li>
+        <li class="check-item">
+          <div class="check-header">
+            <span class="check-id">A3</span>
+            <span class="check-name">Error logs that are huge, growing fast, or dominated by one repeating line</span>
+          </div>
+          <p class="check-desc">Tracks diagnostic log files for explosive file growth or continuous repeating failure entries.</p>
+        </li>
+        <li class="check-item">
+          <div class="check-header">
+            <span class="check-id">A4</span>
+            <span class="check-name">WP-Cron that has stopped firing</span>
+          </div>
+          <p class="check-desc">Detects overdue scheduled events indicating that WordPress background task processing has stalled.</p>
+        </li>
+      </ul>
+
+      <h3>Hosting</h3>
+      <ul class="check-list">
+        <li class="check-item">
+          <div class="check-header">
+            <span class="check-id">B1</span>
+            <span class="check-name">Other WordPress sites readable by this site's PHP</span>
+          </div>
+          <p class="check-desc">Flags when neighbor sites share the same Linux user account so one break-in reaches all of them.</p>
+        </li>
+        <li class="check-item">
+          <div class="check-header">
+            <span class="check-id">B2</span>
+            <span class="check-name">No open_basedir limit</span>
+          </div>
+          <p class="check-desc">Warns when PHP can open files anywhere the hosting system account can access.</p>
+        </li>
+        <li class="check-item">
+          <div class="check-header">
+            <span class="check-id">B4</span>
+            <span class="check-name">wp-config.php that other accounts on the server can read or change</span>
+          </div>
+          <p class="check-desc">Reports readable permissions as a note or writable permissions by other server accounts as a warning. Does not replace account-level isolation covered by B1.</p>
+        </li>
+        <li class="check-item">
+          <div class="check-header">
+            <span class="check-id">B8</span>
+            <span class="check-name">Plugin, theme or core updates are waiting</span>
+          </div>
+          <p class="check-desc">Provides a note naming every pending update identified by WordPress.</p>
+        </li>
+        <li class="check-item">
+          <div class="check-header">
+            <span class="check-id">D1</span>
+            <span class="check-name">readme.html and license.txt that state the exact WordPress version are publicly served</span>
+          </div>
+          <p class="check-desc">Low-confidence note pointing out public access to static version disclosure files.</p>
+        </li>
+        <li class="check-item">
+          <div class="check-header">
+            <span class="check-id">D3</span>
+            <span class="check-name">The home page is sent without standard security headers</span>
+          </div>
+          <p class="check-desc">Checks for HSTS of at least six months, nosniff, clickjacking protection, referrer policy, and a content security policy. Uses a single header-only request to the site's own home page as a visitor receives it; note only, never sends an alert.</p>
+        </li>
+        <li class="check-item">
+          <div class="check-header">
+            <span class="check-id">D2</span>
+            <span class="check-name">None of the well-known login-protection or two-factor plugins is active</span>
+          </div>
+          <p class="check-desc">Low-confidence note advising on login protection; does not inspect edge or hosting-level controls.</p>
+        </li>
+        <li class="check-item">
+          <div class="check-header">
+            <span class="check-id">B7</span>
+            <span class="check-name">WordPress has not managed to check for updates for days</span>
+          </div>
+          <p class="check-desc">Reads timestamps WordPress already stored locally; makes no external network requests.</p>
+        </li>
+        <li class="check-item">
+          <div class="check-header">
+            <span class="check-id">B5</span>
+            <span class="check-name">PHP past end of life (or within 90 days of it), and a PHP memory limit under 64 MB</span>
+          </div>
+          <p class="check-desc">Flags unsupported runtime versions and severely constrained memory thresholds.</p>
+        </li>
+        <li class="check-item">
+          <div class="check-header">
+            <span class="check-id">B6</span>
+            <span class="check-name">A disk that is nearly full</span>
+          </div>
+          <p class="check-desc">Warns when remaining disk capacity is critically low in percentage and absolute bytes.</p>
+        </li>
+        <li class="check-item">
+          <div class="check-header">
+            <span class="check-id">H4</span>
+            <span class="check-name">Stale accounts</span>
+          </div>
+          <p class="check-desc">Housekeeping info note reporting five or more subscriber or customer accounts registered over two years ago with no sign-in session and no recent shop activity. Reports counts only, never user names or email addresses, and never deletes accounts.</p>
+        </li>
+        <li class="check-item">
+          <div class="check-header">
+            <span class="check-id">H3</span>
+            <span class="check-name">Installed plugins that are not active</span>
+          </div>
+          <p class="check-desc">Housekeeping info note highlighting inactive plugins that remain on disk.</p>
+        </li>
+        <li class="check-item">
+          <div class="check-header">
+            <span class="check-id">H2</span>
+            <span class="check-name">The newest backup in UpdraftPlus's own history is more than 14 days old</span>
+          </div>
+          <p class="check-desc">Housekeeping info note reading the backup tool's existing history; never triggers an alert email.</p>
+        </li>
+        <li class="check-item">
+          <div class="check-header">
+            <span class="check-id">H1</span>
+            <span class="check-name">Older local UpdraftPlus backup copies that use space on the server</span>
+          </div>
+          <p class="check-desc">Housekeeping note offering confirmed cleanup only when history proves the newest backup was sent to remote storage; never triggers an alert email.</p>
+        </li>
+        <li class="check-item">
+          <div class="check-header">
+            <span class="check-id">B3</span>
+            <span class="check-name">Backups, database dumps and config copies where the web server can serve them</span>
+          </div>
+          <p class="check-desc">Checks for exposed database dumps or archives in web-accessible directories, querying loopback headers to verify if files are publicly served before raising severity to critical.</p>
+        </li>
+      </ul>
+
+      <h3>Malware indicators</h3>
+      <ul class="check-list">
+        <li class="check-item">
+          <div class="check-header">
+            <span class="check-id">C17</span>
+            <span class="check-name">The uploads folder is not set to refuse PHP</span>
+          </div>
+          <p class="check-desc">Inspects wp-content/uploads/.htaccess without uploading test files. Confirmed fix creates protective configuration on Apache or LiteSpeed; provides manual configuration rules for nginx.</p>
+        </li>
+        <li class="check-item">
+          <div class="check-header">
+            <span class="check-id">C1</span>
+            <span class="check-name">Hidden auto_prepend_file / auto_append_file loaders</span>
+          </div>
+          <p class="check-desc">Scans .user.ini, php.ini, and .htaccess for stealthy file execution directives.</p>
+        </li>
+        <li class="check-item">
+          <div class="check-header">
+            <span class="check-id">C2</span>
+            <span class="check-name">Hex-named zip archives that malware uses to rebuild itself</span>
+          </div>
+          <p class="check-desc">Detects hidden archive payloads commonly deployed in self-healing malware campaigns.</p>
+        </li>
+        <li class="check-item">
+          <div class="check-header">
+            <span class="check-id">C3</span>
+            <span class="check-name">Unexpected PHP: must-use plugins, drop-ins, hidden dot-files and loose PHP in wp-content</span>
+          </div>
+          <p class="check-desc">Audits non-standard PHP files residing outside normal plugin and theme folders.</p>
+        </li>
+        <li class="check-item">
+          <div class="check-header">
+            <span class="check-id">C4</span>
+            <span class="check-name">Administrator accounts shaped like automation rather than people</span>
+          </div>
+          <p class="check-desc">Identifies suspicious administrative accounts exhibiting machine-generated patterns.</p>
+        </li>
+        <li class="check-item">
+          <div class="check-header">
+            <span class="check-id">C5</span>
+            <span class="check-name">Application passwords on administrator accounts</span>
+          </div>
+          <p class="check-desc">Flags persistent application passwords that survive administrative password resets.</p>
+        </li>
+        <li class="check-item">
+          <div class="check-header">
+            <span class="check-id">C6</span>
+            <span class="check-name">Custom CSS that hides a user from the Users screen</span>
+          </div>
+          <p class="check-desc">Uncovers style rules injected to conceal malicious administrative accounts from the dashboard.</p>
+        </li>
+        <li class="check-item">
+          <div class="check-header">
+            <span class="check-id">C9</span>
+            <span class="check-name">Links hidden off-screen inside published content</span>
+          </div>
+          <p class="check-desc">Detects SEO spam links disguised or positioned outside viewport boundaries in posts.</p>
+        </li>
+        <li class="check-item">
+          <div class="check-header">
+            <span class="check-id">C15</span>
+            <span class="check-name">PHP files in the web root that WordPress core does not ship, and renamed server-config or maintenance leftovers</span>
+          </div>
+          <p class="check-desc">Detection only; identifies non-core PHP scripts and backup config files in the web root.</p>
+        </li>
+        <li class="check-item">
+          <div class="check-header">
+            <span class="check-id">C16</span>
+            <span class="check-name">Renamed plugin copies such as plugin.bak-20260809</span>
+          </div>
+          <p class="check-desc">Finds dormant, unmanaged plugin clones that bypass WordPress update routines but remain accessible.</p>
+        </li>
+        <li class="check-item">
+          <div class="check-header">
+            <span class="check-id">C13</span>
+            <span class="check-name">Code that hides or runs other code in a theme's functions.php, header.php or footer.php</span>
+          </div>
+          <p class="check-desc">Detection only; detects injected evaluation or obfuscation routines in active and inactive themes without editing theme files.</p>
+        </li>
+        <li class="check-item">
+          <div class="check-header">
+            <span class="check-id">C12</span>
+            <span class="check-name">PHP files inside the uploads folder</span>
+          </div>
+          <p class="check-desc">Flags executable scripts in uploads (standard silence-is-golden placeholders are ignored; files with suspicious traits are critical).</p>
+        </li>
+      </ul>
+
+      <h3>Known vulnerabilities (opt-in)</h3>
+      <ul class="check-list">
+        <li class="check-item">
+          <div class="check-header">
+            <span class="check-id">E1</span>
+            <span class="check-name">Plugins, themes or WordPress versions with a published vulnerability</span>
+          </div>
+          <p class="check-desc">Matched locally on your server against the Wordfence Intelligence feed. Disabled unless EARLYWARD_WORDFENCE_KEY is explicitly defined in wp-config.php.</p>
+        </li>
+      </ul>
+
+      <h2 id="writes">What it writes</h2>
+      <p>Scans are read-only. Scanning never writes files or modifies database tables. Automatic writes occur solely to persist scan state, and file changes take place only when an administrator confirms a specific fix.</p>
+
+      <h3>Automatic writes (no confirmation needed)</h3>
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">What</th>
+              <th scope="col">Where</th>
+              <th scope="col">Purpose</th>
+              <th scope="col">Removed on uninstall</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Scan results, alert state, baseline, and log measurements</td>
+              <td>WordPress option <code>earlyward_state</code> (not autoloaded, capped at 500 findings)</td>
+              <td>Stores findings, compares baseline, measures log changes, and emails only when alert findings change.</td>
+              <td>Yes</td>
+            </tr>
+            <tr>
+              <td>Fix audit log</td>
+              <td>WordPress option <code>earlyward_fix_log</code> (not autoloaded, last 50 entries)</td>
+              <td>Records time, user, action, file, sha256 hash, and previous permissions when fixes run.</td>
+              <td>Yes</td>
+            </tr>
+            <tr>
+              <td>Quarantine manifest</td>
+              <td>WordPress option <code>earlyward_quarantine</code> (not autoloaded, max 200 items)</td>
+              <td>Maintains records of quarantined files and folders so they can be restored.</td>
+              <td>Yes (quarantined files remain)</td>
+            </tr>
+            <tr>
+              <td>Scan execution lock</td>
+              <td>WordPress transient <code>earlyward_scan_lock</code> (10-minute expiry)</td>
+              <td>Prevents overlapping scans from running at the same time.</td>
+              <td>Yes</td>
+            </tr>
+            <tr>
+              <td>Scheduled scan job</td>
+              <td>WP-Cron event <code>earlyward_scan</code> (hourly)</td>
+              <td>Runs diagnostic scans in the background away from visitor traffic.</td>
+              <td>Yes (also removed on deactivation)</td>
+            </tr>
+            <tr>
+              <td>Notification email</td>
+              <td>Dispatched via <code>wp_mail()</code> to site admin</td>
+              <td>Sent only when warning or critical findings change; info findings never send email.</td>
+              <td>n/a</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>Viewing the admin page (Tools &rarr; Earlyward), Site Health tests, the admin bar badge, and the dashboard widget read existing stored results only; they write nothing and initiate no network requests.</p>
+
+      <h3>Confirmed fixes (only after administrator confirmation)</h3>
+      <p>Fixes appear under findings on the Findings tab. Each fix requires the <code>manage_options</code> capability, a valid nonce, and an explicit ticked confirmation box. Clicking a fix re-scans the target immediately to verify current state; actions are refused if conditions have changed.</p>
+
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">Action</th>
+              <th scope="col">Operation</th>
+              <th scope="col">Reversibility</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Restrict wp-config.php (B4)</td>
+              <td>Applies chmod 600 if PHP owns the file. Immediately restored if PHP cannot read it.</td>
+              <td>Reversible by applying original permissions from the fix log.</td>
+            </tr>
+            <tr>
+              <td>Delete exposed backup or dump (B3)</td>
+              <td>Deletes the specific backup or dump file listed in the finding. Never deletes .php files.</td>
+              <td>Not reversible from the admin UI. File hash is logged.</td>
+            </tr>
+            <tr>
+              <td>Delete maintenance leftover (C3)</td>
+              <td>Deletes <code>wp-content/maintenance.php</code> if classified as a harmless generated remnant.</td>
+              <td>Not reversible from the admin UI. File hash is logged.</td>
+            </tr>
+            <tr>
+              <td>Quarantine file (C15, C12, C13, D1)</td>
+              <td>Moves file into locked directory <code>wp-content/earlyward-quarantine-&lt;random&gt;/</code> renamed with a safe extension.</td>
+              <td>Reversible using "Put back" on the Quarantine and fix log tab.</td>
+            </tr>
+            <tr>
+              <td>Quarantine plugin folder (C16, H3)</td>
+              <td>Renames and moves selected plugin folders into the quarantine directory without running uninstaller scripts.</td>
+              <td>Reversible using "Put back" on the Quarantine and fix log tab.</td>
+            </tr>
+            <tr>
+              <td>Update extensions and core (B8)</td>
+              <td>Runs WordPress native upgrader for selected items, plugins and themes first, WordPress core last.</td>
+              <td>Not reversible from UI; restore from a site backup.</td>
+            </tr>
+            <tr>
+              <td>Back up now</td>
+              <td>Triggers an immediate background backup via UpdraftPlus if that plugin is active.</td>
+              <td>Managed through UpdraftPlus.</td>
+            </tr>
+            <tr>
+              <td>Block PHP in uploads (C17)</td>
+              <td>Creates <code>wp-content/uploads/.htaccess</code> blocking PHP script execution on Apache and LiteSpeed.</td>
+              <td>Reversible by removing the file; original hash logged.</td>
+            </tr>
+            <tr>
+              <td>Delete older local backup copies (H1)</td>
+              <td>Removes local backup archives older than the newest set, only when verified present on remote storage.</td>
+              <td>Not reversible from UI. Local copies deleted; remote copy remains intact.</td>
+            </tr>
+            <tr>
+              <td>Delete for good (Quarantine tab)</td>
+              <td>Permanently deletes an individual quarantined file or directory.</td>
+              <td>Permanent; action and hash recorded in fix log.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>Defining <code>define( 'EARLYWARD_NO_FIXES', true );</code> in <code>wp-config.php</code> removes all fix buttons and disables all fix endpoints.</p>
+
+      <h2 id="network">What it sends</h2>
+      <p>Earlyward minimizes network activity and makes no external requests by default:</p>
+      <ul>
+        <li><strong>Local loopback requests only:</strong>
+          <ul>
+            <li>Check A1 sends two loopback requests (<code>/</code> and <code>/wp-json/</code> with cache-busting parameters) to test homepage availability and REST endpoints.</li>
+            <li>Check D3 sends one HTTP HEAD request (redirects not followed) to the site's own home page to read response headers.</li>
+            <li>Check B3 sends header-only HTTP HEAD requests (at most 8 per scan) to the site's own address to verify whether backup files found in the docroot are publicly accessible.</li>
+          </ul>
+        </li>
+        <li><strong>Wordfence Intelligence feed (E1, opt-in only):</strong>
+          <ul>
+            <li>Off by default. Active only if you define <code>EARLYWARD_WORDFENCE_KEY</code> in <code>wp-config.php</code> with a free API key.</li>
+            <li>When configured, downloads the public vulnerability feed at most every 12 hours (hourly after transient network errors).</li>
+            <li>The HTTP request sends only the API key. No site URL, no domain name, and no list of installed plugins or themes is transmitted.</li>
+            <li>Vulnerability matching is executed locally on your server. Results are stored in option <code>earlyward_vuln_cache</code> and deleted on uninstall.</li>
+          </ul>
+        </li>
+      </ul>
+
+      <h2 id="privacy">Privacy statement</h2>
+      <p>Earlyward is built with complete privacy in mind:</p>
+      <ul>
+        <li>No analytics, tracking pixels, or telemetry beacons.</li>
+        <li>No phone-home calls or external license verification.</li>
+        <li>No external fonts, remote scripts, or third-party stylesheets.</li>
+        <li>No information regarding your site, plugins, users, or configuration ever leaves your server, except the local loopback checks and the optional vulnerability feed described above.</li>
+      </ul>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <p>Earlyward is free software released under the <a href="https://github.com/gklinks/earlyward/blob/main/LICENSE" rel="noopener noreferrer">GPL-2.0-or-later license</a>.</p>
+      <p>Early preview — not yet recommended for production sites. Earlyward detects and warns; it does not promise protection.</p>
+    </div>
+  </footer>
+</body>
+</html>
