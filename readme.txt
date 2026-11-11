@@ -4,7 +4,7 @@ Tags: security, malware, diagnostics, monitoring, hardening
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 0.9.0
+Stable tag: 0.10.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -42,9 +42,13 @@ Privately, through the Security tab of the GitHub repository. Please do not open
 
 == Changelog ==
 
-= Unreleased =
-* C9 now also finds links hidden by a tiny box (1-2px with overflow hidden), font-size 0, negative text-indent, clipping, and display:none / visibility:hidden / opacity:0 blocks that hold several external links or text shown nowhere else, and it searches the data of Elementor, Beaver Builder, Bricks and Oxygen, not only page text. It detects common hiding patterns, not all of them. A "Fix it here" button removes the hidden blocks you tick, after saving the old values, and "Put back" restores them; change the administrator passwords too. Each C9 finding now says when the hidden block first shows up in the post's saved revisions and which user saved that revision (up to 200 revisions per post), because that user may have had their login stolen.
-* New check C18, SEO spam leftovers: categories, tags and other terms (empty ones too), posts and pages in any status except trash, and subscriber/customer accounts whose name or slug contains a word from a fixed list (casino, poker, slots, betting, gambling, viagra, cialis, payday loan, essay writing, replica, escort, crypto bonus), plus posts whose title is mostly Chinese, Japanese or Korean characters on a site whose other titles are not. A word list finds common cases, not all spam; a match is a reason to look, not proof. Detection only.
+= 0.10.0 =
+* Still an early preview: not yet recommended for production sites.
+* C9 finds links that visitors cannot see in more ways: a tiny box (1-2px with overflow hidden), text moved off-screen, font-size 0, negative text-indent, clipping, and display:none, visibility:hidden or opacity:0 blocks that hold several external links or text shown nowhere else. It also searches the data of Elementor, Beaver Builder, Bricks and Oxygen, not only the page text. It detects common hiding patterns, not all of them.
+* C9 has a "Remove hidden links" fix under its finding ("Fix it here"): tick the hidden blocks to remove, and Earlyward saves the old values first and checks the result. "Put back" on the Quarantine and fix log tab restores them, but only while the post is still as the fix left it. Change the administrator passwords too.
+* C9 timeline: each finding now says when the hidden block first appears in the post's saved revisions (up to 200 revisions per post) and which user saved that revision, because that user may have had their login stolen. No revision history is not proof that nothing happened.
+* New check C18, SEO spam leftovers: categories, tags and other terms (empty ones too), posts and pages in any status except trash, and subscriber or customer accounts whose name or slug contains a word from a fixed list (casino, poker, slots, betting, gambling, viagra, cialis, payday loan, essay writing, replica, escort, crypto bonus). It also flags posts whose title is mostly Chinese, Japanese or Korean characters on a site whose other titles are not. A word list finds common cases, not all spam; a match is a reason to look, not proof. Detection only.
+* C18 is listed in the Site Health "found nothing" list when it runs and reports nothing.
 
 = 0.9.0 =
 * Still an early preview: not yet recommended for production sites.

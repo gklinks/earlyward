@@ -147,6 +147,26 @@ final class SiteHealthTest extends TestCase {
 	}
 
 	/**
+	 * C18 has a name in the "found nothing" list, so a clean C18 run is listed like the other checks.
+	 */
+	public function test_seo_spam_check_is_in_the_found_nothing_list(): void {
+		$names = Site_Health::check_names();
+		$this->assertArrayHasKey( 'C18', $names );
+		$this->assertNotSame( '', $names['C18'] );
+
+		$last = array(
+			'timings'  => array(
+				'C18' => 0.1,
+				'C9'  => 0.1,
+			),
+			'findings' => array( self::f( 'info' ) ), // From check C9.
+		);
+		$this->assertSame( array( 'C18' ), Site_Health::passed_ids( $last ) );
+		$r = Site_Health::passed_result( $last, self::URL );
+		$this->assertStringContainsString( 'C18: ' . $names['C18'], $r['description'] );
+	}
+
+	/**
 	 * A failed check is reported, so fail-open never means silently unchecked.
 	 */
 	public function test_failed_result_lists_the_check(): void {

@@ -36,6 +36,18 @@
       <p>Release history for Earlyward, tracking all diagnostic checks, fix capabilities, and platform enhancements.</p>
 
       <article class="version-entry">
+        <h2>0.10.0</h2>
+        <ul>
+          <li>Still an early preview: not yet recommended for production sites.</li>
+          <li>C9 finds links that visitors cannot see in more ways: a tiny box (1-2px with overflow hidden), text moved off-screen, font-size 0, negative text-indent, clipping, and display:none, visibility:hidden or opacity:0 blocks that hold several external links or text shown nowhere else. It also searches the data of Elementor, Beaver Builder, Bricks and Oxygen, not only the page text. It detects common hiding patterns, not all of them.</li>
+          <li>C9 has a "Remove hidden links" fix under its finding ("Fix it here"): tick the hidden blocks to remove, and Earlyward saves the old values first and checks the result. "Put back" on the Quarantine and fix log tab restores them, but only while the post is still as the fix left it. Change the administrator passwords too.</li>
+          <li>C9 timeline: each finding now says when the hidden block first appears in the post's saved revisions (up to 200 revisions per post) and which user saved that revision, because that user may have had their login stolen. No revision history is not proof that nothing happened.</li>
+          <li>New check C18, SEO spam leftovers: categories, tags and other terms (empty ones too), posts and pages in any status except trash, and subscriber or customer accounts whose name or slug contains a word from a fixed list (casino, poker, slots, betting, gambling, viagra, cialis, payday loan, essay writing, replica, escort, crypto bonus). It also flags posts whose title is mostly Chinese, Japanese or Korean characters on a site whose other titles are not. A word list finds common cases, not all spam; a match is a reason to look, not proof. Detection only.</li>
+          <li>C18 is listed in the Site Health "found nothing" list when it runs and reports nothing.</li>
+        </ul>
+      </article>
+
+      <article class="version-entry">
         <h2>0.9.0</h2>
         <ul>
           <li>Still an early preview: not yet recommended for production sites.</li>

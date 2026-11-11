@@ -230,21 +230,22 @@ final class Site_Health {
 	 */
 	public static function check_names(): array {
 		return array(
-			'A1' => __( 'Homepage and REST API answer normally', 'earlyward' ),
-			'A2' => __( 'No recent PHP crashes', 'earlyward' ),
-			'A3' => __( 'PHP error log is a normal size', 'earlyward' ),
-			'A4' => __( 'WP-Cron is running on time', 'earlyward' ),
-			'C1' => __( 'No code is injected before every request', 'earlyward' ),
-			'C2' => __( 'No disguised archives holding PHP code', 'earlyward' ),
-			'C3' => __( 'No unexpected PHP files or drop-ins', 'earlyward' ),
-			'C4' => __( 'Administrator accounts look normal', 'earlyward' ),
-			'C5' => __( 'No unusual administrator credentials', 'earlyward' ),
-			'C6' => __( 'No hidden user rows', 'earlyward' ),
-			'C9' => __( 'No hidden links in content', 'earlyward' ),
-			'B1' => __( 'Other sites cannot be read from here', 'earlyward' ),
-			'B2' => __( 'PHP is limited to this site\'s files', 'earlyward' ),
-			'B3' => __( 'No backups or dumps can be downloaded', 'earlyward' ),
-			'B4' => __( 'wp-config.php is not open to other accounts', 'earlyward' ),
+			'A1'  => __( 'Homepage and REST API answer normally', 'earlyward' ),
+			'A2'  => __( 'No recent PHP crashes', 'earlyward' ),
+			'A3'  => __( 'PHP error log is a normal size', 'earlyward' ),
+			'A4'  => __( 'WP-Cron is running on time', 'earlyward' ),
+			'C1'  => __( 'No code is injected before every request', 'earlyward' ),
+			'C2'  => __( 'No disguised archives holding PHP code', 'earlyward' ),
+			'C3'  => __( 'No unexpected PHP files or drop-ins', 'earlyward' ),
+			'C4'  => __( 'Administrator accounts look normal', 'earlyward' ),
+			'C5'  => __( 'No unusual administrator credentials', 'earlyward' ),
+			'C6'  => __( 'No hidden user rows', 'earlyward' ),
+			'C9'  => __( 'No hidden links in content', 'earlyward' ),
+			'C18' => __( 'No SEO spam leftovers in terms, posts or accounts', 'earlyward' ),
+			'B1'  => __( 'Other sites cannot be read from here', 'earlyward' ),
+			'B2'  => __( 'PHP is limited to this site\'s files', 'earlyward' ),
+			'B3'  => __( 'No backups or dumps can be downloaded', 'earlyward' ),
+			'B4'  => __( 'wp-config.php is not open to other accounts', 'earlyward' ),
 		);
 	}
 
