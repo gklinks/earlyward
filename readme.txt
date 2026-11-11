@@ -42,6 +42,9 @@ Privately, through the Security tab of the GitHub repository. Please do not open
 
 == Changelog ==
 
+= Unreleased =
+* New check C19, new outside link domains: remembers which other websites published posts and pages link to, and warns when a domain appears that was not there before (an email follows the usual rule for warnings). The first scan only records the list. A new domain is a reason to look, not proof. "Accept new link domains" on the Earlyward screen, or `wp earlyward baseline --check=C19 --reset`, accepts the current list. Detection only.
+
 = 0.10.0 =
 * Still an early preview: not yet recommended for production sites.
 * C9 finds links that visitors cannot see in more ways: a tiny box (1-2px with overflow hidden), text moved off-screen, font-size 0, negative text-indent, clipping, and display:none, visibility:hidden or opacity:0 blocks that hold several external links or text shown nowhere else. It also searches the data of Elementor, Beaver Builder, Bricks and Oxygen, not only the page text. It detects common hiding patterns, not all of them.

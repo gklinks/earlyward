@@ -7,23 +7,24 @@ that is not on this list, that is a bug; please report it.
 
 | What | Where | Why | Removed on uninstall |
 |---|---|---|---|
-| Last scan result, the set of open alerts (per environment: web, command line), the healthy homepage baseline (A1) and the last measurements (A1 signals, A3 log sizes) | option `earlyward_state`, not autoloaded, capped at 500 findings | Show findings; email only when the set changes; compare with a healthy state; measure log growth | Yes |
+| Last scan result, the set of open alerts (per environment: web, command line), the healthy homepage baseline (A1), the list of outside link domains in published content (C19 baseline: host names only, up to 2000) and the last measurements (A1 signals, A3 log sizes, the C19 domain list) | option `earlyward_state`, not autoloaded, capped at 500 findings | Show findings; email only when the set changes; compare with a healthy state; measure log growth | Yes |
 | Fix log (only once a fix has been used) | option `earlyward_fix_log`, not autoloaded, last 50 entries | Show what was changed and let it be reversed by hand | Yes |
 | Quarantine record (only once something was quarantined) | option `earlyward_quarantine`, not autoloaded, at most 200 items: folder name, and for each item its original place, stored name, sha256, size, time, user, check | List what is in quarantine and put it back | The option yes; the folder and its files stay, see below |
 | Scan lock | transient `earlyward_scan_lock` (10 minutes) | Stop two scans overlapping | Yes |
 | Scheduled scan | WP-Cron event `earlyward_scan`, hourly; re-added on admin pages if something removed it | Run scans off the front end | Yes (also removed on deactivation) |
 | Alert email | `wp_mail()` to the site's admin email address | Only when the set of warning/critical findings changes; info findings never email | n/a |
 
-**Admin screen (Tools → Earlyward).** Viewing it writes nothing. Two buttons write, both need the `manage_options` capability and a nonce, and both only do what the CLI already does:
+**Admin screen (Tools → Earlyward).** Viewing it writes nothing. Three buttons write, all need the `manage_options` capability and a nonce, and all only do what the CLI already does:
 
 - *Scan now* runs the scheduled job once (same writes as a scheduled scan, same email rule).
 - *Set baseline* clears the A1 baseline and records a new one from a scan right now, if the homepage looks healthy. It does nothing unless the "I changed the site on purpose" box is ticked.
+- *Accept new link domains* clears the C19 baseline (the list of outside link domains) and records a new one from a scan right now. It does nothing unless the "I know these outside link domains and accept them" box is ticked.
 
 **Overview tab.** Writes nothing and contacts nobody. It shows what WordPress already holds (update information from WordPress's own last check, comment counts, users, the cron schedule). The one thing Earlyward adds to its existing stored state is a small record of when the set of warning or critical findings last changed (time, counts), so the tab can show it.
 
 **Site Health** (Tools → Site Health) shows the stored findings as tests. It only reads the last stored scan: no scan, no request, no write.
 
-`wp earlyward scan` writes nothing. `wp earlyward run` writes the same as a scheduled scan. `wp earlyward baseline --reset` clears the A1 baseline.
+`wp earlyward scan` writes nothing. `wp earlyward run` writes the same as a scheduled scan. `wp earlyward baseline --reset` clears the A1 baseline (`--check=C19` clears the C19 link-domain baseline).
 
 - The admin bar badge and the dashboard widget only read the stored scan result. They write nothing and start no scan.
 

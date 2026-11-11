@@ -242,6 +242,7 @@ final class Site_Health {
 			'C6'  => __( 'No hidden user rows', 'earlyward' ),
 			'C9'  => __( 'No hidden links in content', 'earlyward' ),
 			'C18' => __( 'No SEO spam leftovers in terms, posts or accounts', 'earlyward' ),
+			'C19' => __( 'No new outside link domains in content', 'earlyward' ),
 			'B1'  => __( 'Other sites cannot be read from here', 'earlyward' ),
 			'B2'  => __( 'PHP is limited to this site\'s files', 'earlyward' ),
 			'B3'  => __( 'No backups or dumps can be downloaded', 'earlyward' ),

@@ -49,26 +49,42 @@ final class Command {
 	}
 
 	/**
-	 * Show or reset the healthy homepage baseline used by check A1.
+	 * Show or reset a baseline: the healthy homepage used by check A1 (default), or the outside link domains used by check C19.
 	 *
 	 * The first healthy scan records it automatically. Reset it after you change the site on
-	 * purpose (new theme, removed feature); the next scan records the new state.
+	 * purpose (new theme, removed feature, links you added); the next scan records the new state.
 	 *
 	 * ## OPTIONS
 	 *
 	 * [--reset]
 	 * : Forget the current baseline.
 	 *
+	 * [--check=<id>]
+	 * : Which baseline: A1 (default) or C19.
+	 *
 	 * @param string[]                   $args       Positional args.
 	 * @param array<string, string|bool> $assoc_args Flags.
 	 */
 	public function baseline( array $args, array $assoc_args ): void {
+		$check = isset( $assoc_args['check'] ) ? strtoupper( (string) $assoc_args['check'] ) : 'A1';
+		if ( ! in_array( $check, array( 'A1', 'C19' ), true ) ) {
+			\WP_CLI::error( 'Unknown baseline. Use --check=A1 or --check=C19.' );
+		}
 		if ( ! empty( $assoc_args['reset'] ) ) {
-			\Earlyward\Store\State::set_baseline( 'A1', null );
+			\Earlyward\Store\State::set_baseline( $check, null );
 			\WP_CLI::success( 'Baseline cleared. The next healthy scan records a new one (run "wp earlyward run" to do it now).' );
 			return;
 		}
 		$baselines = \Earlyward\Store\State::baselines();
+		if ( 'C19' === $check ) {
+			if ( empty( $baselines['C19'] ) ) {
+				\WP_CLI::warning( 'No link-domain baseline yet. The first scan records it.' );
+				return;
+			}
+			\WP_CLI::line( sprintf( 'Recorded: %s UTC', gmdate( 'Y-m-d H:i', (int) ( $baselines['C19']['at'] ?? 0 ) ) ) );
+			\WP_CLI::line( 'Outside link domains: ' . count( (array) ( $baselines['C19']['domains'] ?? array() ) ) );
+			return;
+		}
 		if ( empty( $baselines['A1'] ) ) {
 			\WP_CLI::warning( 'No baseline yet. It is recorded by the first scan that loads a healthy homepage.' );
 			return;

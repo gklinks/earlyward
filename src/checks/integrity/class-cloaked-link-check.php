@@ -274,7 +274,7 @@ final class Cloaked_Link_Check implements Check {
 	 * @param string $url URL.
 	 * @return string
 	 */
-	private static function host_of( string $url ): string {
+	public static function host_of( string $url ): string {
 		if ( ! preg_match( '#^\s*(?:https?:)?//([^/:?\#\s]+)#i', $url, $m ) ) {
 			return '';
 		}

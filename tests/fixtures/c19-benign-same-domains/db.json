@@ -1,0 +1,8 @@
+{
+	"options": { "home": "https://www.site.fixture", "siteurl": "https://site.fixture" },
+	"posts": [
+		{ "id": 1, "type": "post", "status": "publish", "title": "Hello world", "slug": "hello-world", "content": "<p>Read <a href=\"https://Example.org/guide\">the guide</a> and <a href=\"https://site.fixture/about/\">about us</a>.</p>" },
+		{ "id": 2, "type": "page", "status": "publish", "title": "Partners", "slug": "partners", "content": "<p><a href=\"https://www.partner.example/\">Partner</a> <a href=\"//www.example.org/x\">again</a> <a href=\"/contact/\">Contact</a> <a href=\"mailto:hi@example.com\">Mail</a></p>" },
+		{ "id": 3, "type": "post", "status": "draft", "title": "Draft", "slug": "draft", "content": "<a href=\"https://draft-only.example/\">not published</a>" }
+	]
+}

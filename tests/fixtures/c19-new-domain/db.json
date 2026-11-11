@@ -1,0 +1,11 @@
+{
+	"options": { "home": "https://site.fixture", "siteurl": "https://site.fixture" },
+	"posts": [
+		{ "id": 1, "type": "post", "status": "publish", "title": "Hello world", "slug": "hello-world", "content": "<p>Read <a href=\"https://example.org/guide\">the guide</a>.</p>" },
+		{ "id": 2, "type": "page", "status": "publish", "title": "Partners", "slug": "partners", "content": "<p><a href=\"https://cheap-pills.example/buy\">x</a> <a href=\"https://Example.org/\">ok</a></p>" },
+		{ "id": 3, "type": "post", "status": "publish", "title": "News", "slug": "news", "content": "<p><a href=\"https://www.cheap-pills.example/\">y</a></p>" }
+	],
+	"postmeta": [
+		{ "post_id": 1, "key": "_elementor_data", "value": "[{\"settings\":{\"editor\":\"<a href=\\\"https://builder-spam.example/\\\">z</a>\"}}]" }
+	]
+}

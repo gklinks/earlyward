@@ -33,6 +33,7 @@ final class Page {
 
 	const ACTION_SCAN     = 'earlyward_scan_now';
 	const ACTION_BASELINE = 'earlyward_set_baseline';
+	const ACTION_LINKS    = 'earlyward_accept_links';
 	const ACTION_FIX      = 'earlyward_fix';
 	const ACTION_RESTORE  = 'earlyward_restore';
 	const ACTION_PURGE    = 'earlyward_purge';
@@ -43,7 +44,7 @@ final class Page {
 	 *
 	 * @var string[]
 	 */
-	const NOTICES = array( 'scanned', 'busy', 'baseline_set', 'baseline_missing', 'baseline_unconfirmed', 'fixed', 'fix_gone', 'fix_unconfirmed', 'fix_refused', 'fix_failed', 'quarantined', 'restored', 'purged', 'q_gone', 'q_refused', 'q_failed', 'q_unconfirmed', 'fix_need_extra', 'fix_none_ticked', 'backup_started', 'backup_busy', 'backup_unavailable' );
+	const NOTICES = array( 'scanned', 'busy', 'baseline_set', 'baseline_missing', 'baseline_unconfirmed', 'links_accepted', 'links_unconfirmed', 'fixed', 'fix_gone', 'fix_unconfirmed', 'fix_refused', 'fix_failed', 'quarantined', 'restored', 'purged', 'q_gone', 'q_refused', 'q_failed', 'q_unconfirmed', 'fix_need_extra', 'fix_none_ticked', 'backup_started', 'backup_busy', 'backup_unavailable' );
 
 	/**
 	 * Register hooks. Called on admin requests only.
@@ -52,6 +53,7 @@ final class Page {
 		add_action( 'admin_menu', array( __CLASS__, 'add_menu' ) );
 		add_action( 'admin_post_' . self::ACTION_SCAN, array( __CLASS__, 'handle_scan' ) );
 		add_action( 'admin_post_' . self::ACTION_BASELINE, array( __CLASS__, 'handle_baseline' ) );
+		add_action( 'admin_post_' . self::ACTION_LINKS, array( __CLASS__, 'handle_accept_links' ) );
 		add_action( 'admin_post_' . self::ACTION_FIX, array( __CLASS__, 'handle_fix' ) );
 		add_action( 'admin_post_' . self::ACTION_RESTORE, array( __CLASS__, 'handle_restore' ) );
 		add_action( 'admin_post_' . self::ACTION_PURGE, array( __CLASS__, 'handle_purge' ) );
@@ -130,6 +132,22 @@ final class Page {
 		}
 		$baselines = State::baselines();
 		wp_safe_redirect( self::url( empty( $baselines['A1'] ) ? 'baseline_missing' : 'baseline_set', 'findings' ) );
+		exit;
+	}
+
+	/**
+	 * "Accept new link domains": forget the C19 list of outside link domains and record the current one from a
+	 * scan right now. Needs the confirmation box: it is the list C19 compares published content with.
+	 */
+	public static function handle_accept_links(): void {
+		self::authorise( self::ACTION_LINKS );
+		if ( empty( $_POST['earlyward_confirm'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce and capability are checked by authorise() above.
+			wp_safe_redirect( self::url( 'links_unconfirmed', 'findings' ) );
+			exit;
+		}
+		State::set_baseline( 'C19', null );
+		$out = Plugin::run( true );
+		wp_safe_redirect( self::url( $out['ran'] ? 'links_accepted' : 'busy', 'findings' ) );
 		exit;
 	}
 
@@ -412,6 +430,8 @@ final class Page {
 			'baseline_set'         => array( 'notice-success', __( 'New baseline recorded from the homepage as it is now.', 'earlyward' ) ),
 			'baseline_missing'     => array( 'notice-warning', __( 'The old baseline was cleared, but no new one was recorded because the homepage did not look healthy in this scan. Fix the problem, then try again.', 'earlyward' ) ),
 			'baseline_unconfirmed' => array( 'notice-warning', __( 'Nothing was changed. Tick the box to confirm that you changed the site on purpose.', 'earlyward' ) ),
+			'links_accepted'       => array( 'notice-success', __( 'The outside link domains in your content now are the new normal. Earlyward reports only domains that are added after this.', 'earlyward' ) ),
+			'links_unconfirmed'    => array( 'notice-warning', __( 'Nothing was changed. Tick the box to confirm that you know and accept these link domains.', 'earlyward' ) ),
 			'fixed'                => array( 'notice-success', __( 'Done. The change is in the fix log on the Quarantine and fix log tab. A new scan is queued, so the finding should disappear within a minute.', 'earlyward' ) ),
 			'fix_gone'             => array( 'notice-warning', __( 'Nothing was changed. This finding is no longer reported by a fresh scan, so the site has changed since the page was drawn.', 'earlyward' ) ),
 			'fix_unconfirmed'      => array( 'notice-warning', __( 'Nothing was changed: the box "I understand what this changes" was not ticked.', 'earlyward' ) ),
@@ -573,6 +593,14 @@ final class Page {
 		echo '<label><input type="checkbox" name="earlyward_confirm" value="1" /> ' . esc_html__( 'I changed the site on purpose (new theme, removed feature) and it works.', 'earlyward' ) . '</label> ';
 		echo '<button type="submit" class="button">' . esc_html__( 'Set baseline', 'earlyward' ) . '</button> ';
 		echo '<span class="description">' . esc_html__( 'Check A1 compares the homepage with a healthy copy it recorded earlier. This forgets that copy and records a new one from a scan right now, if the homepage looks healthy.', 'earlyward' ) . '</span>';
+		echo '</form>';
+
+		echo '<form method="post" action="' . $post . '">'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped with esc_url() above.
+		echo '<input type="hidden" name="action" value="' . esc_attr( self::ACTION_LINKS ) . '" />';
+		wp_nonce_field( self::ACTION_LINKS );
+		echo '<label><input type="checkbox" name="earlyward_confirm" value="1" /> ' . esc_html__( 'I know these outside link domains and accept them.', 'earlyward' ) . '</label> ';
+		echo '<button type="submit" class="button">' . esc_html__( 'Accept new link domains', 'earlyward' ) . '</button> ';
+		echo '<span class="description">' . esc_html__( 'Check C19 reports outside domains that published content links to and did not before. This records the domains linked now as the new normal.', 'earlyward' ) . '</span>';
 		echo '</form>';
 
 		echo '</div>';

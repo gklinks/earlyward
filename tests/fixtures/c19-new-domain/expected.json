@@ -1,0 +1,4 @@
+[
+  { "check": "C19", "severity": "warning", "confidence": "medium", "where": [ "domain:builder-spam.example", "domain:cheap-pills.example" ] },
+  { "check": "C17", "severity": "info", "confidence": "medium", "where": [ "wp-content/uploads/.htaccess" ] }
+]
