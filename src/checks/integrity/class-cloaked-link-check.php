@@ -130,8 +130,8 @@ final class Cloaked_Link_Check implements Check {
 				__( 'An element hidden from visitors (moved off-screen, shrunk to a tiny box, or hidden with CSS) holds links. Visitors never see them, search engines do: this is how paid-backlink operations use hacked sites, and it can get the site penalised.', 'earlyward' ),
 				$evidence,
 				array(
-					__( 'Open the page in the page builder code view (or the code editor) and remove the hidden block, or ask your host to remove it. Keep a copy first.', 'earlyward' ),
-					__( 'Change the passwords of all administrator accounts: this is usually done with a stolen login.', 'earlyward' ),
+					__( 'Use "Fix it here" under this finding to remove the hidden blocks you tick: Earlyward saves the old values first, checks the result, and "Put back" on the Quarantine and fix log tab restores them. Or open the page in the page builder code view (or the code editor) and remove the hidden block yourself, or ask your host to. Keep a copy first.', 'earlyward' ),
+					__( 'Change the passwords of all administrator accounts, even after the links are removed: this is usually done with a stolen login, and removing the links does not close that way in.', 'earlyward' ),
 					__( 'Check Google Search Console, under Security issues, and search your other pages too: this kind of injection usually hits several.', 'earlyward' ),
 				)
 			);
@@ -183,7 +183,7 @@ final class Cloaked_Link_Check implements Check {
 	 * @param Context $ctx Context.
 	 * @return string[]|null
 	 */
-	private static function own_hosts( Context $ctx ): ?array {
+	public static function own_hosts( Context $ctx ): ?array {
 		$hosts = array();
 		$db    = $ctx->db();
 		foreach ( array(
@@ -252,10 +252,14 @@ final class Cloaked_Link_Check implements Check {
 	/**
 	 * Elements whose style attribute hides them from visitors and which contain links (see the class comment).
 	 *
+	 * Each hit also carries what the "Remove hidden links" fix needs to find the same element again: "style" (how it
+	 * is hidden), "kind" (offset, hard or soft), "id" (a fingerprint of tag, style and links, plus the number of the
+	 * element among identical ones) and "hrefs".
+	 *
 	 * @param string        $html      Content.
 	 * @param string[]|null $own_hosts Hosts that are the site itself (links to them are internal); null when the
 	 *                                 site's own host is unknown, which makes the display:none / visibility / opacity rule quiet.
-	 * @return array<int, array{tag: string, links: int, domains: string[]}>
+	 * @return array<int, array{tag: string, links: int, domains: string[], style: string, kind: string, id: string, hrefs: string[], span: array{0: int, 1: int}}>
 	 */
 	public static function find_cloaked_links( string $html, ?array $own_hosts = array() ): array {
 		$out = array();
@@ -263,9 +267,10 @@ final class Cloaked_Link_Check implements Check {
 			return $out;
 		}
 		$covered = 0; // End of the last reported element: hidden elements nested inside it add nothing.
+		$seen    = array(); // Identical hidden elements met so far, by fingerprint.
 		foreach ( $tags as $tag ) {
-			$kind = self::hiding_kind( $tag[3][0] );
-			if ( '' === $kind || $tag[0][1] < $covered ) {
+			list( $kind, $style ) = self::classify( $tag[3][0] );
+			if ( '' === $kind ) {
 				continue;
 			}
 			$name  = strtolower( $tag[1][0] );
@@ -276,12 +281,14 @@ final class Cloaked_Link_Check implements Check {
 			$region = ( 'a' === $name ? $tag[0][0] : '' ) . $block['inner'] . ( 'a' === $name ? '</a>' : '' );
 
 			$links    = array();
+			$hrefs    = array();
 			$external = array();
 			if ( preg_match_all( '/<a\b[^>]*?\bhref\s*=\s*(?:"([^"]*)"|\'([^\']*)\'|([^\s>]+))[^>]*>(.*?)(?:<\/a>|$)/is', $region, $anchors, PREG_SET_ORDER ) ) {
 				foreach ( $anchors as $anchor ) {
-					$href    = '' !== ( $anchor[1] ) ? $anchor[1] : ( '' !== ( $anchor[2] ) ? $anchor[2] : ( $anchor[3] ) );
-					$host    = self::host_of( html_entity_decode( $href ) );
+					$href    = html_entity_decode( '' !== ( $anchor[1] ) ? $anchor[1] : ( '' !== ( $anchor[2] ) ? $anchor[2] : ( $anchor[3] ) ) );
+					$host    = self::host_of( $href );
 					$links[] = $host;
+					$hrefs[] = $href;
 					if ( '' !== $host && ! in_array( $host, (array) $own_hosts, true ) ) {
 						$external[] = array(
 							'host' => $host,
@@ -291,6 +298,12 @@ final class Cloaked_Link_Check implements Check {
 				}
 			}
 			if ( empty( $links ) ) {
+				continue;
+			}
+			$print          = self::fingerprint( $name, html_entity_decode( $tag[3][0] ), $hrefs );
+			$nth            = $seen[ $print ] ?? 0;
+			$seen[ $print ] = $nth + 1;
+			if ( $tag[0][1] < $covered ) {
 				continue;
 			}
 			if ( 'offset' === $kind ) {
@@ -308,9 +321,27 @@ final class Cloaked_Link_Check implements Check {
 				'tag'     => $tag[0][0],
 				'links'   => count( $links ),
 				'domains' => array_values( array_unique( array_column( $external, 'host' ) ) ),
+				'style'   => $style,
+				'kind'    => $kind,
+				'id'      => $print . '.' . $nth,
+				'hrefs'   => $hrefs,
+				'span'    => array( $tag[0][1], $end ),
 			);
 		}
 		return $out;
+	}
+
+	/**
+	 * A short fingerprint of a hidden element: tag name, decoded style attribute and the links inside it.
+	 * The "Remove hidden links" fix computes the same value from a parsed document to find the element again.
+	 *
+	 * @param string   $name  Tag name.
+	 * @param string   $style Style attribute, entities decoded.
+	 * @param string[] $hrefs Link targets inside the element, entities decoded, in document order.
+	 * @return string 12 hex characters.
+	 */
+	public static function fingerprint( string $name, string $style, array $hrefs ): string {
+		return substr( hash( 'sha256', strtolower( $name ) . "\n" . trim( $style ) . "\n" . implode( "\n", $hrefs ) ), 0, 12 );
 	}
 
 	/**
@@ -389,7 +420,18 @@ final class Cloaked_Link_Check implements Check {
 	 * @param string $style Style attribute value.
 	 * @return string
 	 */
-	private static function hiding_kind( string $style ): string {
+	public static function hiding_kind( string $style ): string {
+		return self::classify( $style )[0];
+	}
+
+	/**
+	 * Kind (as hiding_kind) and a style key: offscreen, tinybox, textindent, clip, fontsize0, displaynone, visibility
+	 * or opacity. Both are empty when the style does not hide the element.
+	 *
+	 * @param string $style Style attribute value.
+	 * @return array{0: string, 1: string}
+	 */
+	public static function classify( string $style ): array {
 		$props = array();
 		foreach ( explode( ';', strtolower( html_entity_decode( $style ) ) ) as $decl ) {
 			$pair = explode( ':', $decl, 2 );
@@ -399,34 +441,34 @@ final class Cloaked_Link_Check implements Check {
 			$props[ trim( $pair[0] ) ] = trim( (string) preg_replace( '/\s*!important\s*$/', '', $pair[1] ) );
 		}
 		if ( empty( $props ) ) {
-			return '';
+			return array( '', '' );
 		}
 
 		if ( isset( $props['position'] ) && in_array( $props['position'], array( 'fixed', 'absolute' ), true ) ) {
 			foreach ( array( 'top', 'left', 'right', 'bottom', 'margin-left', 'margin-top' ) as $side ) {
 				$px = isset( $props[ $side ] ) ? self::length_px( $props[ $side ] ) : null;
 				if ( null !== $px && $px <= -self::MIN_OFFSET ) {
-					return 'offset';
+					return array( 'offset', 'offscreen' );
 				}
 			}
 		}
 
 		$indent = isset( $props['text-indent'] ) ? self::length_px( $props['text-indent'] ) : null;
 		if ( null !== $indent && $indent <= -self::MIN_OFFSET ) {
-			return 'hard';
+			return array( 'hard', 'textindent' );
 		}
 
 		$clips = (string) ( $props['clip'] ?? '' );
 		if ( preg_match( '/^rect\(\s*0(?:px)?[\s,]+0(?:px)?[\s,]+0(?:px)?[\s,]+0(?:px)?\s*\)$/', $clips ) ) {
-			return 'hard';
+			return array( 'hard', 'clip' );
 		}
 		if ( preg_match( '/^inset\(\s*(?:50|100)%/', (string) ( $props['clip-path'] ?? '' ) ) ) {
-			return 'hard';
+			return array( 'hard', 'clip' );
 		}
 
 		$size = isset( $props['font-size'] ) ? self::length_px( $props['font-size'], true ) : null;
 		if ( null !== $size && 0.0 === $size ) {
-			return 'hard';
+			return array( 'hard', 'fontsize0' );
 		}
 
 		$clipped = 'hidden' === ( $props['overflow'] ?? '' ) || 'hidden' === ( $props['overflow-x'] ?? '' ) || 'hidden' === ( $props['overflow-y'] ?? '' );
@@ -434,18 +476,21 @@ final class Cloaked_Link_Check implements Check {
 			foreach ( array( 'height', 'max-height', 'width', 'max-width' ) as $dimension ) {
 				$px = isset( $props[ $dimension ] ) ? self::length_px( $props[ $dimension ] ) : null;
 				if ( null !== $px && $px >= 0 && $px <= 2 ) {
-					return 'hard';
+					return array( 'hard', 'tinybox' );
 				}
 			}
 		}
 
-		if ( 'none' === ( $props['display'] ?? '' ) || 'hidden' === ( $props['visibility'] ?? '' ) ) {
-			return 'soft';
+		if ( 'none' === ( $props['display'] ?? '' ) ) {
+			return array( 'soft', 'displaynone' );
+		}
+		if ( 'hidden' === ( $props['visibility'] ?? '' ) ) {
+			return array( 'soft', 'visibility' );
 		}
 		if ( isset( $props['opacity'] ) && preg_match( '/^0*(?:\.0*)?$/', $props['opacity'] ) && '' !== $props['opacity'] ) {
-			return 'soft';
+			return array( 'soft', 'opacity' );
 		}
-		return '';
+		return array( '', '' );
 	}
 
 	/**

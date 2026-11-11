@@ -8,11 +8,14 @@
 
 namespace Earlyward\Admin;
 
+use Earlyward\Checks\Integrity\Cloaked_Link_Check;
 use Earlyward\Env\Context;
 use Earlyward\Fix\Backup;
 use Earlyward\Fix\Fixer;
+use Earlyward\Fix\Hidden_Links;
 use Earlyward\Fix\Quarantine;
 use Earlyward\Fix\Updater;
+use Earlyward\Fix\Wp_Post_Store;
 use Earlyward\Fix\Writer;
 use Earlyward\Plugin;
 use Earlyward\Scanner\Scanner;
@@ -188,6 +191,12 @@ final class Page {
 			exit;
 		}
 
+		// Removing hidden links edits a post: the person must be allowed to edit that very post.
+		if ( Fixer::ID_REMOVE_HIDDEN === $id && ( 1 !== preg_match( '/^post:([0-9]+)$/', (string) $shown['evidence'][0]['location'], $post_match ) || ! current_user_can( 'edit_post', (int) $post_match[1] ) ) ) {
+			wp_safe_redirect( self::url( 'fix_refused', $return ) );
+			exit;
+		}
+
 		$ctx      = Context::from_wordpress( array(), array(), false ); // No requests to the site: the click must not wait on a loopback.
 		$run      = Scanner::with_default_checks()->run( $ctx );
 		$findings = array();
@@ -207,6 +216,7 @@ final class Page {
 				'extra'      => $has_copy,
 				'selected'   => $selected,
 				'quarantine' => Quarantine::load(),
+				'posts'      => new Wp_Post_Store(),
 				'random'     => strtolower( wp_generate_password( 12, false, false ) ),
 				'upgrade'    => array( Updater::class, 'upgrade' ),
 				'self_dir'   => basename( dirname( __DIR__, 2 ) ),
@@ -257,8 +267,14 @@ final class Page {
 		}
 		$ctx    = Context::from_wordpress( array(), array(), false );
 		$record = Quarantine::load();
-		$done   = self::ACTION_RESTORE === $action
-			? Quarantine::restore( $ctx, new Writer(), $record, $item, get_current_user_id(), time() )
+		// Putting values back into a post needs the right to edit that post.
+		$held = $record['items'][ $item ] ?? array();
+		if ( Hidden_Links::KIND === ( $held['kind'] ?? '' ) && ( 1 !== preg_match( '/^post:([0-9]+)$/', (string) ( $held['original'] ?? '' ), $post_match ) || ! current_user_can( 'edit_post', (int) $post_match[1] ) ) ) {
+			wp_safe_redirect( self::url( 'q_refused', 'quarantine' ) );
+			exit;
+		}
+		$done = self::ACTION_RESTORE === $action
+			? Quarantine::restore( $ctx, new Writer(), $record, $item, get_current_user_id(), time(), new Wp_Post_Store() )
 			: Quarantine::purge( $ctx, new Writer(), $record, $item, get_current_user_id(), time() );
 		Quarantine::save( $done['record'] );
 		Fixer::record( array( $done['entry'] ) );
@@ -693,6 +709,9 @@ final class Page {
 		echo '<input type="hidden" name="earlyward_fingerprint" value="' . esc_attr( (string) ( $finding['fingerprint'] ?? '' ) ) . '" />';
 		wp_nonce_field( self::ACTION_FIX );
 		echo '<p><strong>' . esc_html__( 'Fix it here:', 'earlyward' ) . '</strong> ' . esc_html( $offer['what'] ) . '</p>';
+		if ( Fixer::ID_REMOVE_HIDDEN === $offer['id'] ) {
+			self::render_hidden_blocks( $finding );
+		}
 		if ( $offer['pick'] ) {
 			$evidence = isset( $finding['evidence'] ) && is_array( $finding['evidence'] ) ? $finding['evidence'] : array();
 			echo '<fieldset class="earlyward-pick"><legend class="screen-reader-text">' . esc_html__( 'Items to act on', 'earlyward' ) . '</legend>';
@@ -710,6 +729,47 @@ final class Page {
 		echo '<p><label><input type="checkbox" name="earlyward_confirm" value="1" required="required" /> ' . esc_html__( 'I understand what this changes.', 'earlyward' ) . '</label> ';
 		echo '<button type="submit" class="button">' . esc_html( $offer['label'] ) . '</button> <span class="earlyward-pick-msg" role="alert"></span></p>';
 		echo '</form>';
+	}
+
+	/**
+	 * One checkbox per hidden block C9 reports in a post (read now, from the post itself), for the "Remove hidden links" fix.
+	 * Everything shown comes from the post and may be attacker-written: plain text only.
+	 *
+	 * @param array<string, mixed> $finding C9 finding.
+	 */
+	private static function render_hidden_blocks( array $finding ): void {
+		$location = isset( $finding['evidence'][0]['location'] ) ? (string) $finding['evidence'][0]['location'] : '';
+		$post     = 1 === preg_match( '/^post:([0-9]+)$/', $location, $m ) ? ( new Wp_Post_Store() )->load( (int) $m[1], Cloaked_Link_Check::BUILDER_KEYS ) : null;
+		$blocks   = null === $post ? array() : Hidden_Links::blocks( Context::from_wordpress( array(), array(), false ), $post );
+		if ( null === $post || empty( $blocks ) ) {
+			echo '<p class="description">' . esc_html__( 'The hidden blocks could not be listed now; the page has changed. Run a new scan.', 'earlyward' ) . '</p>';
+			return;
+		}
+		$styles = array(
+			'offscreen'   => __( 'moved off-screen', 'earlyward' ),
+			'tinybox'     => __( 'tiny box (2px or less, overflow hidden)', 'earlyward' ),
+			'fontsize0'   => __( 'font-size 0', 'earlyward' ),
+			'textindent'  => __( 'text pushed off to the left', 'earlyward' ),
+			'clip'        => __( 'clipped away', 'earlyward' ),
+			'displaynone' => __( 'display:none', 'earlyward' ),
+			'visibility'  => __( 'visibility:hidden', 'earlyward' ),
+			'opacity'     => __( 'opacity:0', 'earlyward' ),
+		);
+		echo '<fieldset class="earlyward-pick"><legend class="screen-reader-text">' . esc_html__( 'Hidden blocks to remove', 'earlyward' ) . '</legend>';
+		foreach ( $blocks as $block ) {
+			$where = 'content' === $block['source'] ? __( 'page text', 'earlyward' ) : sprintf( /* translators: %s: page-builder data key. */ __( 'page-builder data (%s)', 'earlyward' ), $block['source'] );
+			$line  = sprintf(
+				/* translators: 1: post title, 2: where in the post, 3: how it is hidden, 4: number of links, 5: external domains. */
+				__( '"%1$s", in %2$s, %3$s, %4$d link(s) to: %5$s', 'earlyward' ),
+				'' === $post['title'] ? '#' . $post['id'] : $post['title'],
+				$where,
+				$styles[ $block['style'] ] ?? $block['style'],
+				$block['links'],
+				empty( $block['domains'] ) ? __( 'this site only', 'earlyward' ) : implode( ', ', $block['domains'] )
+			);
+			echo '<label><input type="checkbox" name="earlyward_items[]" value="' . esc_attr( $block['id'] ) . '"' . ( $block['pre'] ? ' checked="checked"' : '' ) . ' /> ' . esc_html( $line ) . '</label><br />';
+		}
+		echo '</fieldset>';
 	}
 
 	/**

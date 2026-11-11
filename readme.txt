@@ -43,7 +43,7 @@ Privately, through the Security tab of the GitHub repository. Please do not open
 == Changelog ==
 
 = Unreleased =
-* C9 now also finds links hidden by a tiny box (1-2px with overflow hidden), font-size 0, negative text-indent, clipping, and display:none / visibility:hidden / opacity:0 blocks that hold several external links or text shown nowhere else, and it searches the data of Elementor, Beaver Builder, Bricks and Oxygen, not only page text. It detects common hiding patterns, not all of them; detection only.
+* C9 now also finds links hidden by a tiny box (1-2px with overflow hidden), font-size 0, negative text-indent, clipping, and display:none / visibility:hidden / opacity:0 blocks that hold several external links or text shown nowhere else, and it searches the data of Elementor, Beaver Builder, Bricks and Oxygen, not only page text. It detects common hiding patterns, not all of them. A "Fix it here" button removes the hidden blocks you tick, after saving the old values, and "Put back" restores them; change the administrator passwords too.
 
 = 0.9.0 =
 * Still an early preview: not yet recommended for production sites.

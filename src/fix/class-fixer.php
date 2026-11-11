@@ -37,6 +37,7 @@ final class Fixer {
 	const ID_UPDATE             = 'update';
 	const ID_BLOCK_UPLOADS_PHP  = 'block_uploads_php';
 	const ID_LINK               = 'link';
+	const ID_REMOVE_HIDDEN      = 'remove_hidden_links';
 
 	const LOG_OPTION = 'earlyward_fix_log';
 	const MAX_LOG    = 50;
@@ -47,7 +48,7 @@ final class Fixer {
 	 * @return string[]
 	 */
 	public static function ids(): array {
-		return array( self::ID_CHMOD_CONFIG, self::ID_DELETE_BACKUP, self::ID_DELETE_MAINTENANCE, self::ID_DELETE_OLD_BACKUPS, self::ID_QUARANTINE_FILE, self::ID_QUARANTINE_FOLDER, self::ID_UPDATE, self::ID_BLOCK_UPLOADS_PHP );
+		return array( self::ID_CHMOD_CONFIG, self::ID_DELETE_BACKUP, self::ID_DELETE_MAINTENANCE, self::ID_DELETE_OLD_BACKUPS, self::ID_QUARANTINE_FILE, self::ID_QUARANTINE_FOLDER, self::ID_UPDATE, self::ID_BLOCK_UPLOADS_PHP, self::ID_REMOVE_HIDDEN );
 	}
 
 	/**
@@ -141,6 +142,11 @@ final class Fixer {
 					return self::make( self::ID_BLOCK_UPLOADS_PHP, __( 'Create the protective .htaccess in uploads', 'earlyward' ), __( 'Creates one new file, wp-content/uploads/.htaccess, that tells Apache and LiteSpeed never to run PHP from the uploads folder. Images and documents are not affected. Nothing existing is changed; delete the file to undo.', 'earlyward' ) );
 				}
 				break;
+			case 'C9':
+				if ( 1 === preg_match( '/^post:[0-9]+$/', $first ) ) {
+					return self::make( self::ID_REMOVE_HIDDEN, __( 'Remove the ticked hidden blocks', 'earlyward' ), __( 'Removes exactly the ticked hidden blocks from this post (page text and page-builder data), after saving the old values in the locked Earlyward quarantine folder. The post is read back and checked afterwards, and the old values are written back at once if anything looks wrong. Nothing else on the post changes, and its revisions are not touched. Change the administrator passwords too: removing the links does not remove the way in.', 'earlyward' ) . ' ' . $restore );
+				}
+				break;
 			case 'D2':
 				$offer        = self::make( self::ID_LINK, __( 'Find a two-factor plugin', 'earlyward' ), __( 'Opens Plugins, Add New with a search for two-factor login plugins. Earlyward does not install anything itself.', 'earlyward' ) );
 				$offer['url'] = 'plugin-install.php?s=two-factor&tab=search&type=term';
@@ -183,6 +189,9 @@ final class Fixer {
 		if ( self::ID_UPDATE === $id ) {
 			return 'core:WordPress' === $location || ( 1 === preg_match( '#^(plugin|theme):[A-Za-z0-9._/-]+$#', $location ) && false === strpos( $location, '..' ) );
 		}
+		if ( self::ID_REMOVE_HIDDEN === $id ) {
+			return 1 === preg_match( '/^post:[0-9]+$/', $location );
+		}
 		return '' !== $location;
 	}
 
@@ -200,7 +209,8 @@ final class Fixer {
 	 * @param array<string, mixed>             $options  extra (bool: second box ticked), selected (string[]: ticked
 	 *                                                   evidence locations), quarantine (record), random (12 characters
 	 *                                                   for a new quarantine folder name), upgrade (callable( string $kind,
-	 *                                                   string $key ): array{ok: bool, result: string}), self_dir (this
+	 *                                                   string $key ): array{ok: bool, result: string}), posts (Post_Store, for
+	 *                                                   ID_REMOVE_HIDDEN; selected then holds block IDs), self_dir (this
 	 *                                                   plugin's folder name, never moved).
 	 * @return array{ok: bool, code: string, log: array<int, array<string, mixed>>, quarantine: array<string, mixed>|null}
 	 */
@@ -260,6 +270,26 @@ final class Fixer {
 
 		if ( self::ID_BLOCK_UPLOADS_PHP === $id ) {
 			return self::block_uploads( $ctx, $writer, $user_id, $now );
+		}
+		if ( self::ID_REMOVE_HIDDEN === $id ) {
+			$posts = $options['posts'] ?? null;
+			if ( ! $posts instanceof Post_Store ) {
+				return self::result( false, 'refused', array() );
+			}
+			$selected = isset( $options['selected'] ) && is_array( $options['selected'] ) ? array_map( 'strval', $options['selected'] ) : array();
+			return Hidden_Links::apply(
+				$ctx,
+				$posts,
+				$writer,
+				Quarantine::normalise( $options['quarantine'] ?? array() ),
+				(int) substr( $paths[0], 5 ),
+				$selected,
+				array(
+					'user'   => $user_id,
+					'at'     => $now,
+					'random' => (string) ( $options['random'] ?? '' ),
+				)
+			);
 		}
 		if ( self::ID_UPDATE === $id ) {
 			return self::update( $paths, $options, $user_id, $now );

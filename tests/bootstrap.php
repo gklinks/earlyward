@@ -42,4 +42,5 @@ require_once dirname( __DIR__ ) . '/src/class-autoloader.php';
 \Earlyward\Autoloader::register( dirname( __DIR__ ) . '/src' );
 require_once __DIR__ . '/support/class-fixture-database.php';
 require_once __DIR__ . '/support/class-fixture-loopback.php';
+require_once __DIR__ . '/support/class-memory-post-store.php';
 require_once __DIR__ . '/support/class-fixture-site.php';

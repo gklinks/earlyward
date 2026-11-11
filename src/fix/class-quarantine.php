@@ -166,6 +166,68 @@ final class Quarantine {
 	}
 
 	/**
+	 * Store a small file of Earlyward's own making (the backup of a post's values before a fix) in the quarantine folder.
+	 * The stored name has no ".php" in it and ends in ".quarantined", like every other item.
+	 *
+	 * @param Context                                                        $ctx      Context.
+	 * @param Writer                                                         $writer   Writer.
+	 * @param array{dir: string, items: array<string, array<string, mixed>>} $record   Record.
+	 * @param string                                                         $name     Name to build the stored name from.
+	 * @param string                                                         $contents Contents.
+	 * @param string                                                         $location What it belongs to, for example "post:40".
+	 * @param array<string, mixed>                                           $meta     action, check, user, at, and random (12 characters).
+	 * @return array{ok: bool, code: string, record: array{dir: string, items: array<string, array<string, mixed>>}, id: string, stored: string, sha256: string, bytes: int}
+	 */
+	public static function put_blob( Context $ctx, Writer $writer, array $record, string $name, string $contents, string $location, array $meta ): array {
+		$at   = (int) ( $meta['at'] ?? 0 );
+		$fail = static function ( string $code ) use ( $record ): array {
+			return array(
+				'ok'     => false,
+				'code'   => $code,
+				'record' => $record,
+				'id'     => '',
+				'stored' => '',
+				'sha256' => '',
+				'bytes'  => 0,
+			);
+		};
+		if ( count( $record['items'] ) >= self::MAX_ITEMS ) {
+			return $fail( 'refused' );
+		}
+		$ready = self::ensure( $ctx, $writer, $record, (string) ( $meta['random'] ?? '' ) );
+		if ( null === $ready ) {
+			return $fail( 'failed' );
+		}
+		$record = $ready;
+		$id     = gmdate( 'Ymd-His', $at ) . '-' . substr( hash( 'sha256', $location . '|' . $at . '|' . count( $record['items'] ) . '|' . hash( 'sha256', $contents ) ), 0, 8 );
+		$stored = $id . '-' . self::clean_name( $name ) . self::SUFFIX;
+		if ( ! $writer->create_file( self::folder( $ctx, $record ) . '/' . $stored, $contents ) ) {
+			return $fail( 'failed' );
+		}
+		$sha                    = hash( 'sha256', $contents );
+		$record['items'][ $id ] = array(
+			'original' => $location,
+			'stored'   => $stored,
+			'kind'     => Hidden_Links::KIND,
+			'sha256'   => $sha,
+			'bytes'    => strlen( $contents ),
+			'check'    => (string) ( $meta['check'] ?? '' ),
+			'at'       => $at,
+			'user'     => (int) ( $meta['user'] ?? 0 ),
+		);
+		self::write_manifest( $ctx, $writer, $record );
+		return array(
+			'ok'     => true,
+			'code'   => 'fixed',
+			'record' => $record,
+			'id'     => $id,
+			'stored' => $stored,
+			'sha256' => $sha,
+			'bytes'  => strlen( $contents ),
+		);
+	}
+
+	/**
 	 * Put an item back where it came from. Refused if something already exists there.
 	 *
 	 * @param Context                                                        $ctx    Context.
@@ -174,9 +236,10 @@ final class Quarantine {
 	 * @param string                                                         $id     Item ID.
 	 * @param int                                                            $user   Who confirmed.
 	 * @param int                                                            $now    Time.
+	 * @param Post_Store|null                                                $posts  Post store, needed to put back the values of a post (a "Remove hidden links" backup).
 	 * @return array{ok: bool, code: string, record: array{dir: string, items: array<string, array<string, mixed>>}, entry: array<string, mixed>}
 	 */
-	public static function restore( Context $ctx, Writer $writer, array $record, string $id, int $user, int $now ): array {
+	public static function restore( Context $ctx, Writer $writer, array $record, string $id, int $user, int $now, ?Post_Store $posts = null ): array {
 		$item  = $record['items'][ $id ] ?? null;
 		$entry = array(
 			'at'     => $now,
@@ -188,6 +251,20 @@ final class Quarantine {
 			return self::outcome( false, 'gone', $record, $entry + array( 'result' => 'not in quarantine' ) );
 		}
 		$stored = self::stored_path( $ctx, $record, $item );
+		if ( Hidden_Links::KIND === ( $item['kind'] ?? '' ) ) {
+			// Values of a post: written back into the post, only while the post is still as the fix left it.
+			if ( null === $stored || null === $posts ) {
+				return self::outcome( false, 'refused', $record, $entry + array( 'result' => 'unsafe path' ) );
+			}
+			$back = Hidden_Links::put_back( $posts, $stored );
+			if ( ! $back['ok'] ) {
+				return self::outcome( false, $back['code'], $record, $entry + array( 'result' => $back['result'] ) );
+			}
+			$writer->delete_file( $stored );
+			unset( $record['items'][ $id ] );
+			self::write_manifest( $ctx, $writer, $record );
+			return self::outcome( true, 'restored', $record, $entry + array( 'result' => 'values put back into the post' ) );
+		}
 		$target = self::original_path( $ctx, (string) $item['original'] );
 		if ( null === $stored || null === $target ) {
 			return self::outcome( false, 'refused', $record, $entry + array( 'result' => 'unsafe path' ) );
