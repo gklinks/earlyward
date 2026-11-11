@@ -42,6 +42,9 @@ Privately, through the Security tab of the GitHub repository. Please do not open
 
 == Changelog ==
 
+= Unreleased =
+* C9 now also finds links hidden by a tiny box (1-2px with overflow hidden), font-size 0, negative text-indent, clipping, and display:none / visibility:hidden / opacity:0 blocks that hold several external links or text shown nowhere else, and it searches the data of Elementor, Beaver Builder, Bricks and Oxygen, not only page text. It detects common hiding patterns, not all of them; detection only.
+
 = 0.9.0 =
 * Still an early preview: not yet recommended for production sites.
 * New check D3: the home page is sent without standard security headers (HSTS of at least six months, nosniff, clickjacking protection, referrer policy, a content security policy). One header-only request to the site's own home page; a note, never an alert.
@@ -101,6 +104,6 @@ Privately, through the Security tab of the GitHub repository. Please do not open
 * Early preview. Not yet recommended for production sites.
 * Runtime checks: silent outage against a known-good baseline (A1), code switched off after a crash and recovery mode (A2), runaway error logs (A3), WP-Cron not firing (A4).
 * Hosting checks: other sites readable by this site's PHP (B1), no open_basedir (B2), backups and dumps the web server can serve (B3), wp-config.php permissions (B4).
-* Malware indicators: auto_prepend_file loaders (C1), self-healing zip seeds (C2), unexpected PHP in wp-content (C3), automation-shaped administrators (C4), application passwords on administrators (C5), CSS hiding a user (C6), links hidden off-screen (C9).
+* Malware indicators: auto_prepend_file loaders (C1), self-healing zip seeds (C2), unexpected PHP in wp-content (C3), automation-shaped administrators (C4), application passwords on administrators (C5), CSS hiding a user (C6), hidden links in content and page-builder data (C9).
 * Hourly scan in WP-Cron; email only when warning or critical findings change.
 * WP-CLI: `wp earlyward scan`, `run`, `report`, `baseline`. An admin screen (Tools, Earlyward) is in development and not part of 0.1.0.

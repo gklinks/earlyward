@@ -115,29 +115,33 @@ final class Wpdb_Database implements Database {
 	 * @param string[] $types    Post types.
 	 * @param string[] $statuses Statuses.
 	 * @param int      $limit    Limit.
+	 * @param string[] $any_of   At least one of these, when not empty.
 	 * @return array<int, array{id: int, type: string, title: string, content: string}>
 	 */
-	public function posts_containing( array $needles, array $types, array $statuses, int $limit ): array {
+	public function posts_containing( array $needles, array $types, array $statuses, int $limit, array $any_of = array() ): array {
 		$wpdb    = $this->wpdb;
 		$needles = array_values( $needles );
 		if ( empty( $needles ) || empty( $types ) || empty( $statuses ) ) {
 			return array();
 		}
-		// SQL filters on the first needle only, with a fixed, literal query; the rest are checked in PHP.
+		// SQL filters on the first needle and (when given) on one of the hints, with a fixed, literal query; the rest is checked in PHP.
 		// One small query per type and status keeps it portable (MySQL, MariaDB, SQLite integration).
-		$out = array();
+		$any_of = self::slots( $any_of );
+		$out    = array();
 		foreach ( $types as $type ) {
 			foreach ( $statuses as $status ) {
 				$rows = $wpdb->get_results(
-					$wpdb->prepare(
+					$wpdb->prepare( // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- the values are passed as one array: 5 fixed, 8 patterns, the limit.
 						'SELECT ID, post_type, post_title, post_content FROM %i
 						WHERE post_type = %s AND post_status = %s AND post_content LIKE %s
+						AND ( %d = 0 OR post_content LIKE %s OR post_content LIKE %s OR post_content LIKE %s OR post_content LIKE %s
+						OR post_content LIKE %s OR post_content LIKE %s OR post_content LIKE %s OR post_content LIKE %s )
 						ORDER BY ID LIMIT %d',
-						$wpdb->posts,
-						$type,
-						$status,
-						'%' . $wpdb->esc_like( $needles[0] ) . '%',
-						max( 1, $limit )
+						array_merge(
+							array( $wpdb->posts, $type, $status, '%' . $wpdb->esc_like( $needles[0] ) . '%', count( $any_of ) ),
+							self::like_args( $wpdb, $any_of ),
+							array( max( 1, $limit ) )
+						)
 					),
 					ARRAY_A
 				);
@@ -147,6 +151,9 @@ final class Wpdb_Database implements Database {
 						if ( false === stripos( $content, $needle ) ) {
 							continue 2;
 						}
+					}
+					if ( ! self::has_any( $content, $any_of ) ) {
+						continue;
 					}
 					$out[] = array(
 						'id'      => (int) $row['ID'],
@@ -161,6 +168,121 @@ final class Wpdb_Database implements Database {
 			}
 		}
 		return $out;
+	}
+
+	/**
+	 * Builder post meta containing all needles.
+	 *
+	 * @param string[] $keys     Meta keys.
+	 * @param string[] $needles  Substrings.
+	 * @param string[] $statuses Statuses.
+	 * @param int      $limit    Limit.
+	 * @param string[] $any_of   At least one of these, when not empty.
+	 * @return array<int, array{id: int, type: string, title: string, key: string, value: string}>
+	 */
+	public function meta_containing( array $keys, array $needles, array $statuses, int $limit, array $any_of = array() ): array {
+		$wpdb    = $this->wpdb;
+		$needles = array_values( $needles );
+		if ( empty( $keys ) || empty( $needles ) || empty( $statuses ) ) {
+			return array();
+		}
+		// Revisions and autosaves have status inherit, so a status like publish never returns them. One fixed query per key and status, LIMITed; SQL filters on the first needle and one of the hints, the rest is checked in PHP.
+		$any_of = self::slots( $any_of );
+		$out    = array();
+		foreach ( $keys as $key ) {
+			foreach ( $statuses as $status ) {
+				$rows = $wpdb->get_results(
+					$wpdb->prepare( // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- the values are passed as one array: 6 fixed, 8 patterns, the limit.
+						'SELECT p.ID, p.post_type, p.post_title, m.meta_value FROM %i m
+						INNER JOIN %i p ON p.ID = m.post_id
+						WHERE m.meta_key = %s AND p.post_status = %s
+						AND m.meta_value LIKE %s
+						AND ( %d = 0 OR m.meta_value LIKE %s OR m.meta_value LIKE %s OR m.meta_value LIKE %s OR m.meta_value LIKE %s
+						OR m.meta_value LIKE %s OR m.meta_value LIKE %s OR m.meta_value LIKE %s OR m.meta_value LIKE %s )
+						ORDER BY p.ID LIMIT %d',
+						array_merge(
+							array( $wpdb->postmeta, $wpdb->posts, $key, $status, '%' . $wpdb->esc_like( $needles[0] ) . '%', count( $any_of ) ),
+							self::like_args( $wpdb, $any_of ),
+							array( max( 1, $limit ) )
+						)
+					),
+					ARRAY_A
+				);
+				foreach ( (array) $rows as $row ) {
+					$value = (string) $row['meta_value'];
+					foreach ( $needles as $needle ) {
+						if ( false === stripos( $value, $needle ) ) {
+							continue 2;
+						}
+					}
+					if ( ! self::has_any( $value, $any_of ) ) {
+						continue;
+					}
+					$out[] = array(
+						'id'    => (int) $row['ID'],
+						'type'  => (string) $row['post_type'],
+						'title' => (string) $row['post_title'],
+						'key'   => (string) $key,
+						'value' => $value,
+					);
+					if ( count( $out ) >= $limit ) {
+						return $out;
+					}
+				}
+			}
+		}
+		return $out;
+	}
+
+	/**
+	 * At most 8 non-empty hints (the queries have 8 fixed LIKE slots).
+	 *
+	 * @param string[] $any_of Hints.
+	 * @return string[]
+	 */
+	private static function slots( array $any_of ): array {
+		$out = array();
+		foreach ( $any_of as $hint ) {
+			if ( '' !== (string) $hint ) {
+				$out[] = (string) $hint;
+			}
+		}
+		return array_slice( $out, 0, 8 );
+	}
+
+	/**
+	 * Exactly 8 LIKE patterns: the hints, padded with the last hint (the slots are ignored when there are no hints).
+	 *
+	 * @param \wpdb    $wpdb   Database.
+	 * @param string[] $any_of Hints, from slots().
+	 * @return string[]
+	 */
+	private static function like_args( \wpdb $wpdb, array $any_of ): array {
+		$pad = empty( $any_of ) ? '' : end( $any_of );
+		$out = array();
+		for ( $i = 0; $i < 8; $i++ ) {
+			$out[] = '%' . $wpdb->esc_like( $any_of[ $i ] ?? $pad ) . '%';
+		}
+		return $out;
+	}
+
+	/**
+	 * True when no hints are given, or the text contains at least one.
+	 *
+	 * @param string   $text   Text.
+	 * @param string[] $any_of Hints.
+	 * @return bool
+	 */
+	private static function has_any( string $text, array $any_of ): bool {
+		if ( empty( $any_of ) ) {
+			return true;
+		}
+		foreach ( $any_of as $hint ) {
+			if ( false !== stripos( $text, $hint ) ) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**

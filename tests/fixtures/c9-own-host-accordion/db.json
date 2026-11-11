@@ -1,0 +1,15 @@
+{
+    "options": {
+        "home": "https://www.site.fixture",
+        "siteurl": "https://www.site.fixture"
+    },
+    "posts": [
+        {
+            "id": 61,
+            "type": "page",
+            "status": "publish",
+            "title": "FAQ",
+            "content": "<div class=\"accordion\"><div style=\"display:none\"><a href=\"https://site.fixture/shipping\">Shipping</a><a href=\"https://www.site.fixture/returns\">Returns</a><a href=\"https://site.fixture/about\">About</a><a href=\"https://site.fixture/contact\">Contact</a></div></div>"
+        }
+    ]
+}

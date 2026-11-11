@@ -38,9 +38,23 @@ interface Database {
 	 * @param string[] $types    Post types.
 	 * @param string[] $statuses Post statuses.
 	 * @param int      $limit    Maximum rows.
+	 * @param string[] $any_of   When not empty, at least one of these substrings must also appear (case-insensitive).
 	 * @return array<int, array{id: int, type: string, title: string, content: string}>
 	 */
-	public function posts_containing( array $needles, array $types, array $statuses, int $limit ): array;
+	public function posts_containing( array $needles, array $types, array $statuses, int $limit, array $any_of = array() ): array;
+
+	/**
+	 * Post meta values (page-builder data) that contain every one of the given substrings (case-insensitive),
+	 * for posts in one of the given statuses. Revisions and autosaves are never returned.
+	 *
+	 * @param string[] $keys     Meta keys.
+	 * @param string[] $needles  Substrings that must all appear.
+	 * @param string[] $statuses Post statuses.
+	 * @param int      $limit    Maximum rows.
+	 * @param string[] $any_of   When not empty, at least one of these substrings must also appear (case-insensitive).
+	 * @return array<int, array{id: int, type: string, title: string, key: string, value: string}>
+	 */
+	public function meta_containing( array $keys, array $needles, array $statuses, int $limit, array $any_of = array() ): array;
 
 	/**
 	 * One option, decoded. Serialized objects are never instantiated.

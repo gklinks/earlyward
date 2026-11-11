@@ -1,0 +1,21 @@
+{
+    "options": {
+        "home": "https://site.fixture"
+    },
+    "posts": [
+        {
+            "id": 44,
+            "type": "page",
+            "status": "publish",
+            "title": "Many",
+            "content": "<div style=\"display:none\"><a href=\"https://a.fixture/1\">one</a><a href=\"https://b.fixture/2\">two</a><a href=\"https://c.fixture/3\">three</a></div>"
+        },
+        {
+            "id": 45,
+            "type": "page",
+            "status": "publish",
+            "title": "Single",
+            "content": "<p>Visible words.</p><div style=\"visibility:hidden\"><a href=\"https://spam.fixture/s\">unseen anchor</a></div>"
+        }
+    ]
+}

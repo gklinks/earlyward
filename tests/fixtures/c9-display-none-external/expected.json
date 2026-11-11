@@ -1,0 +1,26 @@
+[
+    {
+        "check": "C9",
+        "severity": "critical",
+        "confidence": "high",
+        "where": [
+            "post:44"
+        ]
+    },
+    {
+        "check": "C9",
+        "severity": "critical",
+        "confidence": "high",
+        "where": [
+            "post:45"
+        ]
+    },
+    {
+        "check": "C17",
+        "severity": "info",
+        "confidence": "medium",
+        "where": [
+            "wp-content\/uploads\/.htaccess"
+        ]
+    }
+]

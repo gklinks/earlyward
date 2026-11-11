@@ -56,7 +56,7 @@ evidence (file and line, user, option or URL) so you can judge it yourself.
 - **C4** Administrator accounts shaped like automation rather than people.
 - **C5** Application passwords on administrator accounts (they survive password changes).
 - **C6** Custom CSS that hides a user from the Users screen.
-- **C9** Links hidden off-screen inside published content.
+- **C9** Links hidden from visitors inside published content: moved off-screen, in a tiny box (1-2px with overflow hidden), font-size 0, large negative text-indent, clipped, or hidden with display:none / visibility:hidden / opacity:0. It reads page text and the data of Elementor, Beaver Builder, Bricks and Oxygen (published posts only). Detects common hiding patterns, not all of them. Hidden blocks of the display:none kind are reported only with 3 or more external links, or an external link whose text is not shown elsewhere on the page, so tabs, accordions and menus stay quiet. Own-site links are recognised from the home and siteurl settings (with www. and without are the same); if the site address cannot be read, that display:none rule stays quiet. It checks up to 1000 matching items per source and says so when that limit is reached. Detection only.
 - **C15** PHP files in the web root that WordPress core does not ship, and renamed server-config or maintenance leftovers (detection only).
 - **C16** Renamed plugin copies such as `plugin.bak-20260809`, which WordPress no longer lists or updates but the web can still reach.
 - **C13** Code that hides or runs other code in a theme's functions.php, header.php or footer.php (detection only; never edits a theme).

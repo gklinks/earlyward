@@ -30,6 +30,13 @@ final class Fixture_Database implements Database {
 	private $data;
 
 	/**
+	 * Record of posts_containing / meta_containing calls, for tests.
+	 *
+	 * @var array<int, array{source: string, any_of: string[], limit: int}>
+	 */
+	public $calls = array();
+
+	/**
 	 * Constructor.
 	 *
 	 * @param array<string, mixed> $data Decoded db.json.
@@ -85,10 +92,16 @@ final class Fixture_Database implements Database {
 	 * @param string[] $types    Types.
 	 * @param string[] $statuses Statuses.
 	 * @param int      $limit    Limit.
+	 * @param string[] $any_of   At least one of these, when not empty.
 	 * @return array<int, array{id: int, type: string, title: string, content: string}>
 	 */
-	public function posts_containing( array $needles, array $types, array $statuses, int $limit ): array {
-		$out = array();
+	public function posts_containing( array $needles, array $types, array $statuses, int $limit, array $any_of = array() ): array {
+		$this->calls[] = array(
+			'source' => 'posts',
+			'any_of' => $any_of,
+			'limit'  => $limit,
+		);
+		$out           = array();
 		foreach ( (array) $this->data['posts'] as $post ) {
 			if ( ! in_array( $post['type'], $types, true ) || ! in_array( $post['status'], $statuses, true ) ) {
 				continue;
@@ -97,6 +110,9 @@ final class Fixture_Database implements Database {
 				if ( false === stripos( (string) $post['content'], $needle ) ) {
 					continue 2;
 				}
+			}
+			if ( ! self::has_any( (string) $post['content'], $any_of ) ) {
+				continue;
 			}
 			$out[] = array(
 				'id'      => (int) $post['id'],
@@ -109,6 +125,73 @@ final class Fixture_Database implements Database {
 			}
 		}
 		return $out;
+	}
+
+	/**
+	 * Builder post meta containing all needles, from db.json "postmeta": [ { "post_id": 1, "key": "_elementor_data", "value": "" } ] joined to "posts".
+	 *
+	 * @param string[] $keys     Keys.
+	 * @param string[] $needles  Needles.
+	 * @param string[] $statuses Statuses.
+	 * @param int      $limit    Limit.
+	 * @param string[] $any_of   At least one of these, when not empty.
+	 * @return array<int, array{id: int, type: string, title: string, key: string, value: string}>
+	 */
+	public function meta_containing( array $keys, array $needles, array $statuses, int $limit, array $any_of = array() ): array {
+		$this->calls[] = array(
+			'source' => 'meta',
+			'any_of' => $any_of,
+			'limit'  => $limit,
+		);
+		$out           = array();
+		foreach ( (array) ( $this->data['postmeta'] ?? array() ) as $meta ) {
+			if ( ! in_array( $meta['key'], $keys, true ) ) {
+				continue;
+			}
+			foreach ( (array) $this->data['posts'] as $post ) {
+				if ( (int) $post['id'] !== (int) $meta['post_id'] || ! in_array( $post['status'], $statuses, true ) ) {
+					continue;
+				}
+				foreach ( $needles as $needle ) {
+					if ( false === stripos( (string) $meta['value'], $needle ) ) {
+						continue 3;
+					}
+				}
+				if ( ! self::has_any( (string) $meta['value'], $any_of ) ) {
+					continue;
+				}
+				$out[] = array(
+					'id'    => (int) $post['id'],
+					'type'  => (string) $post['type'],
+					'title' => (string) $post['title'],
+					'key'   => (string) $meta['key'],
+					'value' => (string) $meta['value'],
+				);
+				if ( count( $out ) >= $limit ) {
+					return $out;
+				}
+			}
+		}
+		return $out;
+	}
+
+	/**
+	 * True when no hints are given, or the text contains at least one.
+	 *
+	 * @param string   $text   Text.
+	 * @param string[] $any_of Hints.
+	 * @return bool
+	 */
+	private static function has_any( string $text, array $any_of ): bool {
+		if ( empty( $any_of ) ) {
+			return true;
+		}
+		foreach ( $any_of as $hint ) {
+			if ( false !== stripos( $text, $hint ) ) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**

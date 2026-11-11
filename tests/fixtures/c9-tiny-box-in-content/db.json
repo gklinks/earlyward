@@ -1,0 +1,11 @@
+{
+    "posts": [
+        {
+            "id": 41,
+            "type": "post",
+            "status": "publish",
+            "title": "Update",
+            "content": "<p>Hello.</p><div style=\"height: 1px; overflow: hidden\"><p><a href=\"https://spam.fixture/x\">alpha</a> <a href=\"https://other.fixture/y\">beta</a></p></div>"
+        }
+    ]
+}
