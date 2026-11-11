@@ -35,6 +35,7 @@ namespace Earlyward\Checks\Integrity;
 
 use Earlyward\Checks\Check;
 use Earlyward\Env\Context;
+use Earlyward\Env\Database;
 use Earlyward\Finding\Evidence;
 use Earlyward\Finding\Finding;
 
@@ -54,6 +55,11 @@ final class Cloaked_Link_Check implements Check {
 	const MAX_DOMAINS = 5;
 
 	const MAX_POSTS = 1000;
+
+	/**
+	 * Revisions read per reported post.
+	 */
+	const MAX_REVISIONS = 200;
 
 	/**
 	 * The SQL pre-filter: a link, and one of these hints that something is being hidden.
@@ -112,6 +118,13 @@ final class Cloaked_Link_Check implements Check {
 				'domains'       => implode( ', ', $domains ),
 				'edit'          => 'post.php?post=' . (int) $id . '&action=edit',
 			);
+			$history = self::history( $db, (int) $id, $own );
+			$data   += array(
+				'history'                  => $history['text'],
+				'revisions_with_hidden'    => $history['infected'],
+				'revisions_checked'        => $history['checked'],
+				'first_seen_by_user_login' => $history['login'],
+			);
 			if ( $capped ) {
 				$data['note'] = sprintf( 'checked the first %d matching items', self::MAX_POSTS );
 			}
@@ -131,12 +144,63 @@ final class Cloaked_Link_Check implements Check {
 				$evidence,
 				array(
 					__( 'Use "Fix it here" under this finding to remove the hidden blocks you tick: Earlyward saves the old values first, checks the result, and "Put back" on the Quarantine and fix log tab restores them. Or open the page in the page builder code view (or the code editor) and remove the hidden block yourself, or ask your host to. Keep a copy first.', 'earlyward' ),
+					__( 'The evidence says which user saved the oldest revision found with the hidden block, and when. That person may have had their login stolen: change that user\'s password. Revisions can be deleted or turned off, so no history is not proof of anything.', 'earlyward' ),
 					__( 'Change the passwords of all administrator accounts, even after the links are removed: this is usually done with a stolen login, and removing the links does not close that way in.', 'earlyward' ),
 					__( 'Check Google Search Console, under Security issues, and search your other pages too: this kind of injection usually hits several.', 'earlyward' ),
 				)
 			);
 		}
 		return $findings;
+	}
+
+	/**
+	 * When did the hidden block first show up, and who saved that revision? Looks at up to MAX_REVISIONS saved
+	 * revisions of the post (autosaves included): their content and their builder data, with the same detection.
+	 *
+	 * @param Database      $db  Database.
+	 * @param int           $id  Post ID.
+	 * @param string[]|null $own Own hosts, null when unknown.
+	 * @return array{text: string, infected: int, checked: int, login: string}
+	 */
+	private static function history( Database $db, int $id, ?array $own ): array {
+		$revisions = $db->revisions( $id, self::BUILDER_KEYS, self::MAX_REVISIONS ); // Newest first.
+		$oldest    = null;
+		$infected  = 0;
+		foreach ( $revisions as $revision ) {
+			$hit = array() !== self::find_cloaked_links( $revision['content'], $own );
+			foreach ( $revision['meta'] as $value ) {
+				$hit = $hit || array() !== self::find_cloaked_links( self::unescape_builder( $value ), $own );
+			}
+			if ( $hit ) {
+				++$infected;
+				$oldest = $revision; // Newest first: the last hit is the oldest one.
+			}
+		}
+		$none = array(
+			'text'     => 'no revision history',
+			'infected' => 0,
+			'checked'  => count( $revisions ),
+			'login'    => '',
+		);
+		if ( null === $oldest ) {
+			return $none;
+		}
+		$who = '' !== $oldest['author_login'] ? $oldest['author_login'] : ( $oldest['author_id'] > 0 ? 'user #' . $oldest['author_id'] : 'an unknown user' );
+		$cap = count( $revisions ) >= self::MAX_REVISIONS;
+		return array(
+			'text'     => sprintf(
+				'%1$s a revision saved %2$s UTC by %3$s; %4$d of %5$d revisions checked contain it%6$s',
+				$cap && $oldest['id'] === $revisions[ count( $revisions ) - 1 ]['id'] ? 'at least since' : 'first seen in',
+				$oldest['date'],
+				$who,
+				$infected,
+				count( $revisions ),
+				$cap ? sprintf( ' (only the newest %d revisions are read)', self::MAX_REVISIONS ) : ''
+			),
+			'infected' => $infected,
+			'checked'  => count( $revisions ),
+			'login'    => $who,
+		);
 	}
 
 	/**

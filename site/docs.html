@@ -236,7 +236,14 @@
             <span class="check-id">C9</span>
             <span class="check-name">Links hidden from visitors inside published content</span>
           </div>
-          <p class="check-desc">Detects links hidden from visitors in published content and in page-builder data (Elementor, Beaver Builder, Bricks, Oxygen): moved off-screen, in a tiny box, font-size 0, clipped, or hidden with display:none. Finds common hiding patterns, not every pattern. Detection only.</p>
+          <p class="check-desc">Detects links hidden from visitors in published content and in page-builder data (Elementor, Beaver Builder, Bricks, Oxygen): moved off-screen, in a tiny box, font-size 0, clipped, or hidden with display:none. Finds common hiding patterns, not every pattern. Also reports when the block first shows up in the post's saved revisions and which user saved it (up to 200 revisions). Detection only.</p>
+        </li>
+        <li class="check-item">
+          <div class="check-header">
+            <span class="check-id">C18</span>
+            <span class="check-name">SEO spam leftovers: terms, posts and new accounts named after spam topics</span>
+          </div>
+          <p class="check-desc">Matches categories, tags and other terms (empty ones too), posts in any status except trash, and subscriber or customer accounts against a fixed word list (casino, poker, slots, betting, gambling, viagra, cialis, payday loan, essay writing, replica, escort, crypto bonus; whole words), and flags titles in Chinese, Japanese or Korean script on sites that are not written in them. A word list finds common cases, not all spam; a match is a reason to look, not proof. Detection only.</p>
         </li>
         <li class="check-item">
           <div class="check-header">

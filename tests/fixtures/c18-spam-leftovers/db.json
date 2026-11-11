@@ -1,0 +1,25 @@
+{
+	"options": { "home": "https://site.fixture", "siteurl": "https://site.fixture" },
+	"terms": [
+		{ "id": 3, "name": "Uncategorized", "slug": "uncategorized", "taxonomy": "category", "count": 4 },
+		{ "id": 31, "name": "Online Casino Bonus", "slug": "online-casino-bonus", "taxonomy": "category", "count": 0 },
+		{ "id": 32, "name": "cheap", "slug": "buy-viagra-online", "taxonomy": "post_tag", "count": 0 },
+		{ "id": 33, "name": "Poker", "slug": "poker", "taxonomy": "product_cat", "count": 2 },
+		{ "id": 34, "name": "Casino menu item", "slug": "casino-menu", "taxonomy": "nav_menu", "count": 1 }
+	],
+	"posts": [
+		{ "id": 1, "type": "post", "status": "publish", "title": "Hello world", "slug": "hello-world", "content": "" },
+		{ "id": 2, "type": "page", "status": "publish", "title": "About us", "slug": "about-us", "content": "" },
+		{ "id": 3, "type": "page", "status": "publish", "title": "Contact", "slug": "contact", "content": "" },
+		{ "id": 41, "type": "post", "status": "publish", "title": "Best online casino 2026", "slug": "best-online-casino-2026", "content": "" },
+		{ "id": 42, "type": "post", "status": "draft", "title": "Offer", "slug": "cheap-cialis-now", "content": "" },
+		{ "id": 43, "type": "post", "status": "trash", "title": "Old poker post", "slug": "old-poker", "content": "" },
+		{ "id": 44, "type": "revision", "status": "inherit", "parent": 1, "title": "casino revision", "slug": "1-revision-v1", "content": "" }
+	],
+	"users": [
+		{ "id": 1, "login": "anna", "email": "anna@site.fixture", "registered": "2025-01-01 09:00:00", "roles": ["administrator"], "meta": {} },
+		{ "id": 51, "login": "casino-win77", "email": "a@x.test", "registered": "2026-10-01 09:00:00", "roles": ["subscriber"], "meta": {} },
+		{ "id": 52, "login": "mary", "display_name": "Mary Escort Service", "email": "b@x.test", "registered": "2026-10-02 09:00:00", "roles": ["customer"], "meta": {} },
+		{ "id": 53, "login": "poker_king", "email": "c@x.test", "registered": "2026-10-03 09:00:00", "roles": ["editor"], "meta": {} }
+	]
+}

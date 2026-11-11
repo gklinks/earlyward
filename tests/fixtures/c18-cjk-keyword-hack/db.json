@@ -1,0 +1,9 @@
+{
+	"posts": [
+		{ "id": 1, "type": "post", "status": "publish", "title": "Hello world", "slug": "hello-world", "content": "" },
+		{ "id": 2, "type": "page", "status": "publish", "title": "About us", "slug": "about-us", "content": "" },
+		{ "id": 3, "type": "page", "status": "publish", "title": "Contact", "slug": "contact", "content": "" },
+		{ "id": 4, "type": "post", "status": "publish", "title": "Our news", "slug": "our-news", "content": "" },
+		{ "id": 5, "type": "post", "status": "pending", "title": "激安ブランドコピー通販", "slug": "x5", "content": "" }
+	]
+}

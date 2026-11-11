@@ -360,4 +360,173 @@ final class Wpdb_Database implements Database {
 			'by_role'    => $by,
 		);
 	}
+
+	/**
+	 * Revisions of one post (see the interface).
+	 *
+	 * @param int      $post_id   Parent post ID.
+	 * @param string[] $meta_keys Builder meta keys.
+	 * @param int      $limit     Maximum revisions.
+	 * @return array<int, array{id: int, author_id: int, author_login: string, date: string, content: string, meta: array<string, string>}>
+	 */
+	public function revisions( int $post_id, array $meta_keys, int $limit ): array {
+		$wpdb  = $this->wpdb;
+		$limit = max( 1, $limit );
+		$rows  = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT r.ID, r.post_author, r.post_content, r.post_modified_gmt, r.post_date_gmt, u.user_login FROM %i r
+				LEFT JOIN %i u ON u.ID = r.post_author
+				WHERE r.post_type = 'revision' AND r.post_parent = %d
+				ORDER BY r.ID DESC LIMIT %d",
+				$wpdb->posts,
+				$wpdb->users,
+				$post_id,
+				$limit
+			),
+			ARRAY_A
+		);
+		$out   = array();
+		foreach ( (array) $rows as $row ) {
+			$date                    = (string) $row['post_modified_gmt'];
+			$out[ (int) $row['ID'] ] = array(
+				'id'           => (int) $row['ID'],
+				'author_id'    => (int) $row['post_author'],
+				'author_login' => (string) ( $row['user_login'] ?? '' ),
+				'date'         => ( '' === $date || '0000-00-00 00:00:00' === $date ) ? (string) $row['post_date_gmt'] : $date,
+				'content'      => (string) $row['post_content'],
+				'meta'         => array(),
+			);
+		}
+		// One fixed query per key; only meta of the revisions already read is kept.
+		foreach ( $meta_keys as $key ) {
+			$metas = $wpdb->get_results(
+				$wpdb->prepare(
+					"SELECT m.post_id, m.meta_value FROM %i m
+					INNER JOIN %i r ON r.ID = m.post_id
+					WHERE m.meta_key = %s AND r.post_type = 'revision' AND r.post_parent = %d
+					ORDER BY m.post_id DESC LIMIT %d",
+					$wpdb->postmeta,
+					$wpdb->posts,
+					(string) $key,
+					$post_id,
+					$limit
+				),
+				ARRAY_A
+			);
+			foreach ( (array) $metas as $meta ) {
+				if ( isset( $out[ (int) $meta['post_id'] ] ) ) {
+					$out[ (int) $meta['post_id'] ]['meta'][ (string) $key ] = (string) $meta['meta_value'];
+				}
+			}
+		}
+		return array_values( $out );
+	}
+
+	/**
+	 * Terms (see the interface).
+	 *
+	 * @param int $limit Maximum rows.
+	 * @return array<int, array{id: int, name: string, slug: string, taxonomy: string, count: int}>
+	 */
+	public function terms( int $limit ): array {
+		$wpdb = $this->wpdb;
+		$rows = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT t.term_id, t.name, t.slug, x.taxonomy, x.count FROM %i t
+				INNER JOIN %i x ON x.term_id = t.term_id
+				WHERE x.taxonomy NOT IN ( 'nav_menu', 'link_category', 'post_format' )
+				ORDER BY t.term_id LIMIT %d",
+				$wpdb->terms,
+				$wpdb->term_taxonomy,
+				max( 1, $limit )
+			),
+			ARRAY_A
+		);
+		$out  = array();
+		foreach ( (array) $rows as $row ) {
+			$out[] = array(
+				'id'       => (int) $row['term_id'],
+				'name'     => (string) $row['name'],
+				'slug'     => (string) $row['slug'],
+				'taxonomy' => (string) $row['taxonomy'],
+				'count'    => (int) $row['count'],
+			);
+		}
+		return $out;
+	}
+
+	/**
+	 * Post titles and slugs (see the interface). One query per status.
+	 *
+	 * @param string[] $statuses Statuses.
+	 * @param int      $limit    Maximum rows.
+	 * @return array<int, array{id: int, type: string, status: string, title: string, slug: string}>
+	 */
+	public function post_titles( array $statuses, int $limit ): array {
+		$wpdb = $this->wpdb;
+		$out  = array();
+		$skip = Database::NON_CONTENT_TYPES;
+		foreach ( $statuses as $status ) {
+			$rows = $wpdb->get_results(
+				$wpdb->prepare( // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber, WordPress.DB.PreparedSQL.NotPrepared -- the values are passed as one array: table, status, the skipped types, the limit; the only built-in part is a list of %s.
+					'SELECT ID, post_type, post_status, post_title, post_name FROM %i
+					WHERE post_status = %s AND post_type NOT IN ( ' . implode( ', ', array_fill( 0, count( $skip ), '%s' ) ) . ' )
+					ORDER BY ID LIMIT %d',
+					array_merge( array( $wpdb->posts, $status ), $skip, array( max( 1, $limit ) ) )
+				),
+				ARRAY_A
+			);
+			foreach ( (array) $rows as $row ) {
+				$out[] = array(
+					'id'     => (int) $row['ID'],
+					'type'   => (string) $row['post_type'],
+					'status' => (string) $row['post_status'],
+					'title'  => (string) $row['post_title'],
+					'slug'   => (string) $row['post_name'],
+				);
+			}
+		}
+		return array_slice( $out, 0, max( 1, $limit ) );
+	}
+
+	/**
+	 * Accounts with one of the roles (see the interface). One query per role; a user with two listed roles appears once.
+	 *
+	 * @param string[] $roles Roles.
+	 * @param int      $limit Maximum rows.
+	 * @return array<int, array{id: int, login: string, display_name: string}>
+	 */
+	public function user_names( array $roles, int $limit ): array {
+		$wpdb = $this->wpdb;
+		$out  = array();
+		foreach ( $roles as $role ) {
+			$rows = $wpdb->get_results(
+				$wpdb->prepare(
+					'SELECT u.ID, u.user_login, u.display_name, c.meta_value FROM %i u
+					INNER JOIN %i c ON c.user_id = u.ID AND c.meta_key = %s
+					WHERE c.meta_value LIKE %s
+					ORDER BY u.ID LIMIT %d',
+					$wpdb->users,
+					$wpdb->usermeta,
+					$wpdb->get_blog_prefix() . 'capabilities',
+					'%' . $wpdb->esc_like( '"' . (string) $role . '"' ) . '%',
+					max( 1, $limit )
+				),
+				ARRAY_A
+			);
+			foreach ( (array) $rows as $row ) {
+				$caps = self::decode( $row['meta_value'] );
+				if ( ! is_array( $caps ) || empty( $caps[ $role ] ) ) {
+					continue; // The LIKE is only a pre-filter.
+				}
+				$out[ (int) $row['ID'] ] = array(
+					'id'           => (int) $row['ID'],
+					'login'        => (string) $row['user_login'],
+					'display_name' => (string) $row['display_name'],
+				);
+			}
+		}
+		ksort( $out );
+		return array_slice( array_values( $out ), 0, max( 1, $limit ) );
+	}
 }

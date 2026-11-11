@@ -1,0 +1,6 @@
+[
+  { "check": "C18", "severity": "warning", "confidence": "medium", "where": [ "term:31", "term:32", "term:33" ] },
+  { "check": "C18", "severity": "critical", "confidence": "medium", "where": [ "post:41", "post:42" ] },
+  { "check": "C18", "severity": "warning", "confidence": "medium", "where": [ "user:51", "user:52" ] },
+  { "check": "C17", "severity": "info", "confidence": "medium", "where": [ "wp-content/uploads/.htaccess" ] }
+]

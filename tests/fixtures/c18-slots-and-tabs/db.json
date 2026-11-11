@@ -1,0 +1,9 @@
+{
+	"terms": [
+		{ "id": 3, "name": "Slots & Tabs", "slug": "slots-tabs", "taxonomy": "product_cat", "count": 12 },
+		{ "id": 4, "name": "Shelves", "slug": "shelves", "taxonomy": "product_cat", "count": 8 }
+	],
+	"posts": [
+		{ "id": 1, "type": "product", "status": "publish", "title": "Oak shelf", "slug": "oak-shelf", "content": "" }
+	]
+}

@@ -53,6 +53,7 @@ final class Scanner {
 				new \Earlyward\Checks\Integrity\Admin_Credentials_Check(),
 				new \Earlyward\Checks\Integrity\Hidden_User_Css_Check(),
 				new \Earlyward\Checks\Integrity\Cloaked_Link_Check(),
+				new \Earlyward\Checks\Integrity\Seo_Spam_Leftovers_Check(),
 				new \Earlyward\Checks\Hosting\Shared_User_Check(),
 				new \Earlyward\Checks\Hosting\Open_Basedir_Check(),
 				new \Earlyward\Checks\Hosting\Exposed_Backup_Check(),

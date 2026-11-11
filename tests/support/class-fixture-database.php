@@ -7,7 +7,10 @@
  *   "users":   [ { "id": 1, "login": "", "email": "", "registered": "", "roles": ["administrator"],
  *                  "meta": { "session_tokens": {...}, "_application_passwords": [...] } } ],
  *   "posts":   [ { "id": 1, "type": "page", "status": "publish", "title": "", "content": "" } ],
- *   "options": { "name": value }
+ *   "options": { "name": value },
+ *   "terms":   [ { "id": 1, "name": "", "slug": "", "taxonomy": "category", "count": 0 } ]
+ * Posts may carry "slug". Posts of type "revision" take "parent" (post ID), "author" (login) and "date" (UTC);
+ * postmeta rows whose "post_id" is the revision's ID are its builder data. Users may carry "display_name".
  * }
  *
  * @package Earlyward
@@ -235,5 +238,110 @@ final class Fixture_Database implements Database {
 			'candidates' => $count,
 			'by_role'    => $by,
 		);
+	}
+
+	/**
+	 * Revisions of one post, newest (highest ID) first.
+	 *
+	 * @param int      $post_id   Parent post ID.
+	 * @param string[] $meta_keys Builder meta keys.
+	 * @param int      $limit     Maximum revisions.
+	 * @return array<int, array{id: int, author_id: int, author_login: string, date: string, content: string, meta: array<string, string>}>
+	 */
+	public function revisions( int $post_id, array $meta_keys, int $limit ): array {
+		$found = array();
+		foreach ( (array) $this->data['posts'] as $post ) {
+			if ( 'revision' === $post['type'] && (int) ( $post['parent'] ?? 0 ) === $post_id ) {
+				$found[ (int) $post['id'] ] = $post;
+			}
+		}
+		krsort( $found );
+		$out = array();
+		foreach ( array_slice( $found, 0, max( 1, $limit ), true ) as $id => $post ) {
+			$meta = array();
+			foreach ( (array) ( $this->data['postmeta'] ?? array() ) as $row ) {
+				if ( (int) $row['post_id'] === $id && in_array( $row['key'], $meta_keys, true ) ) {
+					$meta[ (string) $row['key'] ] = (string) $row['value'];
+				}
+			}
+			$out[] = array(
+				'id'           => $id,
+				'author_id'    => (int) ( $post['author_id'] ?? 0 ),
+				'author_login' => (string) ( $post['author'] ?? '' ),
+				'date'         => (string) ( $post['date'] ?? '' ),
+				'content'      => (string) $post['content'],
+				'meta'         => $meta,
+			);
+		}
+		return $out;
+	}
+
+	/**
+	 * Terms.
+	 *
+	 * @param int $limit Maximum rows.
+	 * @return array<int, array{id: int, name: string, slug: string, taxonomy: string, count: int}>
+	 */
+	public function terms( int $limit ): array {
+		$out = array();
+		foreach ( (array) ( $this->data['terms'] ?? array() ) as $term ) {
+			if ( in_array( $term['taxonomy'], array( 'nav_menu', 'link_category', 'post_format' ), true ) ) {
+				continue;
+			}
+			$out[] = array(
+				'id'       => (int) $term['id'],
+				'name'     => (string) $term['name'],
+				'slug'     => (string) $term['slug'],
+				'taxonomy' => (string) $term['taxonomy'],
+				'count'    => (int) ( $term['count'] ?? 0 ),
+			);
+		}
+		return array_slice( $out, 0, max( 1, $limit ) );
+	}
+
+	/**
+	 * Post titles and slugs; "slug" is optional in db.json.
+	 *
+	 * @param string[] $statuses Statuses.
+	 * @param int      $limit    Maximum rows.
+	 * @return array<int, array{id: int, type: string, status: string, title: string, slug: string}>
+	 */
+	public function post_titles( array $statuses, int $limit ): array {
+		$out = array();
+		foreach ( (array) $this->data['posts'] as $post ) {
+			if ( ! in_array( $post['status'], $statuses, true ) || in_array( $post['type'], Database::NON_CONTENT_TYPES, true ) ) {
+				continue;
+			}
+			$out[] = array(
+				'id'     => (int) $post['id'],
+				'type'   => (string) $post['type'],
+				'status' => (string) $post['status'],
+				'title'  => (string) $post['title'],
+				'slug'   => (string) ( $post['slug'] ?? '' ),
+			);
+		}
+		return array_slice( $out, 0, max( 1, $limit ) );
+	}
+
+	/**
+	 * Accounts with one of the roles.
+	 *
+	 * @param string[] $roles Roles.
+	 * @param int      $limit Maximum rows.
+	 * @return array<int, array{id: int, login: string, display_name: string}>
+	 */
+	public function user_names( array $roles, int $limit ): array {
+		$out = array();
+		foreach ( (array) $this->data['users'] as $user ) {
+			if ( array() === array_intersect( $roles, (array) ( $user['roles'] ?? array() ) ) ) {
+				continue;
+			}
+			$out[] = array(
+				'id'           => (int) $user['id'],
+				'login'        => (string) $user['login'],
+				'display_name' => (string) ( $user['display_name'] ?? $user['login'] ),
+			);
+		}
+		return array_slice( $out, 0, max( 1, $limit ) );
 	}
 }

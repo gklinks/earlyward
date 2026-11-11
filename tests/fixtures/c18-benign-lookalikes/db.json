@@ -1,0 +1,20 @@
+{
+	"terms": [
+		{ "id": 3, "name": "Uncategorized", "slug": "uncategorized", "taxonomy": "category", "count": 4 },
+		{ "id": 31, "name": "Slotted tools", "slug": "slotted-tools", "taxonomy": "product_cat", "count": 3 },
+		{ "id": 32, "name": "Escorted tours", "slug": "escorted-tours", "taxonomy": "category", "count": 0 },
+		{ "id": 33, "name": "Replicate", "slug": "replicate", "taxonomy": "post_tag", "count": 1 }
+	],
+	"posts": [
+		{ "id": 1, "type": "post", "status": "publish", "title": "Hello world", "slug": "hello-world", "content": "" },
+		{ "id": 2, "type": "post", "status": "publish", "title": "Cooking with a slotted spoon", "slug": "cooking-with-a-slotted-spoon", "content": "" },
+		{ "id": 3, "type": "post", "status": "draft", "title": "Film night draft", "slug": "film-night-draft", "content": "casino" },
+		{ "id": 4, "type": "post", "status": "trash", "title": "Poker", "slug": "poker", "content": "" },
+		{ "id": 5, "type": "post", "status": "auto-draft", "title": "Slots", "slug": "", "content": "" }
+	],
+	"users": [
+		{ "id": 1, "login": "anna", "email": "anna@site.fixture", "registered": "2025-01-01 09:00:00", "roles": ["administrator"], "meta": {} },
+		{ "id": 51, "login": "slotter", "display_name": "Sam Slotted", "email": "a@x.test", "registered": "2026-10-01 09:00:00", "roles": ["subscriber"], "meta": {} },
+		{ "id": 52, "login": "casino_admin", "email": "b@x.test", "registered": "2026-10-02 09:00:00", "roles": ["editor"], "meta": {} }
+	]
+}

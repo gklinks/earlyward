@@ -1,0 +1,14 @@
+{
+	"terms": [
+		{ "id": 3, "name": "未分類", "slug": "uncategorized", "taxonomy": "category", "count": 4 }
+	],
+	"posts": [
+		{ "id": 1, "type": "post", "status": "publish", "title": "こんにちは世界", "slug": "hello", "content": "" },
+		{ "id": 2, "type": "page", "status": "publish", "title": "会社概要", "slug": "about", "content": "" },
+		{ "id": 3, "type": "page", "status": "publish", "title": "お問い合わせ", "slug": "contact", "content": "" },
+		{ "id": 4, "type": "post", "status": "publish", "title": "新商品のお知らせ", "slug": "news", "content": "" },
+		{ "id": 5, "type": "post", "status": "draft", "title": "採用情報", "slug": "jobs", "content": "" },
+		{ "id": 6, "type": "page", "status": "publish", "title": "Privacy", "slug": "privacy", "content": "" },
+		{ "id": 7, "type": "page", "status": "publish", "title": "Terms", "slug": "terms", "content": "" }
+	]
+}

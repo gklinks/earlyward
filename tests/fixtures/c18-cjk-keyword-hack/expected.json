@@ -1,0 +1,4 @@
+[
+  { "check": "C18", "severity": "warning", "confidence": "medium", "where": [ "post:5" ] },
+  { "check": "C17", "severity": "info", "confidence": "medium", "where": [ "wp-content/uploads/.htaccess" ] }
+]
